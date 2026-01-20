@@ -6,6 +6,7 @@ description: |-
 
 ## When to use this skill
 
+In a Dart or Flutter project.
 When a user asks to migrate to `package:checks` or just "checks".
 
 ## How to use this skill
