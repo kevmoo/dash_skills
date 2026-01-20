@@ -1,9 +1,14 @@
 ---
-name: Migrate from package:matcher to package:checks
-description: Replace the usage of `expect` and similar functions from `package:matcher` to `package:checks` equivalents.
+description: |-
+  Replace the usage of `expect` and similar functions from `package:matcher` 
+  to `package:checks` equivalents.
 ---
 
-## Instructions
+## When to use this skill
+
+When a user asks to migrate to `package:checks` or just "checks".
+
+## How to use this skill
 When asked to "migrate to checks", perform the following steps:
 
 1.  **Analysis**:
