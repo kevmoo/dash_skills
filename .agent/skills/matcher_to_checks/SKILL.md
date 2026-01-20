@@ -13,7 +13,7 @@ When asked to "migrate to checks", perform the following steps:
     - If you are unsure about a conversion, err on the side of leaving the code as is.
     - Make special note of custom matchers. Tell the user to consider migrating these first before continuing.
 2.  **Dependency Check**: Ensure `pubspec.yaml` has `package:checks` in `dev_dependencies`. Add it if missing using `dart pub add --dev checks`.
-3.  **Import Management**: Add `import 'package:checks/checks.dart';` to Dart test files. Update the `package:test/test.dart` import to explicitly show only the required symbols, e.g., `import 'package:test/test.dart' show test, group;`. Ensure imports remain sorted.
+3.  **Import Management**: Add `import 'package:checks/checks.dart';` to Dart test files. Update the `package:test/test.dart` import to to `import 'package:test/scaffold.dart`. Ensure imports remain sorted.
 4.  **Replacement**:
   - Replace `expect()` and `expectLater()` calls with `check()` equivalents. See common patterns below. 
 5.  **Verification**: The code should analyze cleanly and the tests should pass.
