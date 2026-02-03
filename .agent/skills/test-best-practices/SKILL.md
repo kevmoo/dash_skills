@@ -23,3 +23,18 @@ Prefer `expect(list, isEmpty)` over `expect(list.isEmpty, true)` and `expect(lis
 This provides more descriptive failure messages.
 
 This applies to objects of type `Iterable`, `Map` and `String`.
+
+### Use `isA<T>()` instead of checking `is T` against a boolean
+
+Prefer `expect(obj, isA<T>())` over `expect(obj is T, isTrue)`.
+
+This provides much more descriptive failure messages when the type does not match.
+
+### Use `containsPair(key, value)` instead of indexing into a map
+
+Prefer `expect(map, containsPair(key, value))` over `expect(map[key], value)`.
+
+This provides much more descriptive failure messages when the key is missing or the value does not match.
+
+> [!NOTE]
+> If the intention is to verify that a key is **missing** (which `expect(map[key], isNull)` also covers), use `expect(map, isNot(contains(key)))`. `containsPair(key, isNull)` expects the key to be present with a `null` value.
