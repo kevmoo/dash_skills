@@ -1,7 +1,9 @@
 ---
+name: dart-cli-app-best-practices
 description: |-
   Best practices for creating high-quality, executable Dart CLI applications.
   Covers entrypoint structure, exit code handling, and recommended packages.
+license: Apache-2.0
 ---
 
 # Dart CLI Application Best Practices

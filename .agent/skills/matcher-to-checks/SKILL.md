@@ -1,7 +1,9 @@
 ---
+name: matcher-to-checks
 description: |-
   Replace the usage of `expect` and similar functions from `package:matcher` 
   to `package:checks` equivalents.
+license: Apache-2.0
 ---
 
 ## When to use this skill
@@ -9,40 +11,72 @@ description: |-
 In a Dart or Flutter project.
 When a user asks to migrate to `package:checks` or just "checks".
 
-## How to use this skill
-When asked to "migrate to checks", perform the following steps:
+## The Workflow
 
 1.  **Analysis**:
-    - Read through the Dart code in the `test/` directory looking for the usage of `expect` from `package:test`.
-    - If there are many problems with a given file, go test by test, making sure the tests pass and the analyzer is happy.
-    - If you cannot get a given test to pass, leave it as is with a `// TODO: Skipped migrating to package:checks, was too complex.` comment explaining why and continue.
-    - If you are unsure about a conversion, err on the side of leaving the code as is.
-    - Make special note of custom matchers. Tell the user to consider migrating these first before continuing.
-2.  **Dependency Check**: Ensure `pubspec.yaml` has `package:checks` in `dev_dependencies`. Add it if missing using `dart pub add --dev checks`.
-3.  **Import Management**: Add `import 'package:checks/checks.dart';` to Dart test files. Update the `package:test/test.dart` import to to `import 'package:test/scaffold.dart`. Ensure imports remain sorted.
+    - Use `grep` to identify files using `expect` or `package:matcher`.
+    - Review custom matchers; these may require manual migration.
+2.  **Tools & Dependencies**:
+    - Ensure `dev_dependencies` includes `checks`.
+    - Run `dart pub add --dev checks` if missing.
+3.  **Discovery**:
+    - Use the **Strategies for Discovery** below to find candidates.
 4.  **Replacement**:
-  - Replace `expect()` and `expectLater()` calls with `check()` equivalents. See common patterns below. 
-5.  **Verification**: The code should analyze cleanly and the tests should pass.
+    - Add `import 'package:checks/checks.dart';`.
+    - Apply the **Common Patterns** below.
+    - **Final Step**: Replace `import 'package:test/test.dart';` with `import 'package:test/scaffold.dart';` (if available) ONLY after all `expect` calls are replaced. This ensures incremental progress.
+5.  **Verification**:
+    - Ensure the code analyzes cleanly.
+    - Ensure tests pass.
+    - Prefer using the Dart MCP server (vs the dart command line) if available.
 
-## Common Conversion Patterns
+## Strategies for Discovery
 
--   `expect(a, equals(b));`  =>  `check(a).equals(b);`
--   `expect(a, isTrue);`  =>  `check(a).isTrue();`
--   `expect(a, isFalse);`  =>  `check(a).isFalse();`
--   `expect(a, isNull);`  =>  `check(a).isNull();`
--   `expect(a, isNotNull);`  =>  `check(a).isNotNull();`
--   `expect(() => foo(), throwsA<SomeException>());`  =>  `check(() => foo()).throws<SomeException>();`
--   `expect(a, unorderedEquals(b));`  =>  `check(a).isA<Iterable>().unorderedEquals(b);`
--   `expect(identical(a, b), isTrue);`  =>  `check(identical(a, b)).isTrue();`
--   `expect(identical(a, b), isFalse);`  =>  `check(identical(a, b)).isFalse();`
--   `expect(list, hasLength(n));`  =>  `check(list).length.equals(n);`
--   `expect(a, closeTo(b, delta));`  =>  `check(a).isA<num>().isCloseTo(b, delta);`
--   `expect(a, greaterThan(b));`  =>  `check(a).isGreaterThan(b);`
--   `expect(a, lessThan(b));`  =>  `check(a).isLessThan(b);`
--   `expect(a, orderedEquals(b));`  =>  `check(a).isA<Iterable>().deepEquals(b);`
--   `expect(() => foo(), throwsA(isA<ArgumentError>().having((e) => e.message, 'message', 'MSG')));`  =>  `check(() => foo()).throws<ArgumentError>().has((e) => e.message as String, (m) => m.contains('MSG'));`
+Use these commands to find migration candidates:
+
+-   **Find usages of expect**:
+    `grep -r "expect(" test/`
+-   **Find usages of expectLater**:
+    `grep -r "expectLater(" test/`
+-   **Find specific matchers** (e.g. `isTrue`):
+    `grep -r "isTrue" test/`
+
+## Common Patterns
+
+| Legacy `expect` | Modern `check` |
+| :--- | :--- |
+| `expect(a, equals(b))` | `check(a).equals(b)` |
+| `expect(a, isTrue)` | `check(a).isTrue()` |
+| `expect(a, isFalse)` | `check(a).isFalse()` |
+| `expect(a, isNull)` | `check(a).isNull()` |
+| `expect(a, isNotNull)` | `check(a).isNotNull()` |
+| `expect(() => fn(), throwsA<T>())` | `check(() => fn()).throws<T>()` |
+| `expect(list, hasLength(n))` | `check(list).length.equals(n)` |
+| `expect(a, closeTo(b, delta))` | `check(a).isA<num>().isCloseTo(b, delta)` |
+| `expect(a, greaterThan(b))` | `check(a).isGreaterThan(b)` |
+| `expect(a, lessThan(b))` | `check(a).isLessThan(b)` |
+| `expect(a, unorderedEquals(b))` | `check(a).isA<Iterable>().unorderedEquals(b)` |
+
+**Complex Examples:**
+
+*Deep Verification with `isA` and `having`:*
+
+**Legacy:**
+```dart
+expect(() => foo(), throwsA(isA<ArgumentError>()
+    .having((e) => e.message, 'message', contains('MSG'))));
+```
+
+**Modern:**
+```dart
+check(() => foo())
+    .throws<ArgumentError>()
+    .has((e) => e.message as String, 'message')
+    .contains('MSG');
+```
 
 ## Constraints
 
--   NEVER modify files outside of `pubspec.yaml` and the `test/` directory.
--   The code should analyze cleanly and the tests should pass.
+-   **Scope**: Only modify files in `test/` (and `pubspec.yaml`).
+-   **Correctness**: One failing test is unacceptable. If a test fails after migration and you cannot fix it immediately, REVERT that specific change.
+-   **Type Safety**: `package:checks` is stricter about types than `matcher`. You may need to add explicit `as T` casts or `isA<T>()` checks in the chain.

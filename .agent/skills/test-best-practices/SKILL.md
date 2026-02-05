@@ -1,6 +1,8 @@
 ---
+name: test-best-practices
 description: |-
   Enforce best practices for Dart and Flutter testing.
+license: Apache-2.0
 ---
 
 ## When to use this skill
