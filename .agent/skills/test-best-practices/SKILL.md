@@ -24,6 +24,12 @@ This provides more descriptive failure messages.
 
 This applies to objects of type `Iterable`, `Map` and `String`.
 
+### Use `isNotEmpty` instead of `isNot(isEmpty)`
+
+Prefer `expect(list, isNotEmpty)` over `expect(list, isNot(isEmpty))`.
+
+This is more readable and idiomatic.
+
 ### Use `isA<T>()` instead of checking `is T` against a boolean
 
 Prefer `expect(obj, isA<T>())` over `expect(obj is T, isTrue)`.
