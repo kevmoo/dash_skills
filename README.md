@@ -8,7 +8,10 @@
 
 # Dash Skills
 
-A curated collection of "skills" for AI agents working on [Dart](https://dart.dev) and [Flutter](https://flutter.dev) projects. These skills follow the [Agent Skills](https://agentskills.io/) standard, enabling agents to perform complex specialized tasks with high reliability.
+A curated collection of "skills" for AI agents working on [Dart](https://dart.dev)
+and [Flutter](https://flutter.dev) projects. These skills follow the
+[Agent Skills](https://agentskills.io/) standard, enabling agents to perform
+complex specialized tasks with high reliability.
 
 ## 🧠 Available Skills
 
@@ -20,7 +23,8 @@ A curated collection of "skills" for AI agents working on [Dart](https://dart.de
 
 ## 🚀 Usage
 
-To use these skills with an agent (like [Jetski](https://github.com/google/jetski)):
+To use these skills with an agent (like [AntiGravity](https://antigravity.google)
+or [Gemini CLI](https://github.com/google/gemini-cli)):
 
 1.  **Ingest**: The agent reads the `.agent/skills` directory.
 2.  **Activate**: Each skill contains a `SKILL.md` defining when and how it should be used.
