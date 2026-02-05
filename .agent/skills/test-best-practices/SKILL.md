@@ -56,3 +56,38 @@ Use the following grep regexes to find candidates:
 
 - **Verify Types**: BEFORE applying `hasLength` or `contains`, ensure the subject is an `Iterable`, `Map`, or `String`. Some custom collection-like classes (e.g. `PriorityQueue`) may have `.length` or `.contains` but do not strictly implement `Iterable`, causing matchers to fail or behave unexpectedly.
 - **Handle Inverted Logic**: Watch out for `expect(x.isEmpty, isFalse)`. This should become `expect(x, isNotEmpty)`, NOT `expect(x, isEmpty)`.
+
+## Advanced Patterns
+
+### Group assertions on the same object
+
+Prefer chaining `having` checks on `isA<T>` over separate assertions.
+
+```dart
+// Bad
+expect(obj.prop1, equals(a));
+expect(obj.prop2, equals(b));
+
+// Good
+expect(obj, isA<MyType>()
+  .having((o) => o.prop1, 'prop1', a)
+  .having((o) => o.prop2, 'prop2', b));
+```
+
+### Verify collections declaratively
+
+Prefer `everyElement` over manual loops.
+
+```dart
+// Bad
+for (var item in list) {
+  expect(item, isNotNull);
+}
+
+// Good
+expect(list, everyElement(isNotNull));
+```
+
+### Use strict Map equality when possible
+
+Prefer `expect(map, {'k': 'v'})` over multiple `containsPair` checks when the full map content is known.
