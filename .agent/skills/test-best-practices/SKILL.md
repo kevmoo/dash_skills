@@ -1,5 +1,5 @@
 ---
-description: |- 
+description: |-
   Enforce best practices for Dart and Flutter testing.
 ---
 
@@ -7,100 +7,76 @@ description: |-
 
 In a Dart or Flutter project.
 When a user asks to "enforce test best practices" or similar.
+When modifying or creating test files.
 
-## A list of patterns to look for
+## Workflow
 
-### Use `hasLength` instead of matching against `length`
+1.  **Search**: Use the grep commands below to identify candidates.
+2.  **Analyze**: Check if the code violates the best practices defined below.
+3.  **Apply**: Refactor the code to use the recommended matchers.
+4.  **Verify**: Run tests (`dart test`) to ensure no regressions.
+
+### Search Strategies
+
+-   `.length`: `grep -r "\.length,\s*equals\(" test/`
+-   Boolean properties:
+    `grep -rE "expect\(.*\.(is(Empty|NotEmpty)),\s*(isTrue|true|isFalse|false)" test/`
+-   Manual loops: `grep -r "for (var .* in .*)" test/` (manual review required)
+
+## Best Practice Patterns
+
+### Collections
+
+#### Use `hasLength`
 
 Prefer `expect(list, hasLength(n))` over `expect(list.length, n)`.
+*Applies to*: `Iterable`, `Map`, `String`.
 
-This applies to objects of type `Iterable`, `Map` and `String`.
+#### Use `isEmpty` / `isNotEmpty`
 
-### Use `isEmpty` and `isNotEmpty` matchers
+Prefer `expect(list, isEmpty)` over `expect(list.isEmpty, true)`.
+Prefer `expect(list, isNotEmpty)` over `expect(list.isNotEmpty, true)` or
+`expect(list, isNot(isEmpty))`.
+*Applies to*: `Iterable`, `Map`, `String`.
 
-Prefer `expect(list, isEmpty)` over `expect(list.isEmpty, true)` and
-`expect(list, isNotEmpty)` over `expect(list.isNotEmpty, true)`.
+#### Declarative Verification
 
-This provides more descriptive failure messages.
+Prefer `expect(list, everyElement(matcher))` over manual loops with assertions.
 
-This applies to objects of type `Iterable`, `Map` and `String`.
+### Maps
 
-### Use `isNotEmpty` instead of `isNot(isEmpty)`
-
-Prefer `expect(list, isNotEmpty)` over `expect(list, isNot(isEmpty))`.
-
-This is more readable and idiomatic.
-
-### Use `isA<T>()` instead of checking `is T` against a boolean
-
-Prefer `expect(obj, isA<T>())` over `expect(obj is T, isTrue)`.
-
-This provides much more descriptive failure messages when the type does not
-match.
-
-### Use `containsPair(key, value)` instead of indexing into a map
+#### Use `containsPair`
 
 Prefer `expect(map, containsPair(key, value))` over `expect(map[key], value)`.
 
-This provides much more descriptive failure messages when the key is missing or
-the value does not match.
+*Note*: If verifying a key is missing, use `expect(map, isNot(contains(key)))`.
 
-> [!NOTE]
-> If the intention is to verify that a key is **missing** (which
-> `expect(map[key], isNull)` also covers), use
-> `expect(map, isNot(contains(key)))`. `containsPair(key, isNull)` expects the
-> key to be present with a `null` value.
+#### Strict Equality
 
-## Strategies for finding patterns
+Prefer `expect(map, {'k': 'v'})` over multiple `containsPair` calls when the
+full map is known.
 
-Use the following grep regexes to find candidates:
+### Types & Objects
 
-- `.length`: `\.length,\s*equals\(` or `expect\(.*\.length`
-- Boolean properties:
-  `expect\(.*\.(is(Empty|NotEmpty)),\s*(isTrue|true|isFalse|false)`
+#### Declarative Type Checks
 
-## Critical Implementation Details
+Prefer `expect(obj, isA<T>())` over `expect(obj is T, isTrue)`.
 
-- **Verify Types**: BEFORE applying `hasLength` or `contains`, ensure the
-  subject is an `Iterable`, `Map`, or `String`. Some custom collection-like
-  classes (e.g. `PriorityQueue`) may have `.length` or `.contains` but do not
-  strictly implement `Iterable`, causing matchers to fail or behave
-  unexpectedly.
-- **Handle Inverted Logic**: Watch out for `expect(x.isEmpty, isFalse)`. This
-  should become `expect(x, isNotEmpty)`, NOT `expect(x, isEmpty)`.
+#### Grouped Assertions
 
-## Advanced Patterns
-
-### Group assertions on the same object
-
-Prefer chaining `having` checks on `isA<T>` over separate assertions.
+Prefer chaining `having` on `isA<T>` for multiple property checks.
 
 ```dart
-// Bad
-expect(obj.prop1, equals(a));
-expect(obj.prop2, equals(b));
-
-// Good
 expect(obj, isA<MyType>()
   .having((o) => o.prop1, 'prop1', a)
   .having((o) => o.prop2, 'prop2', b));
 ```
 
-### Verify collections declaratively
+## Constraints
 
-Prefer `everyElement` over manual loops.
-
-```dart
-// Bad
-for (var item in list) {
-  expect(item, isNotNull);
-}
-
-// Good
-expect(list, everyElement(isNotNull));
-```
-
-### Use strict Map equality when possible
-
-Prefer `expect(map, {'k': 'v'})` over multiple `containsPair` checks when the
-full map content is known.
+-   **Verify Types**: Ensure subject is strictly `Iterable`/`Map` before
+    applying collection matchers. Some custom classes (e.g. `PriorityQueue`)
+    may have `.length` but don't implement `Iterable`.
+-   **Do NOT migrate to package:checks**: Unless explicitly requested. This
+    skill focuses on `package:test` matchers.
+-   **Preserve Behavior**: Ensure refactorings do not change strictness.
