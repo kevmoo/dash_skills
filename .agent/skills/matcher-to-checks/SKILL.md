@@ -24,7 +24,7 @@ When a user asks to migrate to `package:checks` or just "checks".
 4.  **Replacement**:
     - Add `import 'package:checks/checks.dart';`.
     - Apply the **Common Patterns** below.
-    - **Final Step**: Replace `import 'package:test/test.dart';` with `import 'package:test/scaffold.dart';` (if available) ONLY after all `expect` calls are replaced. This ensures incremental progress.
+    - **Final Step**: Replace `import 'package:test/test.dart';` with `import 'package:test/scaffolding.dart';` ONLY after all `expect` calls are replaced. This ensures incremental progress.
 5.  **Verification**:
     - Ensure the code analyzes cleanly.
     - Ensure tests pass.
@@ -55,7 +55,34 @@ Use these commands to find migration candidates:
 | `expect(a, closeTo(b, delta))` | `check(a).isA<num>().isCloseTo(b, delta)` |
 | `expect(a, greaterThan(b))` | `check(a).isGreaterThan(b)` |
 | `expect(a, lessThan(b))` | `check(a).isLessThan(b)` |
-| `expect(a, unorderedEquals(b))` | `check(a).isA<Iterable>().unorderedEquals(b)` |
+| `expect(a, unorderedEquals(b))` | `check(a).unorderedEquals(b)` |
+| `expect(list, isEmpty)` | `check(list).isEmpty()` |
+| `expect(list, isNotEmpty)` | `check(list).isNotEmpty()` |
+| `expect(list, contains(item))` | `check(list).contains(item)` |
+| `expect(map, equals(otherMap))` | `check(map).deepEquals(otherMap)` |
+| `expect(list, equals(otherList))` | `check(list).deepEquals(otherList)` |
+| `expect(future, completes)` | `await check(future).completes()` |
+| `expect(stream, emitsInOrder(...))` | `await check(stream).withQueue.inOrder(...)` |
+
+### Async & Futures (CRITICAL)
+
+- **Checking async functions:**
+  `check(() => asyncFunc()).throws<T>()` causes **FALSE POSITIVES** because the closure returns a `Future`, which is a value, so it "completes normally" (as a Future).
+  **Correct Usage:**
+  ```dart
+  await check(asyncFunc()).throws<T>();
+  ```
+
+- **Chaining on void returns:**
+  Many async check methods (like `throws`) return `Future<void>`. You cannot chain directly on them. Use cascades or callbacks.
+  **Wrong:**
+  ```dart
+  await check(future).throws<Error>().has((e) => e.message, 'message').equals('foo');
+  ```
+  **Correct:**
+  ```dart
+  await check(future).throws<Error>((it) => it.has((e) => e.message, 'message').equals('foo'));
+  ```
 
 **Complex Examples:**
 
@@ -71,12 +98,45 @@ expect(() => foo(), throwsA(isA<ArgumentError>()
 ```dart
 check(() => foo())
     .throws<ArgumentError>()
-    .has((e) => e.message as String, 'message')
+    .has((e) => e.message, 'message')
     .contains('MSG');
+```
+
+*Every Element:*
+
+**Legacy:**
+```dart
+expect(list, everyElement(isA<int>().having((e) => e.isEven, 'isEven', isTrue)));
+```
+
+**Modern:**
+```dart
+check(list).every((e) => e.isA<int>()
+    .has((v) => v.isEven, 'isEven').isTrue());
+```
+
+*Property Extraction:*
+
+**Legacy:**
+```dart
+expect(obj.prop, equals(value)); // When checking multiple props
+```
+
+**Modern:**
+```dart
+check(obj)
+  ..has((e) => e.prop, 'prop').equals(value)
+  ..has((e) => e.other, 'other').equals(otherValue);
+```
+
+*One-line Cascades:*
+Since checks often return `void`, use cascades for multiple assertions on the same subject.
+```dart
+check(it)..isGreaterThan(10)..isLessThan(20);
 ```
 
 ## Constraints
 
--   **Scope**: Only modify files in `test/` (and `pubspec.yaml`).
--   **Correctness**: One failing test is unacceptable. If a test fails after migration and you cannot fix it immediately, REVERT that specific change.
--   **Type Safety**: `package:checks` is stricter about types than `matcher`. You may need to add explicit `as T` casts or `isA<T>()` checks in the chain.
+- **Scope**: Only modify files in `test/` (and `pubspec.yaml`).
+- **Correctness**: One failing test is unacceptable. If a test fails after migration and you cannot fix it immediately, REVERT that specific change.
+- **Type Safety**: `package:checks` is stricter about types than `matcher`. You may need to add explicit `as T` casts or `isA<T>()` checks in the chain.
