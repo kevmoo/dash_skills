@@ -45,6 +45,11 @@ Prefer `expect(list, isNotEmpty)` over `expect(list.isNotEmpty, true)` or
 
 Prefer `expect(list, everyElement(matcher))` over manual loops with assertions.
 
+#### List Equality
+
+Prefer `expect(actualList, expectedList)` over manual loops checking elements by index.
+`package:test` provides readable diffs for list mismatches.
+
 ### Maps
 
 #### Use `containsPair`
