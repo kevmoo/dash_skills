@@ -18,7 +18,8 @@ Use this skill when:
 ## 2. Best Practices
 
 ### Entrypoint Structure (`bin/`)
-Keep the contents of your entrypoint file (e.g., `bin/my_app.dart`) minimal. This improves testability by decoupling logic from the process runner.
+Keep the contents of your entrypoint file (e.g., `bin/my_app.dart`) minimal.
+This improves testability by decoupling logic from the process runner.
 
 **DO:**
 ```dart
@@ -35,7 +36,8 @@ Future<void> main(List<String> arguments) async {
 -   Define classes or heavy functions in the entrypoint.
 
 ### Executable Scripts
-For CLI tools intended to be run directly on Linux and Mac, add a shebang and ensure the file is executable.
+For CLI tools intended to be run directly on Linux and Mac, add a shebang and
+ensure the file is executable.
 
 **DO:**
 1.  Add `#!/usr/bin/env dart` to the first line.
@@ -48,12 +50,14 @@ void main() => print('Ready to run!');
 ```
 
 ### Process Termination (`exitCode`)
-Properly handle process termination to allow for debugging and correct status reporting.
+Properly handle process termination to allow for debugging and correct status
+reporting.
 
 **DO:**
 -   Use the `exitCode` setter to report failure.
 -   Allow `main` to complete naturally.
--   Use standard exit codes (sysexits) for clarity (e.g., `64` for bad usage, `78` for configuration errors).
+-   Use standard exit codes (sysexits) for clarity (e.g., `64` for bad usage,
+    `78` for configuration errors).
     -   See `package:io` `ExitCode` class or FreeBSD sysexits man page.
 
 ```dart
@@ -68,10 +72,12 @@ void main() {
 ```
 
 **AVOID:**
--   Calling `exit(code)` directly, as it terminates the VM immediately, preventing "pause on exit" debugging and `finally` blocks from running.
+-   Calling `exit(code)` directly, as it terminates the VM immediately,
+    preventing "pause on exit" debugging and `finally` blocks from running.
 
 ### Exception Handling
-Uncaught exceptions automatically set a non-zero exit code, but you should handle expected errors gracefully.
+Uncaught exceptions automatically set a non-zero exit code, but you should
+handle expected errors gracefully.
 
 **Example:**
 ```dart
@@ -89,7 +95,8 @@ Future<void> main(List<String> arguments) async {
 
 ## 3. Recommended Packages
 
-Use these community-standard packages owned by the [Dart team](https://dart.dev) to solve common CLI problems:
+Use these community-standard packages owned by the [Dart team](https://dart.dev)
+to solve common CLI problems:
 
 | Category | Recommended Package | Usage |
 | :--- | :--- | :--- |
@@ -112,5 +119,5 @@ Use these community-standard packages owned by the [Dart team](https://dart.dev)
 ## 5. Conventions
 
 -   **File Caching**: Write cached files to `.dart_tool/[pkg_name]/`.
--   **User-Agent**: Always set a User-Agent header in HTTP requests, including version info.
-
+-   **User-Agent**: Always set a User-Agent header in HTTP requests, including
+    version info.

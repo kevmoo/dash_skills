@@ -32,7 +32,8 @@ Use this skill when:
 
 ### 2. Lifecycle Methods (`setUp`, `tearDown`)
 
-- **`setUp`**: Runs *before* every `test` in the current `group` (and nested groups).
+- **`setUp`**: Runs *before* every `test` in the current `group` (and nested
+  groups).
 - **`tearDown`**: Runs *after* every `test` in the current `group`.
 - **`setUpAll`**: Runs *once* before any test in the group.
 - **`tearDownAll`**: Runs *once* after all tests in the group.
@@ -43,7 +44,8 @@ Use this skill when:
 
 ### 3. Configuration (`dart_test.yaml`)
 
-The `dart_test.yaml` file configures the test runner. Common configurations include:
+The `dart_test.yaml` file configures the test runner. Common configurations
+include:
 
 #### Platforms
 Define where tests run (vm, chrome, node).

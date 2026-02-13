@@ -48,23 +48,27 @@ expect(person, isA<Person>()
     .having((p) => p.age, 'age', greaterThan(18)));
 ```
 
-This provides detailed failure messages indicating exactly which property failed.
+This provides detailed failure messages indicating exactly which property
+failed.
 
 ### 4. Async Assertions
 
 - **`completion(matcher)`**:
   - Wait for a future to complete and check its value.
-  - **Prefer `await expectLater(...)`** to ensure the future completes before the test continues.
+  - **Prefer `await expectLater(...)`** to ensure the future completes before
+    the test continues.
   - `await expectLater(future, completion(equals(42)))`.
 
 - **`throwsA(matcher)`**:
   - Check that a future or function throws an exception.
   - `await expectLater(future, throwsA(isA<StateError>()))`.
-  - `expect(() => function(), throwsA(isA<ArgumentError>()))` (synchronous function throwing is fine with `expect`).
+  - `expect(() => function(), throwsA(isA<ArgumentError>()))` (synchronous
+    function throwing is fine with `expect`).
 
 ### 5. Using `expectLater`
 
-Use `await expectLater(...)` when testing async behavior to ensure proper sequencing.
+Use `await expectLater(...)` when testing async behavior to ensure proper
+sequencing.
 
 ```dart
 // GOOD: Waits for future to complete before checking side effects
@@ -79,5 +83,7 @@ expect(sideEffectState, equals('done')); // Race condition!
 ## Principles
 
 1.  **Readable Failures**: Choose matchers that produce clear error messages.
-2.  **Avoid Manual Logic**: Don't use `if` statements or `for` loops for assertions; let matchers handle it.
-3.  **Specific Matchers**: Use the most specific matcher available (e.g., `containsPair` for maps instead of checking keys manually).
+2.  **Avoid Manual Logic**: Don't use `if` statements or `for` loops for
+    assertions; let matchers handle it.
+3.  **Specific Matchers**: Use the most specific matcher available (e.g.,
+    `containsPair` for maps instead of checking keys manually).

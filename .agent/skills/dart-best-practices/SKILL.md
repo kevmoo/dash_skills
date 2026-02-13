@@ -17,9 +17,9 @@ Use this skill when:
 
 ### Multi-line Strings
 Prefer using multi-line strings (`'''`) over concatenating strings with `+` and
-`\n`, especially for large blocks of text like SQL queries, HTML, or PEM-encoded
-keys. This improves readability and avoids `lines_longer_than_80_chars` lint
-errors by allowing natural line breaks.
+`\n`, especially for large blocks of text like SQL queries, HTML, or
+PEM-encoded keys. This improves readability and avoids
+`lines_longer_than_80_chars` lint errors by allowing natural line breaks.
 
 **Avoid:**
 ```dart
@@ -71,10 +71,10 @@ without the complexity of verbose `if-else` blocks or the risk of runtime cast
 errors.
 
 ### Line Length
-Avoid lines longer than 80 characters, even in Markdown files and comments. This
-ensures code is readable in split-screen views and on smaller screens without
-horizontal scrolling.
+Avoid lines longer than 80 characters, even in Markdown files and comments.
+This ensures code is readable in split-screen views and on smaller screens
+without horizontal scrolling.
 
 **Prefer:**
-Target 80 characters for wrapping text. Exceptions are allowed for long URLs or
-identifiers that cannot be broken.
+Target 80 characters for wrapping text. Exceptions are allowed for long URLs
+or identifiers that cannot be broken.

@@ -26,7 +26,9 @@ Use this skill when:
 4.  **Replacement**:
     - Add `import 'package:checks/checks.dart';`.
     - Apply the **Common Patterns** below.
-    - **Final Step**: Replace `import 'package:test/test.dart';` with `import 'package:test/scaffolding.dart';` ONLY after all `expect` calls are replaced. This ensures incremental progress.
+    - **Final Step**: Replace `import 'package:test/test.dart';` with
+      `import 'package:test/scaffolding.dart';` ONLY after all `expect` calls
+      are replaced. This ensures incremental progress.
 5.  **Verification**:
     - Ensure the code analyzes cleanly.
     - Ensure tests pass.
@@ -56,14 +58,17 @@ Use this skill when:
 ### Async & Futures (CRITICAL)
 
 - **Checking async functions:**
-  `check(() => asyncFunc()).throws<T>()` causes **FALSE POSITIVES** because the closure returns a `Future`, which is a value, so it "completes normally" (as a Future).
+  `check(() => asyncFunc()).throws<T>()` causes **FALSE POSITIVES** because the
+  closure returns a `Future`, which is a value, so it "completes normally"
+  (as a Future).
   **Correct Usage:**
   ```dart
   await check(asyncFunc()).throws<T>();
   ```
 
 - **Chaining on void returns:**
-  Many async check methods (like `throws`) return `Future<void>`. You cannot chain directly on them. Use cascades or callbacks.
+  Many async check methods (like `throws`) return `Future<void>`. You cannot
+  chain directly on them. Use cascades or callbacks.
   **Wrong:**
   ```dart
   await check(future).throws<Error>().has((e) => e.message, 'message').equals('foo');
@@ -106,7 +111,8 @@ check(obj)
 ```
 
 *One-line Cascades:*
-Since checks often return `void`, use cascades for multiple assertions on the same subject.
+Since checks often return `void`, use cascades for multiple assertions on the
+same subject.
 ```dart
 check(it)..isGreaterThan(10)..isLessThan(20);
 ```
@@ -114,5 +120,7 @@ check(it)..isGreaterThan(10)..isLessThan(20);
 ## Constraints
 
 - **Scope**: Only modify files in `test/` (and `pubspec.yaml`).
-- **Correctness**: One failing test is unacceptable. If a test fails after migration and you cannot fix it immediately, REVERT that specific change.
-- **Type Safety**: `package:checks` is stricter about types than `matcher`. You may need to add explicit `as T` casts or `isA<T>()` checks in the chain.
+- **Correctness**: One failing test is unacceptable. If a test fails after
+  migration and you cannot fix it immediately, REVERT that specific change.
+- **Type Safety**: `package:checks` is stricter about types than `matcher`.
+  You may need to add explicit `as T` casts or `isA<T>()` checks in the chain.
