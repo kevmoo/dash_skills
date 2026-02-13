@@ -17,9 +17,10 @@ complex specialized tasks with high reliability.
 
 | Skill | Description | Key Features |
 |-------|-------------|--------------|
+| **[Dart Checks Migration](.agent/skills/dart-checks-migration/SKILL.md)** | Migrate from `package:matcher` to `package:checks`. | Automated conversion patterns for modern testing. |
 | **[Dart CLI Best Practices](.agent/skills/dart-cli-app-best-practices/SKILL.md)** | Create high-quality executable CLI apps. | Entrypoint structure, exit codes, cross-platform scripts. |
-| **[Matcher to Checks](.agent/skills/matcher-to-checks/SKILL.md)** | Migrate from `package:matcher` to `package:checks`. | Automated conversion patterns for modern testing. |
-| **[Test Best Practices](.agent/skills/test-best-practices/SKILL.md)** | Enforce modern testing standards. | `hasLength`, `isEmpty`, declarative verifications. |
+| **[Dart Matcher Best Practices](.agent/skills/dart-matcher-best-practices/SKILL.md)** | Best practices for `expect` and `package:matcher`. | Async matching, collection matchers, `isA` chaining. |
+| **[Dart Test Fundamentals](.agent/skills/dart-test-fundamentals/SKILL.md)** | Core concepts for `package:test`. | `test`/`group` structure, lifecycle, configuration. |
 
 ## 🚀 Usage
 

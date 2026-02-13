@@ -1,15 +1,17 @@
 ---
-name: matcher-to-checks
+name: dart-checks-migration
 description: |-
-  Replace the usage of `expect` and similar functions from `package:matcher` 
+  Replace the usage of `expect` and similar functions from `package:matcher`
   to `package:checks` equivalents.
 license: Apache-2.0
 ---
 
-## When to use this skill
+# Dart Checks Migration
 
-In a Dart or Flutter project.
-When a user asks to migrate to `package:checks` or just "checks".
+## When to use this skill
+Use this skill when:
+- Migrating existing test files from `package:matcher` to `package:checks`.
+- A user specifically asks for "modern checks" or similar.
 
 ## The Workflow
 
@@ -28,18 +30,6 @@ When a user asks to migrate to `package:checks` or just "checks".
 5.  **Verification**:
     - Ensure the code analyzes cleanly.
     - Ensure tests pass.
-    - Prefer using the Dart MCP server (vs the dart command line) if available.
-
-## Strategies for Discovery
-
-Use these commands to find migration candidates:
-
--   **Find usages of expect**:
-    `grep -r "expect(" test/`
--   **Find usages of expectLater**:
-    `grep -r "expectLater(" test/`
--   **Find specific matchers** (e.g. `isTrue`):
-    `grep -r "isTrue" test/`
 
 ## Common Patterns
 
@@ -55,7 +45,6 @@ Use these commands to find migration candidates:
 | `expect(a, closeTo(b, delta))` | `check(a).isA<num>().isCloseTo(b, delta)` |
 | `expect(a, greaterThan(b))` | `check(a).isGreaterThan(b)` |
 | `expect(a, lessThan(b))` | `check(a).isLessThan(b)` |
-| `expect(a, unorderedEquals(b))` | `check(a).unorderedEquals(b)` |
 | `expect(list, isEmpty)` | `check(list).isEmpty()` |
 | `expect(list, isNotEmpty)` | `check(list).isNotEmpty()` |
 | `expect(list, contains(item))` | `check(list).contains(item)` |
@@ -84,7 +73,7 @@ Use these commands to find migration candidates:
   await check(future).throws<Error>((it) => it.has((e) => e.message, 'message').equals('foo'));
   ```
 
-**Complex Examples:**
+## Complex Examples
 
 *Deep Verification with `isA` and `having`:*
 
@@ -100,19 +89,6 @@ check(() => foo())
     .throws<ArgumentError>()
     .has((e) => e.message, 'message')
     .contains('MSG');
-```
-
-*Every Element:*
-
-**Legacy:**
-```dart
-expect(list, everyElement(isA<int>().having((e) => e.isEven, 'isEven', isTrue)));
-```
-
-**Modern:**
-```dart
-check(list).every((e) => e.isA<int>()
-    .has((v) => v.isEven, 'isEven').isTrue());
 ```
 
 *Property Extraction:*

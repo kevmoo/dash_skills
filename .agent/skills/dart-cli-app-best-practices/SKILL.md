@@ -89,22 +89,28 @@ Future<void> main(List<String> arguments) async {
 
 ## 3. Recommended Packages
 
-Use these community-standard packages to solve common CLI problems:
+Use these community-standard packages owned by the [Dart team](https://dart.dev) to solve common CLI problems:
 
 | Category | Recommended Package | Usage |
 | :--- | :--- | :--- |
-| **Stack Traces** | `package:stack_trace` | detailed, cleaner stack traces |
-| **Version Info** | `package:build_version` | automatic version injection |
-| **Arg Parsing** | `package:args` | standard flag/option parsing |
-| **CLI Generation** | `package:build_cli` | generate arg parsers from classes |
-| **Configuration** | `package:checked_yaml` | precise YAML parsing with line numbers |
-| **Configuration** | `package:json_serializable` | strongly typed config objects |
-| **Testing** | `package:test_process` | integration testing for CLI apps |
-| **Testing** | `package:test_descriptor` | file system fixtures for tests |
-| **Networking** | `package:http` | standard HTTP client (remember user-agent!) |
+| **Stack Traces** | [`package:stack_trace`](https://pub.dev/packages/stack_trace) | detailed, cleaner stack traces |
+| **Arg Parsing** | [`package:args`](https://pub.dev/packages/args) | standard flag/option parsing |
+| **Testing** | [`package:test_process`](https://pub.dev/packages/test_process) | integration testing for CLI apps |
+| **Testing** | [`package:test_descriptor`](https://pub.dev/packages/test_descriptor) | file system fixtures for tests |
+| **Networking** | [`package:http`](https://pub.dev/packages/http) | standard HTTP client (remember user-agent!) |
+| **ANSI Output** | [`package:io`](https://pub.dev/packages/io) | handling ANSI colors and styles |
 
-## 4. Conventions
+## 4. Interesting community packages
+
+| Category | Recommended Package | Usage |
+| :--- | :--- | :--- |
+| **Configuration** | [`package:json_serializable`](https://pub.dev/packages/json_serializable) | strongly typed config objects |
+| **CLI Generation** | [`package:build_cli`](https://pub.dev/packages/build_cli) | generate arg parsers from classes |
+| **Version Info** | [`package:build_version`](https://pub.dev/packages/build_version) | automatic version injection |
+| **Configuration** | [`package:checked_yaml`](https://pub.dev/packages/checked_yaml) | precise YAML parsing with line numbers |
+
+## 5. Conventions
 
 -   **File Caching**: Write cached files to `.dart_tool/[pkg_name]/`.
 -   **User-Agent**: Always set a User-Agent header in HTTP requests, including version info.
--   **ANSI Output**: Use `package:io` for handling ANSI colors and styles.
+
