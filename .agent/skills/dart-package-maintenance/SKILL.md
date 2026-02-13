@@ -1,6 +1,10 @@
 ---
 name: dart-package-maintenance
-description: Guidelines for maintaining external Dart packages, covering versioning, publishing workflows, and pull request management. Use when updating Dart packages, preparing for a release, or managing collaborative changes in a repository.
+description: |-
+  Guidelines for maintaining external Dart packages, covering versioning,
+  publishing workflows, and pull request management. Use when updating Dart
+  packages, preparing for a release, or managing collaborative changes in a
+  repository.
 ---
 
 # Dart Package Maintenance

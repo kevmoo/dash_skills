@@ -30,13 +30,15 @@ The `SKILL.md` file is the heart of the skill. It contains:
 -   **Be Concise**: Agents have limited context windows. Focus on information
     the agent doesn't already have.
 -   **Imperative Tone**: Use imperative or infinitive form for instructions
-    (e.g., "Use `isA<T>()` for type checks" instead of "You should use...").
+    (e.g., "Use `isA<T>()` for type checks" rather than "You should use...").
 -   **80-Column Rule**: Wrap all text in `.md` files to **80 characters**. This
     improves readability in terminals and split-pane editors.
 -   **Examples Over Explanations**: Provide clear, realistic code snippets or
     interaction examples.
 -   **Tool Integration**: If a skill uses scripts in `scripts/`, explain how
     the agent should invoke them.
+-   **YAML Frontmatter**: Use YAML folded block scalars (`|-`) for long
+    descriptions to keep lines under 80 characters.
 
 ## Maintaining Skills
 
