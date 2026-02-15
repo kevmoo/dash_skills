@@ -22,6 +22,7 @@ complex specialized tasks with high reliability.
 | **[Dart Matcher Best Practices](.agent/skills/dart-matcher-best-practices/SKILL.md)** | Best practices for `expect` and `package:matcher`. | Async matching, collection matchers, `isA` chaining. |
 | **[Dart Package Maintenance](.agent/skills/dart-package-maintenance/SKILL.md)** | Guidelines for package maintenance. | Versioning, WIP tracking, and publishing workflows. |
 | **[Dart Test Fundamentals](.agent/skills/dart-test-fundamentals/SKILL.md)** | Core concepts for `package:test`. | `test`/`group` structure, lifecycle, configuration. |
+| **[pub.dev Search](.agent/skills/pub-dev-search/SKILL.md)** | Search pub.dev and recommend packages. | Quality scores, popularity, likes, downloads, recency. |
 
 ## 🚀 Usage
 
