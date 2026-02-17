@@ -32,15 +32,24 @@ Use this skill when:
 - **`unorderedEquals(items)`**:
   - Verify contents regardless of order.
 
-### 2. Type Checks (`isA<T>`)
+### 2. Type Checks (`isA<T>` and `TypeMatcher<T>`)
 
 - **`isA<T>()`**:
-  - Prefer `expect(obj, isA<Type>())` over `expect(obj is Type, isTrue)`.
+  - Prefer for inline assertions: `expect(obj, isA<Type>())`.
+  - More concise and readable than `TypeMatcher<Type>()`.
   - Allows chaining constraints using `.having()`.
+
+- **`TypeMatcher<T>`**:
+  - Prefer when defining top-level reusable matchers.
+  - **Use `const`**: `const isMyType = TypeMatcher<MyType>();`
+  - Chaining `.having()` works here too, but the resulting matcher is not `const`.
 
 ### 3. Object Properties (`having`)
 
 Use `.having()` on `isA<T>()` or other TypeMatchers to check properties.
+
+- **Descriptive Names**: Use meaningful parameter names in the closure (e.g.,
+  `(e) => e.message`) instead of generic ones like `p0` to improve readability.
 
 ```dart
 expect(person, isA<Person>()

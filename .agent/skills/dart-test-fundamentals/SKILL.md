@@ -29,6 +29,26 @@ Use this skill when:
   - Groups can be nested.
   - Descriptions are concatenated (e.g., "Group Description Test Description").
   - Helps scope `setUp` and `tearDown` calls.
+  - **Naming**: Use `PascalCase` for groups that correspond to a class name
+    (e.g., `group('MyClient', ...)`).
+  - **Avoid Single Groups**: Do not wrap all tests in a file with a single
+    `group` call if it's the only one.
+
+- **Naming Tests**:
+  - Avoid redundant "test" prefixes.
+  - Include the expected behavior or outcome in the description (e.g.,
+    `'throws StateError'` or `'adds API key to URL'`).
+  - Descriptions should read well when concatenated with their group name.
+
+- **Named Parameters Placement**:
+  - For `test` and `group` calls, place named parameters (e.g., `testOn`,
+    `timeout`, `skip`) immediately after the description string, before the
+    callback closure. This improves readability by keeping the test logic last.
+    ```dart
+    test('description', testOn: 'vm', () {
+      // assertions
+    });
+    ```
 
 ### 2. Lifecycle Methods (`setUp`, `tearDown`)
 
