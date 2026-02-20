@@ -35,10 +35,10 @@ practices.
     `pubspec.yaml` version.
 
   - **SemVer Guidelines**:
-    - **Breaking Changes**: Bump Major, reset Minor/Patch (e.g., `2.0.0-wip`,
-      `0.5.0-wip`).
-    - **New Features**: Bump Minor, reset Patch (e.g., `1.1.0-wip`,
-      `0.4.5-wip`).
+    - **Breaking Changes**: Bump Major, reset Minor/Patch
+      (e.g., `2.0.0-wip`, `0.5.0-wip`).
+    - **New Features**: Bump Minor, reset Patch
+      (e.g., `1.1.0-wip`, `0.4.5-wip`).
     - **Bug Fixes**: Bump Patch (e.g., `1.0.1-wip`).
 
 ### Work-in-Progress (WIP) Versions
