@@ -21,6 +21,7 @@ complex specialized tasks with high reliability.
 | **[Dart CLI Best Practices](.agent/skills/dart-cli-app-best-practices/SKILL.md)** | Create high-quality executable CLI apps. | Entrypoint structure, exit codes, cross-platform scripts. |
 | **[Dart Doc Validation](.agent/skills/dart-doc-validation/SKILL.md)** | Validating Dart doc comments. | Catch unresolved doc references and macros. |
 | **[Dart Matcher Best Practices](.agent/skills/dart-matcher-best-practices/SKILL.md)** | Best practices for `expect` and `package:matcher`. | Async matching, collection matchers, `isA` chaining. |
+| **[Dart Modern Features](.agent/skills/dart-modern-features/SKILL.md)** | Prefer modern features (Records, Patterns, etc.). | Concise code, safe destructuring, exhaustive switching. |
 | **[Dart Package Maintenance](.agent/skills/dart-package-maintenance/SKILL.md)** | Guidelines for package maintenance. | Versioning, WIP tracking, and publishing workflows. |
 | **[Dart Test Fundamentals](.agent/skills/dart-test-fundamentals/SKILL.md)** | Core concepts for `package:test`. | `test`/`group` structure, lifecycle, configuration. |
 
