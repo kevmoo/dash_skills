@@ -11,7 +11,7 @@ description: |-
 ## 1. When to use this skill
 Use this skill when:
 - Writing or reviewing Dart code targeting Dart 3.0 or later.
-- Refactoring legacy Dart code to use more modern, concise, and safe features.
+- Refactoring legacy Dart code to use modern, concise, and safe features.
 - Looking for idiomatic ways to handle multiple return values, deep data
   extraction, or exhaustive checking.
 
@@ -122,7 +122,7 @@ class Failure extends Result {}
 String handle(Result r) {
   if (r is Success) return 'OK';
   if (r is Failure) return 'Error';
-  return 'Unknown'; 
+  return 'Unknown';
 }
 ```
 
