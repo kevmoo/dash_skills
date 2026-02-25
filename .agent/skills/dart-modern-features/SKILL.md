@@ -191,7 +191,7 @@ void handleEvent(String ignoredName, int status) {
 ```
 
 **Prefer:**
-Explicity dropping the binding with an underscore.
+Explicitly dropping the binding with an underscore.
 ```dart
 void handleEvent(String _, int status) {
   print('Status: $status');
