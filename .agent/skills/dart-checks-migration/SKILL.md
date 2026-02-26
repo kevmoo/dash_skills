@@ -124,3 +124,11 @@ check(it)..isGreaterThan(10)..isLessThan(20);
   migration and you cannot fix it immediately, REVERT that specific change.
 - **Type Safety**: `package:checks` is stricter about types than `matcher`.
   You may need to add explicit `as T` casts or `isA<T>()` checks in the chain.
+
+## Related Skills
+
+- **[`dart-test-fundamentals`](../dart-test-fundamentals/SKILL.md)**: Core
+  concepts for structuring tests, lifecycles, and configuration.
+- **[`dart-matcher-best-practices`](../dart-matcher-best-practices/SKILL.md)**:
+  Best practices for the traditional `package:matcher` that is being migrated
+  away from.

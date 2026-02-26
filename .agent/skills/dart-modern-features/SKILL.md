@@ -233,3 +233,9 @@ Reducing visual noise with inferred shorthand.
 ```dart
 LogLevel currentLevel = .info;
 ```
+
+## Related Skills
+
+- **[`dart-best-practices`](../dart-best-practices/SKILL.md)**: General code
+  style and foundational Dart idioms that predate or complement the modern
+  syntax features.
