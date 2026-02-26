@@ -118,7 +118,7 @@ timeouts:
 tests. For writing assertions within those tests, refer to:
 
 - **[`dart-matcher-best-practices`](../dart-matcher-best-practices/SKILL.md)**:
-  Use this if the project sticks with the traditional `package:matcher`
-  (`expect` calls).
-- **[`dart-checks-migration`](../dart-checks-migration/SKILL.md)**: Use this if
-  the project is migrating to the modern `package:checks` (`check` calls).
+  Use this if the project sticks with the traditional
+  `package:matcher` (`expect` calls).
+- **[`dart-checks-migration`](../dart-checks-migration/SKILL.md)**: Use this
+  if the project is migrating to the modern `package:checks` (`check` calls).
