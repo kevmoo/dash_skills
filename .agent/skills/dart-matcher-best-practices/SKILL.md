@@ -96,3 +96,11 @@ expect(sideEffectState, equals('done')); // Race condition!
     assertions; let matchers handle it.
 3.  **Specific Matchers**: Use the most specific matcher available (e.g.,
     `containsPair` for maps instead of checking keys manually).
+
+## Related Skills
+
+- **[`dart-test-fundamentals`](../dart-test-fundamentals/SKILL.md)**: Core
+  concepts for structuring tests, lifecycles, and configuration.
+- **[`dart-checks-migration`](../dart-checks-migration/SKILL.md)**: Use this
+  skill if you are migrating tests from `package:matcher` to modern
+  `package:checks`.
