@@ -236,6 +236,6 @@ LogLevel currentLevel = .info;
 
 ## Related Skills
 
-- **[`dart-best-practices`](https://github.com/kevmoo/dash_skills/blob/main/.agent/skills/dart-modern-features/SKILL.md)**: General code
+- **[`dart-best-practices`][dart-best-practices]**: General code
   style and foundational Dart idioms that predate or complement the modern
   syntax features.
