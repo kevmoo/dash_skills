@@ -239,3 +239,5 @@ LogLevel currentLevel = .info;
 - **[`dart-best-practices`][dart-best-practices]**: General code
   style and foundational Dart idioms that predate or complement the modern
   syntax features.
+
+[dart-best-practices]: https://github.com/kevmoo/dash_skills/blob/main/.agent/skills/dart-best-practices/SKILL.md
