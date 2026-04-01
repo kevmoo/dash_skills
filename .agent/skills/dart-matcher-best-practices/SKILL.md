@@ -16,7 +16,7 @@ Use this skill when:
 
 ## Core Matchers
 
-### 1. Collections (`hasLength`, `contains`, `isEmpty`)
+### 1. Collections (`hasLength`, `contains`, `isEmpty`, `unorderedEquals`, `containsPair`)
 
 - **`hasLength(n)`**:
   - Prefer `expect(list, hasLength(n))` over `expect(list.length, n)`.
@@ -28,9 +28,16 @@ Use this skill when:
 
 - **`contains(item)`**:
   - Verify existence without manual iteration.
+  - Prefer over `expect(list.contains(item), true)`.
 
 - **`unorderedEquals(items)`**:
   - Verify contents regardless of order.
+  - Prefer over `expect(list, containsAll(items))`.
+
+- **`containsPair(key, value)`**:
+  - Verify a map contains a specific key-value pair.
+  - Prefer over checking `expect(map[key], value)` or 
+    `expect(map.containsKey(key), true)`.
 
 ### 2. Type Checks (`isA<T>` and `TypeMatcher<T>`)
 
