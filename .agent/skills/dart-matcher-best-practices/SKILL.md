@@ -106,8 +106,11 @@ expect(sideEffectState, equals('done')); // Race condition!
 
 ## Related Skills
 
-- **[`dart-test-fundamentals`](../dart-test-fundamentals/SKILL.md)**: Core
+- **[dart-test-fundamentals]**: Core
   concepts for structuring tests, lifecycles, and configuration.
-- **[`dart-checks-migration`](../dart-checks-migration/SKILL.md)**: Use this
+- **[dart-checks-migration]**: Use this
   skill if you are migrating tests from `package:matcher` to modern
   `package:checks`.
+
+[dart-test-fundamentals]: https://github.com/kevmoo/dash_skills/blob/main/.agent/skills/dart-test-fundamentals/SKILL.md
+[dart-checks-migration]: https://github.com/kevmoo/dash_skills/blob/main/.agent/skills/dart-checks-migration/SKILL.md
