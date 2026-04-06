@@ -127,8 +127,11 @@ check(it)..isGreaterThan(10)..isLessThan(20);
 
 ## Related Skills
 
-- **[`dart-test-fundamentals`](../dart-test-fundamentals/SKILL.md)**: Core
+- **[dart-test-fundamentals]**: Core
   concepts for structuring tests, lifecycles, and configuration.
-- **[`dart-matcher-best-practices`](../dart-matcher-best-practices/SKILL.md)**:
+- **[dart-matcher-best-practices]**:
   Best practices for the traditional `package:matcher` that is being migrated
   away from.
+
+[dart-test-fundamentals]: https://github.com/kevmoo/dash_skills/blob/main/.agent/skills/dart-test-fundamentals/SKILL.md
+[dart-matcher-best-practices]: https://github.com/kevmoo/dash_skills/blob/main/.agent/skills/dart-matcher-best-practices/SKILL.md
