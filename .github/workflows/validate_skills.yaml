@@ -1,0 +1,42 @@
+name: validate_skills
+
+on:
+  pull_request:
+    paths:
+      - '.agent/skills/**'
+      - 'tool/skill_validator/**'
+      - '.github/workflows/validate_skills.yaml'
+  push:
+    branches: [ main ]
+    paths:
+      - '.agent/skills/**'
+      - 'tool/skill_validator/**'
+      - '.github/workflows/validate_skills.yaml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install dependencies
+        run: dart pub get
+        working-directory: tool/skill_validator
+
+      - name: Run skills validation tests
+        run: dart test
+        working-directory: tool/skill_validator
+
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
