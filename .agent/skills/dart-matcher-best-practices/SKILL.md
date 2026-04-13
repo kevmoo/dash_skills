@@ -36,7 +36,7 @@ Use this skill when:
 
 - **`containsPair(key, value)`**:
   - Verify a map contains a specific key-value pair.
-  - Prefer over checking `expect(map[key], value)` or 
+  - Prefer over checking `expect(map[key], value)` or
     `expect(map.containsKey(key), true)`.
 
 ### 2. Type Checks (`isA<T>` and `TypeMatcher<T>`)

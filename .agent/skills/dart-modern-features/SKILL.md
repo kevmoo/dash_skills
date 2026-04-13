@@ -1,8 +1,8 @@
 ---
 name: dart-modern-features
 description: |-
-  Guidelines for using modern Dart features (v3.0 - v3.10) such as Records, 
-  Pattern Matching, Switch Expressions, Extension Types, Class Modifiers, 
+  Guidelines for using modern Dart features (v3.0 - v3.10) such as Records,
+  Pattern Matching, Switch Expressions, Extension Types, Class Modifiers,
   Wildcards, Null-Aware Elements, and Dot Shorthands.
 ---
 
