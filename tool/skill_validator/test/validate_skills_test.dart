@@ -18,8 +18,11 @@ void main() {
           'check-trailing-whitespace': AnalysisSeverity.error,
         },
       );
-      expect(isValid, isTrue,
-          reason: 'Skills validation failed. See above for details.');
+      expect(
+        isValid,
+        isTrue,
+        reason: 'Skills validation failed. See above for details.',
+      );
     } finally {
       await subscription.cancel();
     }
