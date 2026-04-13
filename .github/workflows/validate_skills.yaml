@@ -16,27 +16,23 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tool/skill_validator
     steps:
       - uses: actions/checkout@v6
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
 
-      - name: Install dependencies
-        run: dart pub get
-        working-directory: tool/skill_validator
+      - run: dart pub get
+        id: pub-get
 
-      - name: Run skills validation tests
-        run: dart test
-        working-directory: tool/skill_validator
+      - run: dart analyze --fatal-infos
+        if: always() && steps.pub-get.outcome == 'success'
 
-  formatting:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: dart-lang/setup-dart@v1
-        with:
-          sdk: stable
+      - run: dart format --output=none --set-exit-if-changed .
+        if: always() && steps.pub-get.outcome == 'success'
 
-      - name: Check formatting
-        run: dart format --output=none --set-exit-if-changed .
+      - run: dart test
+        if: always() && steps.pub-get.outcome == 'success'
