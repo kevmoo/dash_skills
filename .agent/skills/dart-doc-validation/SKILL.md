@@ -17,6 +17,16 @@ Use this skill when:
 
 ## 2. Best Practices
 
+### Enable the doc validation lint
+
+In your `analysis_options.yaml`, enable the `comment_references` lint.
+
+```yaml
+linter:
+  rules:
+    - comment_references
+```
+
 ### Validating Documentation Locally
 
 Use the `dart doc` command with a temporary output directory to validate
@@ -27,13 +37,30 @@ This command parses all documentation comments and reports warnings such as:
 -   `warning: undefined macro`
 
 **Command to run:**
+
 ```bash
 dart doc -o $(mktemp -d)
 ```
 
+*This will work on Mac and Linux.*
+
 This ensures that the generated HTML files are stored in a temporary location
 and don't clutter the package directory, while still surfacing all validation
 warnings in the terminal output.
+
+**Browsing the docs:**
+
+Our docs use features designed to be run on a web server. If you want to browse
+the generated docs locally, install the `dhttpd` package.
+
+
+```shell
+pub global activate dhttpd
+TMP_DIR=$(mktemp -d) && dart doc -o "$TMP_DIR" &&  dhttpd --path "$TMP_DIR"
+```
+
+*(Or use another HTTP server, such as `python3 -m http.server`.)*
+
 
 ### Fixing Common Warnings
 
