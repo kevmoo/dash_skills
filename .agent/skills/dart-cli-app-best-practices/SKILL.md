@@ -35,7 +35,27 @@ Future<void> main(List<String> arguments) async {
 -   Put complex logic directly in `bin/my_app.dart`.
 -   Define classes or heavy functions in the entrypoint.
 
-### Executable Scripts
+### Put an `executable` entry in `pubspec.yaml`
+
+List your executables in `pubspec.yaml` to make them available for global
+activation and clean invocation via `dart run`.
+
+**DO:**
+Add an `executables` section mapping the command name to the Dart file in
+`bin/` (excluding the `.dart` extension).
+
+```yaml
+executables:
+  my_app: # Maps to bin/my_app.dart
+  custom_name: main # Maps to bin/main.dart
+```
+
+Then run via `dart run my_app` or `dart run custom_name`.
+
+### CONSIDER `#!` for other scripts on *nix systems
+
+This is NOT a hard and fast rule, but it is something to consider.
+
 For CLI tools intended to be run directly on Linux and Mac, add a shebang and
 ensure the file is executable.
 
