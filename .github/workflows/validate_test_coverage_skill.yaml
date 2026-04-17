@@ -1,0 +1,44 @@
+name: validate_test_coverage_skill
+
+on:
+  pull_request:
+    paths:
+      - '.agent/skills/dart-test-coverage/**'
+      - '.github/workflows/validate_test_coverage_skill.yaml'
+  push:
+    branches: [ main ]
+    paths:
+      - '.agent/skills/dart-test-coverage/**'
+      - '.github/workflows/validate_test_coverage_skill.yaml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk: [stable, dev]
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.sdk }}
+
+      - name: Check formatting (All Skill Dart Code)
+        run: dart format --output=none --set-exit-if-changed .agent/skills/dart-test-coverage/
+
+      - name: Install dependencies (Example Project)
+        run: dart pub get
+        working-directory: .agent/skills/dart-test-coverage/example
+
+      - name: Analyze (Example Project)
+        run: dart analyze --fatal-infos
+        working-directory: .agent/skills/dart-test-coverage/example
+
+      - name: Run tests (Example Project)
+        run: dart test
+        working-directory: .agent/skills/dart-test-coverage/example
+
+      - name: Analyze (Interpreter Script)
+        run: dart analyze .agent/skills/dart-test-coverage/scripts/interpret_coverage.dart
