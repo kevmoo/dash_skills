@@ -25,6 +25,14 @@ Run the following command to collect coverage in JSON format:
 dart test --coverage=.dart_tool/coverage
 ```
 
+> [!NOTE]
+> We use `.dart_tool/coverage` as the output directory because `.dart_tool`
+> is typically already ignored in `.gitignore` files.
+
+> [!TIP]
+> For projects with complex conditional logic, you can pass the
+> `--branch-coverage` flag to `dart test` to collect branch-level coverage.
+
 ## Interpreting Results
 
 ### Option 1: Use the custom interpreter script
@@ -53,6 +61,19 @@ dart run coverage:format_coverage --in=.dart_tool/coverage --out=stdout --pretty
 ```
 This will output the file content with hit counts on the left (e.g., `0|` for
 missed lines).
+
+## Best Practices for Reporting Results
+When presenting coverage results to the user, follow these guidelines:
+1.  **State the high-level percentage first** to give immediate context.
+2.  **Identify specific files and missed lines** clearly.
+3.  **Translate line numbers to code**: Don't just say "lines 3-6 are missed".
+    Look at the source file and tell the user which functions or blocks are
+    untested (e.g., "The `divide` function is missing coverage").
+4.  **Propose concrete fixes**: Provide example test code that the user can
+    immediately apply to cover the missed lines.
+5.  **Use tables for multi-file summaries**: When reporting on multiple files,
+    use a markdown table with columns for File, Coverage %, and Missed Lines
+    to make the summary easy to scan.
 
 ## Constraints
 - ALWAYS verify that tests pass before collecting coverage.
