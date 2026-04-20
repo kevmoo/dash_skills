@@ -28,8 +28,9 @@ vertical space.
 
 ### Documentation Comments (`///`)
 -   Apply the same line-breaking rules as for code comments.
--   Avoid breaking markdown link blocks like `[name]` or `[text](url)` across
-    lines. Place them on their own line if they exceed the limit.
+-   Avoid breaking markdown link blocks like `[name]` or
+    `[text](http://example.com)` across lines. Place them on their own line if
+    they exceed the limit.
 -   Start doc comments with a single summary sentence, followed by a blank line
     before the rest of the comment. It is okay to break this first sentence
     across multiple lines to fit the 80-column limit.
@@ -59,8 +60,9 @@ vertical space.
 
 **Prefer:**
 ```dart
-/// This is a long doc comment that contains a link to
-/// [a very long URL](http://example.com/very/long/url/that/exceeds/eighty/chars).
+/// This is a long doc comment that contains a link to [a very long URL][ref].
+///
+/// [ref]: http://example.com/very/long/url/that/exceeds/eighty/chars
 ```
 
 ### Adjacent String Literals
@@ -78,8 +80,7 @@ print('This is line 1\nThis is line 2 that is also quite long\nThis is line 3 wh
 
 **Prefer:**
 ```dart
-print('''
-This is line 1
+print('''This is line 1
 This is line 2 that is also quite long
 This is line 3 which makes the whole thing exceed eighty characters''');
 ```
