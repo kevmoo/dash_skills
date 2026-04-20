@@ -34,7 +34,7 @@ Use this skill when:
   - **Avoid Single Groups**: Do not wrap all tests in a file with a single
     `group` call if it's the only one.
     - **NOTE**: DO NOT remove groups when doing a cleanup on existing code you
-      didn't create unlesse explicitly asked to. This can cause a LOT of churn
+      didn't create unless explicitly asked to. This can cause a LOT of churn
       in the DIFF that most engineers won't want!
 
 - **Naming Tests** `test('test name here',`:
