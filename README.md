@@ -20,6 +20,7 @@ complex specialized tasks with high reliability.
 | **[Dart Checks Migration](.agent/skills/dart-checks-migration/SKILL.md)** | Migrate from `package:matcher` to `package:checks`. | Automated conversion patterns for modern testing. |
 | **[Dart CLI Best Practices](.agent/skills/dart-cli-app-best-practices/SKILL.md)** | Create high-quality executable CLI apps. | Entrypoint structure, exit codes, cross-platform scripts. |
 | **[Dart Doc Validation](.agent/skills/dart-doc-validation/SKILL.md)** | Validating Dart doc comments. | Catch unresolved doc references and macros. |
+| **[Dart Long Lines](.agent/skills/dart-long-lines/SKILL.md)** | Guidelines for handling long lines in Dart code. | Adhere to 80-column rule, refactoring strategies. |
 | **[Dart Matcher Best Practices](.agent/skills/dart-matcher-best-practices/SKILL.md)** | Best practices for `expect` and `package:matcher`. | Async matching, collection matchers, `isA` chaining. |
 | **[Dart Modern Features](.agent/skills/dart-modern-features/SKILL.md)** | Prefer modern features (Records, Patterns, etc.). | Concise code, safe destructuring, exhaustive switching. |
 | **[Dart Package Maintenance](.agent/skills/dart-package-maintenance/SKILL.md)** | Guidelines for package maintenance. | Versioning, WIP tracking, and publishing workflows. |
