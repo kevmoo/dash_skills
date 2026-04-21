@@ -48,7 +48,8 @@ or identifiers that cannot be broken.
 ## Discovery
 
 ### Multi-line Strings
-To find candidates for multi-line strings, search for string concatenation with `+` involving newlines:
+To find candidates for multi-line strings, search for string concatenation
+with `+` involving newlines:
 - **Regex**: `['"]\s*\+\s*['"]`
 - **Regex**: `\+\s*['"].*\\n`
 

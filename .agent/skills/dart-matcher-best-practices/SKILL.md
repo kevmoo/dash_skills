@@ -2,7 +2,8 @@
 name: dart-matcher-best-practices
 description: |-
   Best practices for using `expect` and `package:matcher`.
-  Focuses on readable assertions, proper matcher selection, and avoiding common pitfalls.
+  Focuses on readable assertions, proper matcher selection, and avoiding
+  common pitfalls.
 license: Apache-2.0
 ---
 

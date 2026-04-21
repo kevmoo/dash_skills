@@ -18,7 +18,8 @@ To find maintenance tasks or inconsistencies:
 
 ### Consistency Checks
 Ensure the latest version in `CHANGELOG.md` matches `pubspec.yaml`:
-- Compare the top header in `CHANGELOG.md` with the `version:` field in `pubspec.yaml`.
+- Compare the top header in `CHANGELOG.md` with the `version:` field in
+  `pubspec.yaml`.
 
 ## Versioning
 

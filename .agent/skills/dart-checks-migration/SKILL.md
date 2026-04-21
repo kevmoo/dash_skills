@@ -88,11 +88,15 @@ Search for specific matchers that are easy to migrate:
   chain directly on them. Use cascades or callbacks.
   **Wrong:**
   ```dart
-  await check(future).throws<Error>().has((e) => e.message, 'message').equals('foo');
+  await check(future)
+      .throws<Error>()
+      .has((e) => e.message, 'message')
+      .equals('foo');
   ```
   **Correct:**
   ```dart
-  await check(future).throws<Error>((it) => it.has((e) => e.message, 'message').equals('foo'));
+  await check(future).throws<Error>(
+      (it) => it.has((e) => e.message, 'message').equals('foo'));
   ```
 
 ## Complex Examples

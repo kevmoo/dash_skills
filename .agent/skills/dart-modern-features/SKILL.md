@@ -21,7 +21,8 @@ Use this skill when:
 To find candidates for modernization:
 
 ### Switch Expressions
-Search for switch statements where every case assigns to the same variable or returns:
+Search for switch statements where every case assigns to the same variable
+or returns:
 - **Regex**: `switch\s*\([^)]+\)\s*\{\s*case`
 
 ### Pattern Matching Candidates

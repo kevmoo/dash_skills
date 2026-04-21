@@ -27,7 +27,8 @@ Verify if the `comment_references` lint is enabled:
 ### Automated Validation
 Run the documentation generator to surface warnings:
 - **Command**: `dart doc -o $(mktemp -d)`
-- **Keywords to look for**: `warning:`, `unresolved doc reference`, `undefined macro`
+- **Keywords to look for**: `warning:`, `unresolved doc reference`,
+  `undefined macro`
 
 ## 2. Best Practices
 
