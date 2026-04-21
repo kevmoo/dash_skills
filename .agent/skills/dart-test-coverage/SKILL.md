@@ -13,6 +13,17 @@ Guidelines for running and interpreting test coverage in Dart packages.
 - When asked to "check test coverage" or "improve coverage".
 - When you need to identify which parts of a library are untested.
 
+## Discovery
+
+To find areas lacking test coverage:
+
+### Run Coverage Analysis
+Follow the workflow to generate and interpret coverage data:
+1. **Run Tests with Coverage**: `dart test --coverage=.dart_tool/coverage`
+2. **Interpret Results**: Use the script or `format_coverage` as described in
+   the **Interpreting Results** section to identify specific files and missed
+   lines.
+
 ## How to use this skill (The Workflow)
 1.  Ensure tests pass by running `dart test`.
 2.  Collect coverage by running `dart test --coverage=.dart_tool/coverage`.

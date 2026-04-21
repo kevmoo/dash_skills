@@ -15,6 +15,20 @@ Use this skill when:
 -   Checking for broken documentation links, references, or macros.
 -   Preparing a package for publishing to pub.dev.
 
+## Discovery
+
+To find documentation issues:
+
+### Missing Lint
+Verify if the `comment_references` lint is enabled:
+- **Target**: `analysis_options.yaml`
+- **Search Query**: `comment_references`
+
+### Automated Validation
+Run the documentation generator to surface warnings:
+- **Command**: `dart doc -o $(mktemp -d)`
+- **Keywords to look for**: `warning:`, `unresolved doc reference`, `undefined macro`
+
 ## 2. Best Practices
 
 ### Enable the doc validation lint
