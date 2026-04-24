@@ -25,6 +25,7 @@ complex specialized tasks with high reliability.
 | **[Dart Modern Features](.agent/skills/dart-modern-features/SKILL.md)** | Prefer modern features (Records, Patterns, etc.). | Concise code, safe destructuring, exhaustive switching. |
 | **[Dart Package Maintenance](.agent/skills/dart-package-maintenance/SKILL.md)** | Guidelines for package maintenance. | Versioning, WIP tracking, and publishing workflows. |
 | **[Dart Test Fundamentals](.agent/skills/dart-test-fundamentals/SKILL.md)** | Core concepts for `package:test`. | `test`/`group` structure, lifecycle, configuration. |
+| **[pub.dev Search](.agent/skills/pub-dev-search/SKILL.md)** | Search pub.dev and recommend packages. | Quality scores, popularity, likes, downloads, recency. |
 
 ## 🚀 Usage
 
