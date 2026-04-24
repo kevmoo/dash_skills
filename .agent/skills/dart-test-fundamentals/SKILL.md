@@ -2,18 +2,29 @@
 name: dart-test-fundamentals
 description: |-
   Core concepts and best practices for `package:test`.
-  Covers `test`, `group`, lifecycle methods (`setUp`, `tearDown`), and configuration (`dart_test.yaml`).
+  Covers `test`, `group`, lifecycle methods (`setUp`, `tearDown`), and
+  configuration (`dart_test.yaml`).
 license: Apache-2.0
 ---
 
 # Dart Test Fundamentals
 
 ## When to use this skill
+
 Use this skill when:
 - Writing new test files.
 - Structuring test suites with `group`.
 - Configuring test execution via `dart_test.yaml`.
 - Understanding test lifecycle methods.
+
+## Discovery
+
+To find candidates for improving test structure:
+
+### `try-finally` Cleanup
+Search for tests that use `try-finally` for cleanup instead of `addTearDown`:
+- **Regex**: `\bfinally\s*\{` (Check if this is used for resource cleanup
+  inside a test).
 
 ## Core Concepts
 

@@ -9,10 +9,24 @@ license: Apache-2.0
 # Dart Long Lines
 
 ## 1. When to use this skill
+
 Use this skill when:
 -   Writing Dart code that might exceed the 80-column limit.
 -   Refactoring code to comply with the `lines_longer_than_80_chars` lint.
     Reference: https://dart.dev/tools/linter-rules/lines_longer_than_80_chars
+
+## Discovery
+
+To find lines that exceed the limit:
+
+### Automated Analysis
+The most reliable way to find long lines is to use the Dart analyzer:
+- **Command**: `dart analyze`
+- **Lint**: `lines_longer_than_80_chars`
+
+### Manual Search
+To search for long lines using regex:
+- **Regex**: `^.{81,}$` (Matches any line with 81 or more characters).
 
 ## 2. Guidelines
 

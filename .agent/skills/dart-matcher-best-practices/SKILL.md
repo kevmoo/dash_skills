@@ -2,17 +2,37 @@
 name: dart-matcher-best-practices
 description: |-
   Best practices for using `expect` and `package:matcher`.
-  Focuses on readable assertions, proper matcher selection, and avoiding common pitfalls.
+  Focuses on readable assertions, proper matcher selection, and avoiding
+  common pitfalls.
 license: Apache-2.0
 ---
 
 # Dart Matcher Best Practices
 
 ## When to use this skill
+
 Use this skill when:
 - Writing assertions using `expect` and `package:matcher`.
 - Migrating legacy manual checks to cleaner matchers.
 - Debugging confusing test failures.
+
+## Discovery
+
+To find candidates for improving matcher usage, search for suboptimal patterns:
+
+### Suboptimal Length Checks
+Search for length checks that should use `hasLength`:
+- **Regex**: `expect\([^,]+.length,\s*`
+
+### Suboptimal Boolean Checks
+Search for checks on boolean properties that have specific matchers:
+- **Regex**: `expect\([^,]+.isEmpty,\s*(true|equals\(true\))`
+- **Regex**: `expect\([^,]+.isNotEmpty,\s*(true|equals\(true\))`
+- **Regex**: `expect\([^,]+.contains\(.*\),\s*(true|equals\(true\))`
+
+### Suboptimal Map Lookups
+Search for manual map lookups instead of `containsPair`:
+- **Regex**: `expect\([^,]+\[.*\],\s*`
 
 ## Core Matchers
 

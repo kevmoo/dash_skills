@@ -33,6 +33,23 @@ Use this skill when:
     - Ensure the code analyzes cleanly.
     - Ensure tests pass.
 
+## Strategies for Discovery
+
+To find candidates for migration, use the following search strategies:
+
+### Files using Legacy Matchers
+Search for test files that import `package:test/test.dart` or use `expect`:
+- **Search Query**: `import 'package:test/test.dart';`
+- **Regex**: `expect\(`
+
+### Specific Matchers to Target
+Search for specific matchers that are easy to migrate:
+- **Regex**: `expect\(.*,\s*equals\(`
+- **Regex**: `expect\(.*,\s*isNull\)`
+- **Regex**: `expect\(.*,\s*isTrue\)`
+- **Regex**: `expect\(.*,\s*isFalse\)`
+- **Regex**: `expect\(.*,\s*throwsA`
+
 ## Common Patterns
 
 | Legacy `expect` | Modern `check` |
@@ -71,11 +88,15 @@ Use this skill when:
   chain directly on them. Use cascades or callbacks.
   **Wrong:**
   ```dart
-  await check(future).throws<Error>().has((e) => e.message, 'message').equals('foo');
+  await check(future)
+      .throws<Error>()
+      .has((e) => e.message, 'message')
+      .equals('foo');
   ```
   **Correct:**
   ```dart
-  await check(future).throws<Error>((it) => it.has((e) => e.message, 'message').equals('foo'));
+  await check(future).throws<Error>(
+      (it) => it.has((e) => e.message, 'message').equals('foo'));
   ```
 
 ## Complex Examples

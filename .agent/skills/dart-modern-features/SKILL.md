@@ -9,11 +9,34 @@ description: |-
 # Dart Modern Features
 
 ## 1. When to use this skill
+
 Use this skill when:
 - Writing or reviewing Dart code targeting Dart 3.0 or later.
 - Refactoring legacy Dart code to use modern, concise, and safe features.
 - Looking for idiomatic ways to handle multiple return values, deep data
   extraction, or exhaustive checking.
+
+## Discovery
+
+To find candidates for modernization:
+
+### Switch Expressions
+Search for switch statements where every case assigns to the same variable
+or returns:
+- **Regex**: `switch\s*\([^)]+\)\s*\{\s*case`
+
+### Pattern Matching Candidates
+Search for manual map or JSON property extraction and type checking:
+- **Regex**: `containsKey\(['"][^'"]+['"]\)`
+- **Regex**: `json\[['"][^'"]+['"]\]\s+is\s+`
+
+### Null-Aware Elements
+Search for collection `if` statements checking for null:
+- **Regex**: `if\s*\(\w+\s*!=\s*null\)\s*\w+`
+
+### Digit Separators
+Search for long numbers without separators:
+- **Regex**: `\b\d{6,}\b` (Matches numbers with 6 or more digits).
 
 ## 2. Features
 
