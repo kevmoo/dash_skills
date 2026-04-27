@@ -1,6 +1,8 @@
 # Testing in this Repository
 
-This repository is attempting to follow the 10 layers of testing described in the "Skillify" [workflow for AI agents](https://x.com/i/status/2046876981711769720). We aim to make every skill robust and self-contained with appropriate tests.
+This repository is attempting to follow the 10 layers of testing described in
+the "Skillify" [workflow for AI agents](https://x.com/i/status/2046876981711769720).
+We aim to make every skill robust and self-contained with appropriate tests.
 
 ## Implemented Layers
 
@@ -18,7 +20,9 @@ We have unit tests for the deterministic scripts associated with skills.
 - **Example**: [interpret_coverage_test.dart](../.agent/skills/dart-test-coverage/scripts/test/interpret_coverage_test.dart)
 
 ### Layer 8: Check Resolvable + DRY Audit (Partial)
-We have a skill validator that checks for basic standards like path validity and formatting. It does not check for reachability from a resolver or for duplicate logic across skills.
+We have a skill validator that checks for basic standards like path validity and
+formatting. It does not check for reachability from a resolver or for duplicate
+logic across skills.
 - **Example**: [validate_skills_test.dart](skill_validator/test/validate_skills_test.dart)
 
 ## Unimplemented Layers
