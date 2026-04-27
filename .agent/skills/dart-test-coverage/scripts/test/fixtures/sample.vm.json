@@ -1,0 +1,8 @@
+{
+  "coverage": [
+    {
+      "source": "package:sample/sample.dart",
+      "hits": [10, 1, 11, 0, 12, 5]
+    }
+  ]
+}
