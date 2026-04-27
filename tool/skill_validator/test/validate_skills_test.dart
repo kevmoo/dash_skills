@@ -31,7 +31,8 @@ void main() {
 
   test('Run skill/scripts/test', () {
     final skillsDir = Directory('../../.agent/skills');
-    expect(skillsDir.existsSync(), isTrue, reason: 'Skills directory not found at \${skillsDir.path}');
+    expect(skillsDir.existsSync(), isTrue,
+        reason: 'Skills directory not found at \${skillsDir.path}');
 
     final skillDirs = skillsDir.listSync().whereType<Directory>();
     for (final dir in skillDirs) {
@@ -41,7 +42,8 @@ void main() {
         print('Running tests in ${scriptsDir.path}');
 
         // Run pub get only if dependencies are not resolved
-        final packageConfig = File('${scriptsDir.path}/.dart_tool/package_config.json');
+        final packageConfig =
+            File('${scriptsDir.path}/.dart_tool/package_config.json');
         if (!packageConfig.existsSync()) {
           Process.runSync(
             'dart',
