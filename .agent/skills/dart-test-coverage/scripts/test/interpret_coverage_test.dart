@@ -6,8 +6,11 @@ import '../interpret_coverage.dart';
 void main() {
   /// Helper to create a mock coverage file.
   /// Takes a list of items where 'hits' is a Map<int, int> (line -> hits).
-  File createMockCoverageFile(Directory dir, String filename,
-      List<Map<String, dynamic>> coverageItems) {
+  File createMockCoverageFile(
+    Directory dir,
+    String filename,
+    List<Map<String, dynamic>> coverageItems,
+  ) {
     final file = File('${dir.path}/$filename');
 
     final processedItems = coverageItems.map((item) {
