@@ -21,15 +21,10 @@ void main() {
         flatHits.add(line);
         flatHits.add(count);
       });
-      return {
-        'source': source,
-        'hits': flatHits,
-      };
+      return {'source': source, 'hits': flatHits};
     }).toList();
 
-    final json = {
-      'coverage': processedItems,
-    };
+    final json = {'coverage': processedItems};
     file.writeAsStringSync(jsonEncode(json));
     return file;
   }
@@ -39,8 +34,8 @@ void main() {
     final coverageFile = createMockCoverageFile(tempDir, 'test.vm.json', [
       {
         'source': 'package:foo/bar.dart',
-        'hits': {1: 1, 2: 0}
-      }
+        'hits': {1: 1, 2: 0},
+      },
     ]);
 
     try {
@@ -57,12 +52,12 @@ void main() {
     final coverageFile = createMockCoverageFile(tempDir, 'test.vm.json', [
       {
         'source': 'package:foo/bar.dart',
-        'hits': {1: 1}
+        'hits': {1: 1},
       },
       {
         'source': 'package:baz/qux.dart',
-        'hits': {1: 1}
-      }
+        'hits': {1: 1},
+      },
     ]);
 
     try {
@@ -79,12 +74,12 @@ void main() {
     final coverageFile = createMockCoverageFile(tempDir, 'test.vm.json', [
       {
         'source': 'package:foo/test/bar_test.dart',
-        'hits': {1: 1}
+        'hits': {1: 1},
       },
       {
         'source': 'package:foo/bar.dart',
-        'hits': {1: 1}
-      }
+        'hits': {1: 1},
+      },
     ]);
 
     try {
