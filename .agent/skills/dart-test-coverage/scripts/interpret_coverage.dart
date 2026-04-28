@@ -44,9 +44,11 @@ void main(List<String> args) {
     print('$source: $percent% ($coveredLines/$totalLines lines)');
 
     // Show missed lines
-    final missed =
-        lineHits.entries.where((e) => e.value == 0).map((e) => e.key).toList()
-          ..sort();
+    final missed = lineHits.entries
+        .where((e) => e.value == 0)
+        .map((e) => e.key)
+        .toList()
+      ..sort();
 
     if (missed.isNotEmpty) {
       print('  Missed lines: ${missed.join(', ')}');
