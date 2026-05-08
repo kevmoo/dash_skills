@@ -136,17 +136,18 @@ Directory? _findRepoRoot(Directory startDir) {
 
 Map<dynamic, dynamic> _parseFrontMatter(String content) {
   if (!content.startsWith('---')) return {};
-  final parts = content.split('---');
-  if (parts.length < 3) return {};
+  final secondTripleDash = content.indexOf('---', 3);
+  if (secondTripleDash == -1) return {};
+  final yamlText = content.substring(3, secondTripleDash);
   try {
-    final yamlMap = loadYaml(parts[1]);
+    final yamlMap = loadYaml(yamlText);
     if (yamlMap is Map) return yamlMap;
   } catch (_) {}
   return {};
 }
 
 String _getSkillTitle(String content, String fallback) {
-  final lines = content.split('\n');
+  final lines = LineSplitter.split(content);
   for (final line in lines) {
     if (line.startsWith('# ')) {
       return line.substring(2).trim();
