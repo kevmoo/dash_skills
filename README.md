@@ -30,6 +30,10 @@ complex specialized tasks with high reliability.
     ```bash
     npx skills add kevmoo/dash_skills --skill dart-modern-features
     ```
+*   **[Dart Multi-line Strings](.agent/skills/dart-multiline-strings/SKILL.md)** — Guidelines and best practices for refactoring consecutive prints, single-line string concatenations, and complex output blocks into triple-quoted multi-line string literals (''' or """) in Dart.
+    ```bash
+    npx skills add kevmoo/dash_skills --skill dart-multiline-strings
+    ```
 *   **[Dart Package Maintenance](.agent/skills/dart-package-maintenance/SKILL.md)** — Guidelines for maintaining external Dart packages, covering versioning, publishing workflows, and pull request management. Use when updating Dart packages, preparing for a release, or managing collaborative changes in a repository.
     ```bash
     npx skills add kevmoo/dash_skills --skill dart-package-maintenance
