@@ -12,7 +12,7 @@ void main() {
 
     try {
       final isValid = await validateSkills(
-        skillDirPaths: ['../../.agent/skills'],
+        skillDirPaths: ['../.agent/skills'],
         resolvedRules: {
           'check-relative-paths': AnalysisSeverity.error,
           'check-absolute-paths': AnalysisSeverity.error,
@@ -30,7 +30,7 @@ void main() {
   });
 
   test('Run skill/scripts/test', () {
-    final skillsDir = Directory('../../.agent/skills');
+    final skillsDir = Directory('../.agent/skills');
     expect(skillsDir.existsSync(), isTrue,
         reason: 'Skills directory not found at \${skillsDir.path}');
 
