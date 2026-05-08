@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:args/args.dart';
+import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
 void main(List<String> arguments) async {
@@ -25,13 +27,13 @@ void main(List<String> arguments) async {
     exit(1);
   }
 
-  final skillsDir = Directory('${repoRoot.path}/.agent/skills');
+  final skillsDir = Directory(p.join(repoRoot.path, '.agent', 'skills'));
   if (!skillsDir.existsSync()) {
     print('Error: Skills directory does not exist at ${skillsDir.path}');
     exit(1);
   }
 
-  final readmeFile = File('${repoRoot.path}/README.md');
+  final readmeFile = File(p.join(repoRoot.path, 'README.md'));
   if (!readmeFile.existsSync()) {
     print('Error: README.md not found at ${readmeFile.path}');
     exit(1);
@@ -40,15 +42,15 @@ void main(List<String> arguments) async {
   final skillDirs = skillsDir
       .listSync()
       .whereType<Directory>()
-      .where((dir) => File('${dir.path}/SKILL.md').existsSync())
+      .where((dir) => File(p.join(dir.path, 'SKILL.md')).existsSync())
       .toList()
-    ..sort((a, b) => a.path.split('/').last.compareTo(b.path.split('/').last));
+    ..sort((a, b) => p.basename(a.path).compareTo(p.basename(b.path)));
 
   final listBuffer = StringBuffer();
   listBuffer.writeln('<!-- SKILLS_LIST_START -->');
   for (final dir in skillDirs) {
-    final skillName = dir.path.split('/').last;
-    final skillFile = File('${dir.path}/SKILL.md');
+    final skillName = p.basename(dir.path);
+    final skillFile = File(p.join(dir.path, 'SKILL.md'));
     final content = skillFile.readAsStringSync();
 
     final frontMatter = _parseFrontMatter(content);
@@ -61,8 +63,12 @@ void main(List<String> arguments) async {
       continue;
     }
 
+    final cleanDescription = LineSplitter.split(description.trim())
+        .map((line) => line.trim())
+        .join(' ');
+
     listBuffer.writeln(
-        '*   **[$title](.agent/skills/$skillName/SKILL.md)** — ${description.trim().replaceAll('\n', ' ')}');
+        '*   **[$title](.agent/skills/$skillName/SKILL.md)** — $cleanDescription');
     listBuffer.writeln('    ```bash');
     listBuffer
         .writeln('    npx skills add kevmoo/dash_skills --skill $skillName');
@@ -116,7 +122,7 @@ void main(List<String> arguments) async {
 Directory? _findRepoRoot(Directory startDir) {
   var dir = startDir;
   while (true) {
-    if (Directory('${dir.path}/.agent/skills').existsSync()) {
+    if (Directory(p.join(dir.path, '.agent', 'skills')).existsSync()) {
       return dir;
     }
     final parent = dir.parent;
