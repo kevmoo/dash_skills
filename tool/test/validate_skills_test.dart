@@ -3,6 +3,8 @@ import 'package:dart_skills_lint/dart_skills_lint.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
+const String _configFilePath = 'dart_skills_lint.yaml';
+
 void main() {
   test('Validate skills', () async {
     Logger.root.level = Level.ALL;
@@ -11,13 +13,11 @@ void main() {
     });
 
     try {
+      final Configuration config = await ConfigParser.loadConfig(
+        path: _configFilePath,
+      );
       final isValid = await validateSkills(
-        skillDirPaths: ['../.agent/skills'],
-        resolvedRules: {
-          'check-relative-paths': AnalysisSeverity.error,
-          'check-absolute-paths': AnalysisSeverity.error,
-          'check-trailing-whitespace': AnalysisSeverity.error,
-        },
+        config: config,
       );
       expect(
         isValid,
