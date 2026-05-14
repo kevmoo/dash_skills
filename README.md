@@ -38,6 +38,10 @@ complex specialized tasks with high reliability.
     ```bash
     npx skills add kevmoo/dash_skills --skill dart-package-maintenance
     ```
+*   **[Dart Test Coverage](.agent/skills/dart-test-coverage/SKILL.md)** — Understand and improve test coverage in a Dart package. Helps agents run coverage, interpret results, and identify missed lines.
+    ```bash
+    npx skills add kevmoo/dash_skills --skill dart-test-coverage
+    ```
 *   **[Dart Test Fundamentals](.agent/skills/dart-test-fundamentals/SKILL.md)** — Core concepts and best practices for `package:test`. Covers `test`, `group`, lifecycle methods (`setUp`, `tearDown`), and configuration (`dart_test.yaml`).
     ```bash
     npx skills add kevmoo/dash_skills --skill dart-test-fundamentals
