@@ -52,7 +52,10 @@ complex specialized tasks with high reliability.
 
 ### Claude Code (plugin marketplace)
 
-This repo is also a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces).
+This repo is also a [Claude Code plugin marketplace][marketplace].
+
+[marketplace]: https://code.claude.com/docs/en/plugin-marketplaces
+
 Add the marketplace and install the plugin to get every skill at once:
 
 ```bash
