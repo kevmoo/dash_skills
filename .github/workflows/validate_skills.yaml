@@ -4,13 +4,17 @@ on:
   pull_request:
     paths:
       - '.agent/skills/**'
-      - 'tool/skill_validator/**'
+      - 'tool/**'
+      - '.claude-plugin/**'
+      - 'plugins/**'
       - '.github/workflows/validate_skills.yaml'
   push:
     branches: [ main ]
     paths:
       - '.agent/skills/**'
-      - 'tool/skill_validator/**'
+      - 'tool/**'
+      - '.claude-plugin/**'
+      - 'plugins/**'
       - '.github/workflows/validate_skills.yaml'
 
 jobs:
@@ -36,3 +40,21 @@ jobs:
 
       - run: dart test
         if: always() && steps.pub-get.outcome == 'success'
+
+  # Canonical schema validation of the plugin marketplace manifests. The
+  # `claude` CLI is offline (no API key, no network), so no secrets are needed.
+  validate_marketplace:
+    runs-on: ubuntu-latest
+    # Override the workflow-level working directory so the validator runs
+    # against the repository root, not tool/.
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install -g @anthropic-ai/claude-code
+      - run: claude plugin validate .
+      - run: claude plugin validate ./plugins/dash-skills

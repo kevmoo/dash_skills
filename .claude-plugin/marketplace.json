@@ -1,0 +1,13 @@
+{
+  "name": "kevmoo",
+  "owner": { "name": "kevmoo" },
+  "description": "Personal Dart & Flutter skills created by kevmoo.",
+  "plugins": [
+    {
+      "name": "dash-skills",
+      "source": "./plugins/dash-skills",
+      "description": "Dart & Flutter authoring, testing, and maintenance skills.",
+      "category": "development"
+    }
+  ]
+}
