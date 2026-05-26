@@ -1,0 +1,9 @@
+{
+  "name": "dash-skills",
+  "description": "Dart & Flutter authoring, testing, and maintenance skills.",
+  "author": { "name": "kevmoo" },
+  "homepage": "https://github.com/kevmoo/dash_skills",
+  "repository": "https://github.com/kevmoo/dash_skills",
+  "license": "Apache-2.0",
+  "keywords": ["dart", "flutter", "skills"]
+}

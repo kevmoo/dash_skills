@@ -50,8 +50,24 @@ complex specialized tasks with high reliability.
 
 ## 🚀 Usage
 
-To use these skills with an agent (like [AntiGravity](https://antigravity.google)
-or [Gemini CLI](https://github.com/google/gemini-cli)):
+### Claude Code (plugin marketplace)
+
+This repo is also a [Claude Code plugin marketplace][marketplace].
+
+[marketplace]: https://code.claude.com/docs/en/plugin-marketplaces
+
+Add the marketplace and install the plugin to get every skill at once:
+
+```bash
+/plugin marketplace add kevmoo/dash_skills
+/plugin install dash-skills@kevmoo
+```
+
+### Other agents
+
+To use these skills with another agent (like
+[AntiGravity](https://antigravity.google) or
+[Gemini CLI](https://github.com/google/gemini-cli)):
 
 1.  **Ingest**: The agent reads the `.agent/skills` directory.
 2.  **Activate**: Each skill contains a `SKILL.md` defining when and how it should be used.
