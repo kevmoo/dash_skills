@@ -30,7 +30,7 @@ void main() {
   });
 
   test('Run skill/scripts/test', () {
-    final skillsDir = Directory('../.agent/skills');
+    final skillsDir = Directory('../skills');
     expect(skillsDir.existsSync(), isTrue,
         reason: 'Skills directory not found at \${skillsDir.path}');
 

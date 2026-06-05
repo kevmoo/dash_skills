@@ -52,7 +52,7 @@ output and provides a summary of covered percentage and missed lines.
 
 Run it from the project root (adjust path to script as needed):
 ```bash
-dart run .agent/skills/dart-test-coverage/scripts/interpret_coverage.dart .dart_tool/coverage <package_name>
+dart run skills/dart-test-coverage/scripts/interpret_coverage.dart .dart_tool/coverage <package_name>
 ```
 Replace `<package_name>` with the name from `pubspec.yaml`.
 

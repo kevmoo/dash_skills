@@ -23,11 +23,11 @@ void main(List<String> arguments) async {
   // We assume we are either in repo root, or in the tool/ directory.
   final repoRoot = _findRepoRoot(currentDir);
   if (repoRoot == null) {
-    print('Error: Could not find repository root containing .agent/skills');
+    print('Error: Could not find repository root containing skills');
     exit(1);
   }
 
-  final skillsDir = Directory(p.join(repoRoot.path, '.agent', 'skills'));
+  final skillsDir = Directory(p.join(repoRoot.path, 'skills'));
   if (!skillsDir.existsSync()) {
     print('Error: Skills directory does not exist at ${skillsDir.path}');
     exit(1);
@@ -68,7 +68,7 @@ void main(List<String> arguments) async {
         .join(' ');
 
     listBuffer.writeln(
-        '*   **[$title](.agent/skills/$skillName/SKILL.md)** — $cleanDescription');
+        '*   **[$title](skills/$skillName/SKILL.md)** — $cleanDescription');
     listBuffer.writeln('    ```bash');
     listBuffer
         .writeln('    npx skills add kevmoo/dash_skills --skill $skillName');
@@ -122,7 +122,7 @@ void main(List<String> arguments) async {
 Directory? _findRepoRoot(Directory startDir) {
   var dir = startDir;
   while (true) {
-    if (Directory(p.join(dir.path, '.agent', 'skills')).existsSync()) {
+    if (Directory(p.join(dir.path, 'skills')).existsSync()) {
       return dir;
     }
     final parent = dir.parent;

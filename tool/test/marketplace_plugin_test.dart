@@ -20,8 +20,8 @@ void main() {
     p.join(repoRoot.path, '.claude-plugin', 'marketplace.json'),
   );
   final pluginLink = p.join(repoRoot.path, 'plugins', _pluginName, 'skills');
-  // Skills live under `.agent/skills/`, not a top-level `skills/`.
-  final canonicalSkills = Directory(p.join(repoRoot.path, '.agent', 'skills'));
+  // Skills live under a top-level `skills/` directory.
+  final canonicalSkills = Directory(p.join(repoRoot.path, 'skills'));
 
   group('Claude plugin marketplace', () {
     test('marketplace.json declares the plugin', () {
@@ -59,7 +59,7 @@ void main() {
       expect(manifest['name'], plugin['name']);
     });
 
-    test('skills symlink resolves to the .agent/skills directory', () {
+    test('skills symlink resolves to the top-level skills directory', () {
       expect(
         FileSystemEntity.isLinkSync(pluginLink),
         isTrue,

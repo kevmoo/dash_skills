@@ -13,11 +13,11 @@ Every skill in this repository has a `SKILL.md` file defining its contract, trig
 
 ### Layer 2: Deterministic Code (Scripts)
 Some skills have deterministic scripts to handle precise work.
-- **Example**: [interpret_coverage.dart](../.agent/skills/dart-test-coverage/scripts/interpret_coverage.dart)
+- **Example**: [interpret_coverage.dart](../skills/dart-test-coverage/scripts/interpret_coverage.dart)
 
 ### Layer 3: Unit Tests
 We have unit tests for the deterministic scripts associated with skills.
-- **Example**: [interpret_coverage_test.dart](../.agent/skills/dart-test-coverage/scripts/test/interpret_coverage_test.dart)
+- **Example**: [interpret_coverage_test.dart](../skills/dart-test-coverage/scripts/test/interpret_coverage_test.dart)
 
 ### Layer 8: Check Resolvable + DRY Audit (Partial)
 We have a skill validator that checks for basic standards like path validity and
@@ -54,7 +54,7 @@ Skill tests are colocated with the skills in their `scripts/` directory. To run 
 
 1. Navigate to the skill's `scripts` directory:
    ```bash
-   cd .agent/skills/dart-test-coverage/scripts
+   cd skills/dart-test-coverage/scripts
    ```
 2. Run the tests:
    ```bash

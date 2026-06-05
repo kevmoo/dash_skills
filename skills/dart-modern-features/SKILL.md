@@ -263,4 +263,4 @@ LogLevel currentLevel = .info;
   style and foundational Dart idioms that predate or complement the modern
   syntax features.
 
-[dart-best-practices]: https://github.com/kevmoo/dash_skills/blob/main/.agent/skills/dart-best-practices/SKILL.md
+[dart-best-practices]: https://github.com/kevmoo/dash_skills/blob/main/skills/dart-best-practices/SKILL.md
