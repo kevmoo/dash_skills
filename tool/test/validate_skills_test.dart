@@ -18,9 +18,7 @@ void main() {
       final Configuration config = await ConfigParser.loadConfig(
         path: _configFilePath,
       );
-      final isValid = await validateSkills(
-        config: config,
-      );
+      final isValid = await validateSkills(config: config);
       expect(
         isValid,
         isTrue,
@@ -33,9 +31,13 @@ void main() {
 
   test('Run skill/scripts/test', () {
     final skillsDir = Directory(
-        Directory.current.path.endsWith('tool') ? '../skills' : 'skills');
-    expect(skillsDir.existsSync(), isTrue,
-        reason: 'Skills directory not found at ${skillsDir.path}');
+      Directory.current.path.endsWith('tool') ? '../skills' : 'skills',
+    );
+    expect(
+      skillsDir.existsSync(),
+      isTrue,
+      reason: 'Skills directory not found at ${skillsDir.path}',
+    );
 
     final skillDirs = skillsDir.listSync().whereType<Directory>();
     for (final dir in skillDirs) {
@@ -45,25 +47,26 @@ void main() {
         print('Running tests in ${scriptsDir.path}');
 
         // Run pub get only if dependencies are not resolved
-        final packageConfig =
-            File('${scriptsDir.path}/.dart_tool/package_config.json');
+        final packageConfig = File(
+          '${scriptsDir.path}/.dart_tool/package_config.json',
+        );
         if (!packageConfig.existsSync()) {
-          Process.runSync(
-            'dart',
-            ['pub', 'get'],
-            workingDirectory: scriptsDir.path,
-          );
+          Process.runSync('dart', [
+            'pub',
+            'get',
+          ], workingDirectory: scriptsDir.path);
         }
 
-        final result = Process.runSync(
-          'dart',
-          ['test'],
-          workingDirectory: scriptsDir.path,
-        );
+        final result = Process.runSync('dart', [
+          'test',
+        ], workingDirectory: scriptsDir.path);
         print(result.stdout);
         print(result.stderr);
-        expect(result.exitCode, 0,
-            reason: 'Tests failed in ${scriptsDir.path}');
+        expect(
+          result.exitCode,
+          0,
+          reason: 'Tests failed in ${scriptsDir.path}',
+        );
       }
     }
   });

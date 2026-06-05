@@ -43,8 +43,9 @@ void main() {
 
     test('plugin source resolves to a directory with a plugin manifest', () {
       final marketplace = _readJson(marketplaceFile);
-      final plugin = (marketplace['plugins'] as List<dynamic>).single
-          as Map<String, dynamic>;
+      final plugin =
+          (marketplace['plugins'] as List<dynamic>).single
+              as Map<String, dynamic>;
       final source = plugin['source'] as String;
 
       expect(source, startsWith('./'));
