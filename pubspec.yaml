@@ -1,0 +1,10 @@
+name: dash_skills
+publish_to: none
+
+environment:
+  sdk: ^3.9.0
+
+workspace:
+  - tool
+  - skills/dart-test-coverage/example
+  - skills/dart-test-coverage/scripts
