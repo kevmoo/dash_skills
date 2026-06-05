@@ -3,10 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('validate README.md is up-to-date with the latest skills', () {
-    final result = Process.runSync(
-      'dart',
-      ['bin/readme.dart', '--validate'],
-    );
+    final result = Process.runSync('dart', ['bin/readme.dart', '--validate']);
     expect(
       result.exitCode,
       0,

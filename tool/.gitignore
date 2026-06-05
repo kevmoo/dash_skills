@@ -1,8 +1,0 @@
-# https://dart.dev/guides/libraries/private-files
-
-# Files and directories created by pub
-.dart_tool/
-.packages
-.pub/
-build/
-pubspec.lock

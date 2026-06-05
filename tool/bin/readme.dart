@@ -6,13 +6,17 @@ import 'package:yaml/yaml.dart';
 
 void main(List<String> arguments) async {
   final parser = ArgParser()
-    ..addFlag('write',
-        abbr: 'w',
-        negatable: false,
-        help: 'Writes the updated skills table to README.md.')
-    ..addFlag('validate',
-        negatable: false,
-        help: 'Validates that README.md is up-to-date with the latest skills.');
+    ..addFlag(
+      'write',
+      abbr: 'w',
+      negatable: false,
+      help: 'Writes the updated skills table to README.md.',
+    )
+    ..addFlag(
+      'validate',
+      negatable: false,
+      help: 'Validates that README.md is up-to-date with the latest skills.',
+    );
 
   final results = parser.parse(arguments);
   final writeMode = results['write'] as bool;
@@ -39,12 +43,13 @@ void main(List<String> arguments) async {
     exit(1);
   }
 
-  final skillDirs = skillsDir
-      .listSync()
-      .whereType<Directory>()
-      .where((dir) => File(p.join(dir.path, 'SKILL.md')).existsSync())
-      .toList()
-    ..sort((a, b) => p.basename(a.path).compareTo(p.basename(b.path)));
+  final skillDirs =
+      skillsDir
+          .listSync()
+          .whereType<Directory>()
+          .where((dir) => File(p.join(dir.path, 'SKILL.md')).existsSync())
+          .toList()
+        ..sort((a, b) => p.basename(a.path).compareTo(p.basename(b.path)));
 
   final listBuffer = StringBuffer();
   listBuffer.writeln('<!-- SKILLS_LIST_START -->');
@@ -63,15 +68,17 @@ void main(List<String> arguments) async {
       continue;
     }
 
-    final cleanDescription = LineSplitter.split(description.trim())
-        .map((line) => line.trim())
-        .join(' ');
+    final cleanDescription = LineSplitter.split(
+      description.trim(),
+    ).map((line) => line.trim()).join(' ');
 
     listBuffer.writeln(
-        '*   **[$title](skills/$skillName/SKILL.md)** — $cleanDescription');
+      '*   **[$title](skills/$skillName/SKILL.md)** — $cleanDescription',
+    );
     listBuffer.writeln('    ```bash');
-    listBuffer
-        .writeln('    npx skills add kevmoo/dash_skills --skill $skillName');
+    listBuffer.writeln(
+      '    npx skills add kevmoo/dash_skills --skill $skillName',
+    );
     listBuffer.writeln('    ```');
   }
   listBuffer.write('<!-- SKILLS_LIST_END -->');
@@ -87,7 +94,8 @@ void main(List<String> arguments) async {
 
   if (startIndex == -1 || endIndex == -1) {
     print(
-        'Error: Could not find comments <!-- SKILLS_LIST_START --> and <!-- SKILLS_LIST_END --> in README.md');
+      'Error: Could not find comments <!-- SKILLS_LIST_START --> and <!-- SKILLS_LIST_END --> in README.md',
+    );
     exit(1);
   }
 
@@ -156,7 +164,9 @@ String _getSkillTitle(String content, String fallback) {
   // If no H1, capitalize fallback
   return fallback
       .split('-')
-      .map((word) =>
-          word.isEmpty ? '' : '${word[0].toUpperCase()}${word.substring(1)}')
+      .map(
+        (word) =>
+            word.isEmpty ? '' : '${word[0].toUpperCase()}${word.substring(1)}',
+      )
       .join(' ');
 }
