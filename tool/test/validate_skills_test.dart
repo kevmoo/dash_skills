@@ -3,7 +3,9 @@ import 'package:dart_skills_lint/dart_skills_lint.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
-const String _configFilePath = 'dart_skills_lint.yaml';
+final String _configFilePath = Directory.current.path.endsWith('tool')
+    ? 'dart_skills_lint.yaml'
+    : 'tool/dart_skills_lint.yaml';
 
 void main() {
   test('Validate skills', () async {
@@ -30,9 +32,10 @@ void main() {
   });
 
   test('Run skill/scripts/test', () {
-    final skillsDir = Directory('../skills');
+    final skillsDir = Directory(
+        Directory.current.path.endsWith('tool') ? '../skills' : 'skills');
     expect(skillsDir.existsSync(), isTrue,
-        reason: 'Skills directory not found at \${skillsDir.path}');
+        reason: 'Skills directory not found at ${skillsDir.path}');
 
     final skillDirs = skillsDir.listSync().whereType<Directory>();
     for (final dir in skillDirs) {
