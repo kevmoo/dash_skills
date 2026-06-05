@@ -62,4 +62,4 @@ with `+` involving newlines:
   usage of modern Dart features like Pattern Matching (useful for deep JSON
   extraction), Records, and Switch Expressions.
 
-[dart-modern-features]: https://github.com/kevmoo/dash_skills/blob/main/.agent/skills/dart-modern-features/SKILL.md
+[dart-modern-features]: https://github.com/kevmoo/dash_skills/blob/main/skills/dart-modern-features/SKILL.md

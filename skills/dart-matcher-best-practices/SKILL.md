@@ -132,5 +132,5 @@ expect(sideEffectState, equals('done')); // Race condition!
   skill if you are migrating tests from `package:matcher` to modern
   `package:checks`.
 
-[dart-test-fundamentals]: https://github.com/kevmoo/dash_skills/blob/main/.agent/skills/dart-test-fundamentals/SKILL.md
-[dart-checks-migration]: https://github.com/kevmoo/dash_skills/blob/main/.agent/skills/dart-checks-migration/SKILL.md
+[dart-test-fundamentals]: https://github.com/kevmoo/dash_skills/blob/main/skills/dart-test-fundamentals/SKILL.md
+[dart-checks-migration]: https://github.com/kevmoo/dash_skills/blob/main/skills/dart-checks-migration/SKILL.md

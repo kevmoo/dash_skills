@@ -6,11 +6,11 @@ agent's capabilities with specialized knowledge and workflows.
 
 ## Skill Structure
 
-Each skill is located in `.agent/skills/<skill-name>/` and must contain a
+Each skill is located in `skills/<skill-name>/` and must contain a
 `SKILL.md` file.
 
 ```
-.agent/skills/<skill-name>/
+skills/<skill-name>/
 ├── SKILL.md (required)
 ├── scripts/ (optional)
 ├── references/ (optional)
@@ -52,7 +52,7 @@ The `SKILL.md` file is the heart of the skill. It contains:
 
 ## Adding a New Skill
 
-1.  Create the directory: `.agent/skills/<my-new-skill>/`.
+1.  Create the directory: `skills/<my-new-skill>/`.
 2.  Add `SKILL.md` with appropriate frontmatter.
 3.  Add the skill to the `Available Skills` table in the root `README.md`.
 4.  (Optional) Package the skill using `package_skill.cjs` if distribution as
