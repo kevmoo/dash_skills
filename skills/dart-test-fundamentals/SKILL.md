@@ -166,8 +166,5 @@ tests. For writing assertions within those tests, refer to:
 - **[dart-matcher-best-practices]**:
   Use this if the project sticks with the traditional
   `package:matcher` (`expect` calls).
-- **[dart-checks-migration]**: Use this
-  if the project is migrating to the modern `package:checks` (`check` calls).
 
 [dart-matcher-best-practices]: https://github.com/kevmoo/dash_skills/blob/main/skills/dart-matcher-best-practices/SKILL.md
-[dart-checks-migration]: https://github.com/kevmoo/dash_skills/blob/main/skills/dart-checks-migration/SKILL.md
