@@ -3,6 +3,10 @@ name: dart-test-coverage
 description: |-
   Understand and improve test coverage in a Dart package.
   Helps agents run coverage, interpret results, and identify missed lines.
+key_features:
+  - LCOV report collection
+  - Missed line identification
+  - Coverage analysis & improvement
 ---
 
 # Dart Test Coverage

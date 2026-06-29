@@ -4,6 +4,10 @@ description: |-
   General best practices for Dart development.
   Covers code style, effective Dart, and language features.
 license: Apache-2.0
+key_features:
+  - Code style guidelines
+  - Effective Dart idioms
+  - Language feature recommendations
 ---
 
 # Dart Best Practices

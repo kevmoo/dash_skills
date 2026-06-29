@@ -4,6 +4,10 @@ description: |-
   Guidelines for handling long lines in Dart code to adhere to the 80-column
   rule. The `lines_longer_than_80_chars` lint.
 license: Apache-2.0
+key_features:
+  - 80-column rule compliance
+  - Line length refactoring
+  - Linter rule enforcement
 ---
 
 # Dart Long Lines

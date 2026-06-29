@@ -5,6 +5,10 @@ description: |-
   Focuses on readable assertions, proper matcher selection, and avoiding
   common pitfalls.
 license: Apache-2.0
+key_features:
+  - Package matcher assertions
+  - Readable test expectations
+  - Matcher selection & refactoring
 ---
 
 # Dart Matcher Best Practices

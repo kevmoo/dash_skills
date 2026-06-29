@@ -5,6 +5,10 @@ description: |-
   publishing workflows, and pull request management. Use when updating Dart
   packages, preparing for a release, or managing collaborative changes in a
   repository.
+key_features:
+  - Versioning & CHANGELOG sync
+  - Publishing workflow guidelines
+  - Pull request management
 ---
 
 # Dart Package Maintenance

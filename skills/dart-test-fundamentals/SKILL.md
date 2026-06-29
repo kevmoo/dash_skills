@@ -5,6 +5,10 @@ description: |-
   Covers `test`, `group`, lifecycle methods (`setUp`, `tearDown`), and
   configuration (`dart_test.yaml`).
 license: Apache-2.0
+key_features:
+  - Package test core concepts
+  - Test lifecycle (setUp, tearDown)
+  - dart_test.yaml configuration
 ---
 
 # Dart Test Fundamentals

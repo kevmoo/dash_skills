@@ -5,6 +5,10 @@ description: |-
   string concatenations, and complex output blocks into triple-quoted multi-line
   string literals (''' or """) in Dart.
 license: Apache-2.0
+key_features:
+  - Triple-quoted multiline strings
+  - Print & concatenation refactoring
+  - Formatting large text blocks
 ---
 
 # Dart Multi-line Strings

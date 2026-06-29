@@ -4,6 +4,10 @@ description: |-
   Best practices for validating Dart documentation comments.
   Covers using `dart doc` to catch unresolved references and macros.
 license: Apache-2.0
+key_features:
+  - Documentation comment validation
+  - Unresolved reference checking
+  - Dart doc macro verification
 ---
 
 # Dart Doc Validation
