@@ -67,8 +67,8 @@ void main(List<String> arguments) async {
 
     final frontMatter = _parseFrontMatter(content);
     final title =
-        frontMatter['name'] as String? ?? _getSkillTitle(content, skillName);
-    final description = frontMatter['description'] as String? ?? '';
+        frontMatter['name']?.toString() ?? _getSkillTitle(content, skillName);
+    final description = frontMatter['description']?.toString() ?? '';
     final keyFeaturesRaw = frontMatter['key_features'];
     final List<String> keyFeatures = [];
     if (keyFeaturesRaw is List) {
@@ -101,9 +101,11 @@ void main(List<String> arguments) async {
   final endTag = '<!-- SKILLS_LIST_END -->';
 
   final startIndex = readmeContent.indexOf(startTag);
-  final endIndex = readmeContent.indexOf(endTag);
+  final endIndex = startIndex == -1
+      ? -1
+      : readmeContent.indexOf(endTag, startIndex);
 
-  if (startIndex == -1 || endIndex == -1 || endIndex < startIndex) {
+  if (startIndex == -1 || endIndex == -1) {
     print(
       'Error: Could not find comments <!-- SKILLS_LIST_START --> and <!-- SKILLS_LIST_END --> in correct order in README.md',
     );
@@ -160,7 +162,7 @@ Map<dynamic, dynamic> _parseFrontMatter(String content) {
   if (!trimmed.startsWith('---')) return {};
   final regExp = RegExp(r'^---\s*$', multiLine: true);
   final matches = regExp.allMatches(trimmed).toList();
-  if (matches.length < 2) return {};
+  if (matches.length < 2 || matches[0].start != 0) return {};
   final secondTripleDash = matches[1].start;
   final yamlText = trimmed.substring(matches[0].end, secondTripleDash);
   try {
@@ -171,7 +173,16 @@ Map<dynamic, dynamic> _parseFrontMatter(String content) {
 }
 
 String _getSkillTitle(String content, String fallback) {
-  final lines = LineSplitter.split(content);
+  var searchContent = content.trimLeft();
+  if (searchContent.startsWith('---')) {
+    final regExp = RegExp(r'^---\s*$', multiLine: true);
+    final matches = regExp.allMatches(searchContent).toList();
+    if (matches.length >= 2) {
+      searchContent = searchContent.substring(matches[1].end);
+    }
+  }
+
+  final lines = LineSplitter.split(searchContent);
   for (final line in lines) {
     if (line.startsWith('# ')) {
       return line.substring(2).trim();
@@ -179,9 +190,7 @@ String _getSkillTitle(String content, String fallback) {
   }
   return fallback
       .split('-')
-      .map(
-        (word) =>
-            word.isEmpty ? '' : '${word[0].toUpperCase()}${word.substring(1)}',
-      )
+      .where((word) => word.isNotEmpty)
+      .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
       .join(' ');
 }
