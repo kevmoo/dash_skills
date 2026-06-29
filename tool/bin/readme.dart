@@ -30,7 +30,8 @@ void main(List<String> arguments) async {
   }
 
   final repoName = p.basename(repoRoot.path);
-  final repoSlug = 'kevmoo/$repoName';
+  final repoSlug =
+      Platform.environment['GITHUB_REPOSITORY'] ?? 'kevmoo/$repoName';
 
   final skillsDir = Directory(p.join(repoRoot.path, 'skills'));
   if (!skillsDir.existsSync()) {
@@ -163,7 +164,7 @@ Directory? _findRepoRoot(Directory startDir) {
 Map<dynamic, dynamic> _parseFrontMatter(String content) {
   final trimmed = content.trimLeft();
   if (!trimmed.startsWith('---')) return {};
-  final regExp = RegExp(r'^---\s*$', multiLine: true);
+  final regExp = RegExp(r'^---[ \t]*\r?$', multiLine: true);
   final matches = regExp.allMatches(trimmed).toList();
   if (matches.length < 2 || matches[0].start != 0) return {};
   final secondTripleDash = matches[1].start;
@@ -178,7 +179,7 @@ Map<dynamic, dynamic> _parseFrontMatter(String content) {
 String _getSkillTitle(String content, String fallback) {
   var searchContent = content.trimLeft();
   if (searchContent.startsWith('---')) {
-    final regExp = RegExp(r'^---\s*$', multiLine: true);
+    final regExp = RegExp(r'^---[ \t]*\r?$', multiLine: true);
     final matches = regExp.allMatches(searchContent).toList();
     if (matches.length >= 2 && matches[0].start == 0) {
       searchContent = searchContent.substring(matches[1].end);
