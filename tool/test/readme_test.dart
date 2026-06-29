@@ -1,16 +1,16 @@
 import 'dart:io';
 import 'package:test/test.dart';
+import 'package:test_process/test_process.dart';
 
 void main() {
-  test('validate README.md is up-to-date with the latest skills', () {
-    final result = Process.runSync('dart', ['bin/readme.dart', '--validate']);
-    expect(
-      result.exitCode,
-      0,
-      reason:
-          'README.md is out of date. Run `dart tool/bin/readme.dart --write` to update it.\n'
-          'stdout:\n${result.stdout}\n'
-          'stderr:\n${result.stderr}',
-    );
+  test('validate README.md is up-to-date with the latest skills', () async {
+    final scriptPath = Directory.current.path.endsWith('tool')
+        ? 'bin/readme.dart'
+        : 'tool/bin/readme.dart';
+    final process = await TestProcess.start(Platform.resolvedExecutable, [
+      scriptPath,
+      '--validate',
+    ]);
+    await process.shouldExit(0);
   });
 }

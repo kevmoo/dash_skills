@@ -23,13 +23,14 @@ void main(List<String> arguments) async {
   final validateMode = results['validate'] as bool;
 
   final currentDir = Directory.current;
-  // Make sure we can resolve directories relative to repository root.
-  // We assume we are either in repo root, or in the tool/ directory.
   final repoRoot = _findRepoRoot(currentDir);
   if (repoRoot == null) {
     print('Error: Could not find repository root containing skills');
     exit(1);
   }
+
+  final repoName = p.basename(repoRoot.path);
+  final repoSlug = 'kevmoo/$repoName';
 
   final skillsDir = Directory(p.join(repoRoot.path, 'skills'));
   if (!skillsDir.existsSync()) {
@@ -53,16 +54,29 @@ void main(List<String> arguments) async {
 
   final listBuffer = StringBuffer();
   listBuffer.writeln('<!-- SKILLS_LIST_START -->');
+  listBuffer.writeln('To install any skill individually:');
+  listBuffer.writeln('```bash');
+  listBuffer.writeln('npx skills add $repoSlug --skill <skill-name>');
+  listBuffer.writeln('```\n');
+  listBuffer.writeln('| Skill | Description | Key Features |');
+  listBuffer.writeln('|-------|-------------|--------------|');
   for (final dir in skillDirs) {
     final skillName = p.basename(dir.path);
     final skillFile = File(p.join(dir.path, 'SKILL.md'));
     final content = skillFile.readAsStringSync();
 
     final frontMatter = _parseFrontMatter(content);
-    final title = _getSkillTitle(content, skillName);
+    final title =
+        frontMatter['name'] as String? ?? _getSkillTitle(content, skillName);
     final description = frontMatter['description'] as String? ?? '';
+    final keyFeaturesRaw = frontMatter['key_features'];
+    final List<String> keyFeatures = [];
+    if (keyFeaturesRaw is List) {
+      keyFeatures.addAll(keyFeaturesRaw.map((e) => e.toString()));
+    } else if (keyFeaturesRaw is String) {
+      keyFeatures.add(keyFeaturesRaw);
+    }
 
-    // Skip deprecated skills
     if (title.toLowerCase().contains('deprecated') ||
         description.toLowerCase().startsWith('deprecated')) {
       continue;
@@ -70,20 +84,17 @@ void main(List<String> arguments) async {
 
     final cleanDescription = LineSplitter.split(
       description.trim(),
-    ).map((line) => line.trim()).join(' ');
+    ).map((line) => line.trim()).join(' ').replaceAll('|', '\\|');
+
+    final cleanFeatures = keyFeatures.join(', ').replaceAll('|', '\\|');
 
     listBuffer.writeln(
-      '*   **[$title](skills/$skillName/SKILL.md)** — $cleanDescription',
+      '| **[$title](skills/$skillName/SKILL.md)** | $cleanDescription | $cleanFeatures |',
     );
-    listBuffer.writeln('    ```bash');
-    listBuffer.writeln(
-      '    npx skills add kevmoo/dash_skills --skill $skillName',
-    );
-    listBuffer.writeln('    ```');
   }
   listBuffer.write('<!-- SKILLS_LIST_END -->');
 
-  final generatedList = listBuffer.toString();
+  final generatedTable = listBuffer.toString();
 
   final readmeContent = readmeFile.readAsStringSync();
   final startTag = '<!-- SKILLS_LIST_START -->';
@@ -92,9 +103,9 @@ void main(List<String> arguments) async {
   final startIndex = readmeContent.indexOf(startTag);
   final endIndex = readmeContent.indexOf(endTag);
 
-  if (startIndex == -1 || endIndex == -1) {
+  if (startIndex == -1 || endIndex == -1 || endIndex < startIndex) {
     print(
-      'Error: Could not find comments <!-- SKILLS_LIST_START --> and <!-- SKILLS_LIST_END --> in README.md',
+      'Error: Could not find comments <!-- SKILLS_LIST_START --> and <!-- SKILLS_LIST_END --> in correct order in README.md',
     );
     exit(1);
   }
@@ -102,11 +113,13 @@ void main(List<String> arguments) async {
   final updatedReadme = readmeContent.replaceRange(
     startIndex,
     endIndex + endTag.length,
-    generatedList,
+    generatedTable,
   );
 
   if (validateMode) {
-    if (readmeContent == updatedReadme) {
+    final normalizedReadme = readmeContent.replaceAll('\r\n', '\n');
+    final normalizedUpdated = updatedReadme.replaceAll('\r\n', '\n');
+    if (normalizedReadme == normalizedUpdated) {
       print('README.md is up-to-date!');
       exit(0);
     } else {
@@ -120,9 +133,9 @@ void main(List<String> arguments) async {
     readmeFile.writeAsStringSync(updatedReadme);
     print('Successfully updated README.md with the latest skills!');
   } else {
-    print('--- Generated Skills List ---');
-    print(generatedList);
-    print('-----------------------------');
+    print('--- Generated Skills Table ---');
+    print(generatedTable);
+    print('------------------------------');
     print('Run with --write (or -w) to save changes to README.md.');
   }
 }
@@ -143,10 +156,13 @@ Directory? _findRepoRoot(Directory startDir) {
 }
 
 Map<dynamic, dynamic> _parseFrontMatter(String content) {
-  if (!content.startsWith('---')) return {};
-  final secondTripleDash = content.indexOf('---', 3);
-  if (secondTripleDash == -1) return {};
-  final yamlText = content.substring(3, secondTripleDash);
+  final trimmed = content.trimLeft();
+  if (!trimmed.startsWith('---')) return {};
+  final regExp = RegExp(r'^---\s*$', multiLine: true);
+  final matches = regExp.allMatches(trimmed).toList();
+  if (matches.length < 2) return {};
+  final secondTripleDash = matches[1].start;
+  final yamlText = trimmed.substring(matches[0].end, secondTripleDash);
   try {
     final yamlMap = loadYaml(yamlText);
     if (yamlMap is Map) return yamlMap;
@@ -161,7 +177,6 @@ String _getSkillTitle(String content, String fallback) {
       return line.substring(2).trim();
     }
   }
-  // If no H1, capitalize fallback
   return fallback
       .split('-')
       .map(
