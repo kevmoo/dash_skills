@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dart_skills_lint/dart_skills_lint.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
+import 'package:test_process/test_process.dart';
 
 final String _configFilePath = Directory.current.path.endsWith('tool')
     ? 'dart_skills_lint.yaml'
@@ -29,7 +30,7 @@ void main() {
     }
   });
 
-  test('Run skill/scripts/test', () {
+  test('Run skill/scripts/test', () async {
     final skillsDir = Directory(
       Directory.current.path.endsWith('tool') ? '../skills' : 'skills',
     );
@@ -46,28 +47,75 @@ void main() {
           File('${scriptsDir.path}/pubspec.yaml').existsSync()) {
         print('Running tests in ${scriptsDir.path}');
 
-        // Run pub get only if dependencies are not resolved
         final packageConfig = File(
           '${scriptsDir.path}/.dart_tool/package_config.json',
         );
         if (!packageConfig.existsSync()) {
-          Process.runSync('dart', [
-            'pub',
-            'get',
-          ], workingDirectory: scriptsDir.path);
+          final pubGetProcess = await TestProcess.start(
+            Platform.resolvedExecutable,
+            ['pub', 'get'],
+            workingDirectory: scriptsDir.path,
+          );
+          await pubGetProcess.shouldExit(0);
         }
 
-        final result = Process.runSync('dart', [
+        final process = await TestProcess.start(Platform.resolvedExecutable, [
           'test',
         ], workingDirectory: scriptsDir.path);
-        print(result.stdout);
-        print(result.stderr);
-        expect(
-          result.exitCode,
-          0,
-          reason: 'Tests failed in ${scriptsDir.path}',
-        );
+        await process.shouldExit(0);
       }
     }
-  });
+  }, timeout: Timeout(Duration(minutes: 3)));
+
+  test('Verify formatting and analysis of all skills Dart code', () async {
+    final skillsDir = Directory(
+      Directory.current.path.endsWith('tool') ? '../skills' : 'skills',
+    );
+    expect(
+      skillsDir.existsSync(),
+      isTrue,
+      reason: 'Skills directory not found at ${skillsDir.path}',
+    );
+
+    final formatProcess = await TestProcess.start(Platform.resolvedExecutable, [
+      'format',
+      '--output=none',
+      '--set-exit-if-changed',
+      skillsDir.path,
+    ]);
+    await formatProcess.shouldExit(0);
+
+    // Ensure pub get has been run for all nested packages to prevent analysis failures
+    final pubspecs = <File>[];
+    for (final dir in skillsDir.listSync().whereType<Directory>().where(
+      (dir) => File('${dir.path}/SKILL.md').existsSync(),
+    )) {
+      final pubspec = File('${dir.path}/pubspec.yaml');
+      if (pubspec.existsSync()) {
+        pubspecs.add(pubspec);
+      }
+      final scriptsPubspec = File('${dir.path}/scripts/pubspec.yaml');
+      if (scriptsPubspec.existsSync()) {
+        pubspecs.add(scriptsPubspec);
+      }
+    }
+    for (final pubspec in pubspecs) {
+      final packageConfig = File(
+        '${pubspec.parent.path}/.dart_tool/package_config.json',
+      );
+      if (!packageConfig.existsSync()) {
+        final process = await TestProcess.start(Platform.resolvedExecutable, [
+          'pub',
+          'get',
+        ], workingDirectory: pubspec.parent.path);
+        await process.shouldExit(0);
+      }
+    }
+
+    final analyzeProcess = await TestProcess.start(
+      Platform.resolvedExecutable,
+      ['analyze', '--fatal-infos', skillsDir.path],
+    );
+    await analyzeProcess.shouldExit(0);
+  }, timeout: Timeout(Duration(minutes: 3)));
 }
