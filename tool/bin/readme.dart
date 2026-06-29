@@ -86,7 +86,10 @@ void main(List<String> arguments) async {
       description.trim(),
     ).map((line) => line.trim()).join(' ').replaceAll('|', '\\|');
 
-    final cleanFeatures = keyFeatures.join(', ').replaceAll('|', '\\|');
+    final cleanFeatures = keyFeatures
+        .map((f) => LineSplitter.split(f.trim()).map((l) => l.trim()).join(' '))
+        .join(', ')
+        .replaceAll('|', '\\|');
 
     listBuffer.writeln(
       '| **[$title](skills/$skillName/SKILL.md)** | $cleanDescription | $cleanFeatures |',
@@ -177,7 +180,7 @@ String _getSkillTitle(String content, String fallback) {
   if (searchContent.startsWith('---')) {
     final regExp = RegExp(r'^---\s*$', multiLine: true);
     final matches = regExp.allMatches(searchContent).toList();
-    if (matches.length >= 2) {
+    if (matches.length >= 2 && matches[0].start == 0) {
       searchContent = searchContent.substring(matches[1].end);
     }
   }
