@@ -26,6 +26,7 @@ npx skills add kevmoo/dash_skills --skill <skill-name>
 | **[dart-package-maintenance](skills/dart-package-maintenance/SKILL.md)** | Guidelines for maintaining external Dart packages, covering versioning, publishing workflows, and pull request management. Use when updating Dart packages, preparing for a release, or managing collaborative changes in a repository. | Versioning & CHANGELOG sync, Publishing workflow guidelines, Pull request management |
 | **[dart-test-coverage](skills/dart-test-coverage/SKILL.md)** | Understand and improve test coverage in a Dart package. Helps agents run coverage, interpret results, and identify missed lines. | LCOV report collection, Missed line identification, Coverage analysis & improvement |
 | **[dart-test-fundamentals](skills/dart-test-fundamentals/SKILL.md)** | Core concepts and best practices for `package:test`. Covers `test`, `group`, lifecycle methods (`setUp`, `tearDown`), and configuration (`dart_test.yaml`). | Package test core concepts, Test lifecycle (setUp, tearDown), dart_test.yaml configuration |
+| **[profile-dart-code](skills/profile-dart-code/SKILL.md)** | Profile Dart command-line applications using the VM Service protocol to capture CPU samples and identify performance bottlenecks. Helps agents automate CPU profiling, generate function call breakdown summaries, and export JSON profiles without a browser or DevTools. | Automated VM Service WebSocket connection, CPU sampling and top-function call summary, JSON trace export for further analysis |
 <!-- SKILLS_LIST_END -->
 
 ## 🚀 Usage
