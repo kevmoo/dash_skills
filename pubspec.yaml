@@ -8,3 +8,4 @@ workspace:
   - tool
   - skills/dart-test-coverage/example
   - skills/dart-test-coverage/scripts
+  - skills/profile-dart-code/scripts
