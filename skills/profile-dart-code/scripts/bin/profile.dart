@@ -62,43 +62,41 @@ void main(List<String> arguments) async {
     r'|The Dart VM service is listening on ((http|ws)://[a-zA-Z0-9\.:]+[^\s]*)',
   );
 
-  process.stdout
-      .transform(utf8.decoder)
-      .transform(const LineSplitter())
-      .listen((line) {
-    final match = uriRegex.firstMatch(line);
-    if (match != null && !wsUriCompleter.isCompleted) {
-      final rawUrl = match.group(1) ?? match.group(3);
-      if (rawUrl != null) {
-        var wsUrl = rawUrl.replaceFirst('http://', 'ws://');
-        if (!wsUrl.endsWith('/ws')) {
-          wsUrl = wsUrl.endsWith('/') ? '${wsUrl}ws' : '$wsUrl/ws';
+  process.stdout.transform(utf8.decoder).transform(const LineSplitter()).listen(
+    (line) {
+      final match = uriRegex.firstMatch(line);
+      if (match != null && !wsUriCompleter.isCompleted) {
+        final rawUrl = match.group(1) ?? match.group(3);
+        if (rawUrl != null) {
+          var wsUrl = rawUrl.replaceFirst('http://', 'ws://');
+          if (!wsUrl.endsWith('/ws')) {
+            wsUrl = wsUrl.endsWith('/') ? '${wsUrl}ws' : '$wsUrl/ws';
+          }
+          wsUriCompleter.complete(Uri.parse(wsUrl));
         }
-        wsUriCompleter.complete(Uri.parse(wsUrl));
+      } else {
+        print(line);
       }
-    } else if (!wsUriCompleter.isCompleted) {
-      print(line);
-    }
-  });
+    },
+  );
 
-  process.stderr
-      .transform(utf8.decoder)
-      .transform(const LineSplitter())
-      .listen((line) {
-    final match = uriRegex.firstMatch(line);
-    if (match != null && !wsUriCompleter.isCompleted) {
-      final rawUrl = match.group(1) ?? match.group(3);
-      if (rawUrl != null) {
-        var wsUrl = rawUrl.replaceFirst('http://', 'ws://');
-        if (!wsUrl.endsWith('/ws')) {
-          wsUrl = wsUrl.endsWith('/') ? '${wsUrl}ws' : '$wsUrl/ws';
+  process.stderr.transform(utf8.decoder).transform(const LineSplitter()).listen(
+    (line) {
+      final match = uriRegex.firstMatch(line);
+      if (match != null && !wsUriCompleter.isCompleted) {
+        final rawUrl = match.group(1) ?? match.group(3);
+        if (rawUrl != null) {
+          var wsUrl = rawUrl.replaceFirst('http://', 'ws://');
+          if (!wsUrl.endsWith('/ws')) {
+            wsUrl = wsUrl.endsWith('/') ? '${wsUrl}ws' : '$wsUrl/ws';
+          }
+          wsUriCompleter.complete(Uri.parse(wsUrl));
         }
-        wsUriCompleter.complete(Uri.parse(wsUrl));
+      } else {
+        stderr.writeln(line);
       }
-    } else {
-      stderr.writeln(line);
-    }
-  });
+    },
+  );
 
   final wsUri = await wsUriCompleter.future.timeout(
     const Duration(seconds: 15),
@@ -123,26 +121,54 @@ void main(List<String> arguments) async {
   final isolateRef = isolates.first;
   final isolateId = isolateRef.id!;
 
-  // Wait until isolate hits kPauseExit
+  bool connectionLost = false;
+  service.onDone.then((_) {
+    connectionLost = true;
+  });
+
   var isPausedAtExit = false;
-  while (!isPausedAtExit) {
-    final isolate = await service.getIsolate(isolateId);
-    if (isolate.pauseEvent?.kind == EventKind.kPauseExit) {
-      isPausedAtExit = true;
+  while (!isPausedAtExit && !connectionLost) {
+    try {
+      final isolate = await service.getIsolate(isolateId);
+      final pauseKind = isolate.pauseEvent?.kind;
+      if (pauseKind == EventKind.kPauseExit) {
+        isPausedAtExit = true;
+        break;
+      }
+      if (pauseKind == EventKind.kPauseException) {
+        print('Target isolate paused on exception!');
+        break;
+      }
+    } catch (e) {
+      print('Error querying VM service: $e');
       break;
     }
-    if (isolate.pauseEvent?.kind == EventKind.kResume &&
-        (await process.exitCode.timeout(const Duration(milliseconds: 50),
-                onTimeout: () => -1)) !=
-            -1) {
+
+    final exitCode = await process.exitCode.timeout(
+      const Duration(milliseconds: 50),
+      onTimeout: () => -1,
+    );
+    if (exitCode != -1) {
+      print('Target process exited with code $exitCode');
       break;
     }
     await Future.delayed(const Duration(milliseconds: 100));
   }
 
+  if (!isPausedAtExit) {
+    print(
+      'Error: Target process did not pause at exit. Cannot retrieve CPU profile.',
+    );
+    await service.dispose();
+    exit(1);
+  }
+
   print('Target execution finished. Retrieving CPU profile samples...');
-  final cpuSamples =
-      await service.getCpuSamples(isolateId, 0, 0x7fffffffffffffff);
+  final cpuSamples = await service.getCpuSamples(
+    isolateId,
+    0,
+    0x7fffffffffffffff,
+  );
 
   final sampleCount = cpuSamples.sampleCount ?? 0;
   print('Retrieved $sampleCount samples.');
@@ -154,9 +180,11 @@ void main(List<String> arguments) async {
 
   print('\n=== Top 15 Functions by Self CPU Samples ===');
   print(
-      '${'Self %'.padRight(8)} | ${'Self'.padRight(8)} | ${'Total %'.padRight(8)} | Function');
+    '${'Self %'.padRight(8)} | ${'Self'.padRight(8)} | ${'Total %'.padRight(8)} | Function',
+  );
   print(
-      '-----------------------------------------------------------------------');
+    '-----------------------------------------------------------------------',
+  );
 
   var displayed = 0;
   for (final func in sortedFunctions) {
@@ -168,13 +196,15 @@ void main(List<String> arguments) async {
     final totalPct = sampleCount > 0 ? (totalCount * 100.0 / sampleCount) : 0.0;
     final name = func.function?.name ?? func.resolvedUrl ?? 'Unknown';
     print(
-        '${pct.toStringAsFixed(1).padLeft(6)}% | ${count.toString().padLeft(8)} | ${totalPct.toStringAsFixed(1).padLeft(6)}% | $name');
+      '${pct.toStringAsFixed(1).padLeft(6)}% | ${count.toString().padLeft(8)} | ${totalPct.toStringAsFixed(1).padLeft(6)}% | $name',
+    );
     displayed++;
   }
 
   final outFile = File(outPath);
   await outFile.writeAsString(
-      const JsonEncoder.withIndent('  ').convert(cpuSamples.toJson()));
+    const JsonEncoder.withIndent('  ').convert(cpuSamples.toJson()),
+  );
   print('\nSaved complete JSON CPU profile to: $outPath');
 
   await service.resume(isolateId);
