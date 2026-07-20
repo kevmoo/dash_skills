@@ -42,13 +42,15 @@ void main() {
     await process.shouldExit(0);
   });
 
-  test('profile script profiles a simple dummy target', () async {
-    final scriptPath = _locateProfileScript();
-    final tempDir = await Directory.systemTemp.createTemp('profile_test_');
-    addTearDown(() => tempDir.delete(recursive: true));
+  test(
+    'profile script profiles a simple dummy target',
+    () async {
+      final scriptPath = _locateProfileScript();
+      final tempDir = await Directory.systemTemp.createTemp('profile_test_');
+      addTearDown(() => tempDir.delete(recursive: true));
 
-    final dummyScript = File('${tempDir.path}/dummy.dart');
-    await dummyScript.writeAsString('''
+      final dummyScript = File('${tempDir.path}/dummy.dart');
+      await dummyScript.writeAsString('''
 void main() {
   var sum = 0;
   for (var i = 0; i < 5000000; i++) {
@@ -57,15 +59,17 @@ void main() {
 }
 ''');
 
-    final outJson = '${tempDir.path}/profile.json';
-    final process = await TestProcess.start(Platform.resolvedExecutable, [
-      scriptPath,
-      '--out',
-      outJson,
-      '--',
-      dummyScript.path,
-    ]);
-    await process.shouldExit(0);
-    expect(File(outJson).existsSync(), isTrue);
-  }, timeout: const Timeout(Duration(minutes: 1)));
+      final outJson = '${tempDir.path}/profile.json';
+      final process = await TestProcess.start(Platform.resolvedExecutable, [
+        scriptPath,
+        '--out',
+        outJson,
+        '--',
+        dummyScript.path,
+      ]);
+      await process.shouldExit(0);
+      expect(File(outJson).existsSync(), isTrue);
+    },
+    timeout: const Timeout(Duration(minutes: 1)),
+  );
 }
