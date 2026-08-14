@@ -261,6 +261,58 @@ Reducing visual noise with inferred shorthand.
 LogLevel currentLevel = .info;
 ```
 
+### Pragmatic Balance: When NOT to Over-Patternize
+Pattern matching and switch expressions should simplify code, not add syntactic
+overhead.
+
+#### 1. Prefer `is` Type Promotion over `if-case` for Single Variables
+If you only need to check a type or promote a variable, use standard `is` checks
+instead of `if-case` or `case` patterns that introduce shadow aliases.
+
+**Avoid:**
+```dart
+// ❌ Anti-pattern: Introduces unnecessary alias variable `k`
+for (final MapEntry(:key, :value) in map.entries) {
+  if (key case final String k when value != null) {
+    process(k, value);
+  }
+}
+```
+
+**Prefer:**
+```dart
+// ✅ Promotes `key` directly in-place without extra variables
+for (final MapEntry(:key, :value) in map.entries) {
+  if (key is String && value != null) {
+    process(key, value);
+  }
+}
+```
+
+#### 2. Consolidate Nullable Types in Switch Arms
+When mapping or returning values in a switch expression where both `null` and a
+type `T` are valid and passed through, match the nullable type `T?` directly
+rather than creating redundant `null` arms.
+
+**Avoid:**
+```dart
+// ❌ Redundant separate null arm
+switch (value) {
+  final String s => s,
+  null => null,
+  _ => throw FormatException(...),
+}
+```
+
+**Prefer:**
+```dart
+// ✅ Clean nullable pattern match
+switch (value) {
+  final String? s => s,
+  _ => throw FormatException(...),
+}
+```
+
 ## Related Skills
 
 - **[dart-best-practices]**: General code
