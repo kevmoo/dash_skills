@@ -7,7 +7,7 @@ on:
       - 'tool/**'
       - '.claude-plugin/**'
       - 'plugins/**'
-      - '.github/workflows/validate_skills.yaml'
+      - '.github/workflows/**'
   push:
     branches: [ main ]
     paths:
@@ -15,7 +15,7 @@ on:
       - 'tool/**'
       - '.claude-plugin/**'
       - 'plugins/**'
-      - '.github/workflows/validate_skills.yaml'
+      - '.github/workflows/**'
 
 jobs:
   validate:
