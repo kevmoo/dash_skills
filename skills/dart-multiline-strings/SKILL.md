@@ -62,6 +62,32 @@ discards it.
     This starts with one blank line above it.''');
     ```
 
+### Handling the Trailing Newline & `print()`
+`print()` automatically appends a trailing newline to the printed output.
+-   If you place the closing `'''` on a new line (`\n''');`), an extra trailing
+    blank line will be printed.
+-   To avoid unintended trailing blank lines, place the closing triple-quotes
+    immediately after the final character:
+    ```dart
+    // ✅ Emits standard output with no extra trailing empty line:
+    print('''
+    Header
+    Content''');
+    ```
+
+### Avoiding Ghost Blank Lines in Conditional Interpolations
+When injecting optional content via interpolation (`${condition ? '...' : ''}`),
+placing the `${...}` on its own line leaves behind its enclosing newline when
+the condition evaluates to `''`, producing an empty blank line in the output.
+-   Include the leading newline *inside* the conditional string literal so the
+    newline only renders when the content is present:
+    ```dart
+    // ✅ Clean conditional rendering without ghost blank lines:
+    print('''
+    Branch Details:
+        Name: $branch${hasWarning ? '\n    WARNING: $warningMessage' : ''}''');
+    ```
+
 ### 80-Character Line Limit Exemption
 The `lines_longer_than_80_chars` lint rule **automatically ignores** lines inside
 multiline string literals. You can write long lines inside triple-quotes without
@@ -74,9 +100,8 @@ instructions. This avoids cluttering the surrounding code with imperatively
 constructed strings or multiple `if` statements:
 ```dart
 print('''
-Status: ${status.isSuccess ? 'PASS' : 'FAIL'}
-${switch (status) {
-  Status.failed => 'Error details: $errorMessage',
+Status: ${status.isSuccess ? 'PASS' : 'FAIL'}${switch (status) {
+  Status.failed => '\nError details: $errorMessage',
   _ => '',
 }}''');
 ```
@@ -105,10 +130,11 @@ void printGerritView(String branch, String desc, bool hasConflicts) {
   print('''
 Branch Details:
     Name:        $branch
-    Description: $desc
-${hasConflicts ? '''
+    Description: $desc${hasConflicts ? '''
+
     WARNING: This branch has conflicts.
     Run `git merge origin/main` to resolve.''' : ''}''');
 }
 ```
+
 

@@ -1,0 +1,48 @@
+{
+  "repo_criteria": [
+    "evals/code_quality_rubric.json"
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Refactor the CLI help banner in lib/src/cli_banner.dart to consolidate consecutive print() statements and empty separator lines into a single triple-quoted multi-line string literal while preserving visual indentation.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "Consecutive print() calls are consolidated into a single print('''...''') or print(\"\"\"...\"\"\") statement.",
+        "Redundant empty print() or print('') separator calls are removed, with vertical spacing handled naturally within the multiline string literal.",
+        "Exact visual spacing and indentation levels are preserved cleanly inside the triple quotes rather than using manual string padding.",
+        "The refactored file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 2,
+      "prompt": "Refactor the SQL query template in lib/src/query_builder.dart which currently uses long string concatenations with the '+' operator and embedded '\\n' escape sequences into a clean, readable multi-line string literal.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "String concatenations using '+' and explicit '\\n' escape sequences are replaced by a single triple-quoted multi-line string literal (''' or \"\"\").",
+        "Variables and parameters are embedded via Dart string interpolation ($variable or ${expression}) instead of string concatenation.",
+        "The multi-line string maintains clean readability without unneeded escaping.",
+        "The refactored file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 3,
+      "prompt": "Refactor the build status reporter in lib/src/status_reporter.dart to replace fragmented imperative print statements and if-conditions with a single triple-quoted multi-line string literal using Dart 3 switch expressions inside string interpolation.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "Fragmented print statements across branch conditions are unified into a single multi-line string literal output.",
+        "Conditional labels and status details are embedded using Dart 3 switch expressions or conditional expressions within ${...} inside the multi-line string.",
+        "The refactored file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    }
+  ]
+}
