@@ -136,7 +136,6 @@ expect(future, completion(equals(42)));
 expect(sideEffectState, equals('done')); // Race condition!
 ```
 
-
 ## Principles
 
 1.  **Readable Failures**: Choose matchers that produce clear error messages.
