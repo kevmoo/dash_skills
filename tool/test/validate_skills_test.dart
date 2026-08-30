@@ -1,12 +1,13 @@
 import 'dart:io';
-import 'package:dart_skills_lint/dart_skills_lint.dart';
+
 import 'package:logging/logging.dart';
+import 'package:skills_lint/skills_lint.dart';
 import 'package:test/test.dart';
 import 'package:test_process/test_process.dart';
 
 final String _configFilePath = Directory.current.path.endsWith('tool')
-    ? 'dart_skills_lint.yaml'
-    : 'tool/dart_skills_lint.yaml';
+    ? 'skills_lint.yaml'
+    : 'tool/skills_lint.yaml';
 
 void main() {
   test('Validate skills', () async {
