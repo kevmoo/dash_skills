@@ -105,7 +105,23 @@ failed.
   - `expect(() => function(), throwsA(isA<ArgumentError>()))` (synchronous
     function throwing is fine with `expect`).
 
-### 5. Using `expectLater`
+### 5. Exception Testing (Avoid `try/catch` with `fail()`)
+
+- **Prefer `throwsA` over imperative `try/catch`**:
+  - Legacy tests often use `try { fn(); fail('should throw'); } catch (e) { expect(e, isA<T>()); }`.
+  - Replace with declarative matchers:
+    ```dart
+    // Synchronous:
+    expect(() => parseData('invalid'), throwsA(isA<FormatException>()));
+
+    // Asynchronous:
+    await expectLater(client.fetch('bad-url'), throwsA(isA<HttpException>()));
+    ```
+  - Common built-in exception matchers include `throwsArgumentError`,
+    `throwsStateError`, `throwsRangeError`, `throwsFormatException`,
+    `throwsNoSuchMethodError`, and `throwsUnsupportedError`.
+
+### 6. Using `expectLater`
 
 Use `await expectLater(...)` when testing async behavior to ensure proper
 sequencing.
@@ -119,6 +135,7 @@ expect(sideEffectState, equals('done'));
 expect(future, completion(equals(42)));
 expect(sideEffectState, equals('done')); // Race condition!
 ```
+
 
 ## Principles
 
