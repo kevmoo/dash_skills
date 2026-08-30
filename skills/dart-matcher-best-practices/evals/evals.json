@@ -1,0 +1,52 @@
+{
+  "repo_criteria": [
+    "evals/code_quality_rubric.json"
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Refactor the unit tests in test/collection_test.dart to replace legacy boolean checks and property lookups (like .length == n, .isEmpty == true, .contains(x) == true, and map[key] == val) with idiomatic package:matcher matchers (hasLength, isEmpty, contains, and containsPair).",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "Checks on '.length' are replaced with 'hasLength(n)'.",
+        "Checks on '.isEmpty' or '.isNotEmpty' are replaced with 'isEmpty' or 'isNotEmpty'.",
+        "Checks on '.contains(item)' are replaced with 'contains(item)'.",
+        "Map key/value lookups are replaced with 'containsPair(key, value)'.",
+        "The refactored test file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos').",
+        "All test assertions pass successfully when running 'dart test'."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 2,
+      "prompt": "Refactor the custom exception tests in test/api_client_test.dart to replace type checks and subsequent property assertions on the casted exception with chained isA<T>().having() matchers.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "Type checks ('is CustomException') combined with manual field assertions are replaced with 'isA<CustomException>()'.",
+        "Property inspections are chained using '.having((e) => e.property, 'property', expectedValue)'.",
+        "Descriptive parameter names are used in closures instead of generic positional names.",
+        "The refactored test file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos').",
+        "All test assertions pass successfully when running 'dart test'."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 3,
+      "prompt": "Modernize the async error-handling tests in test/async_loader_test.dart by replacing imperative try/catch blocks with 'await expectLater(future, throwsA(isA<T>()))' and ensuring future completions are awaited.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "Imperative try/catch blocks that invoke fail() are replaced with 'await expectLater(..., throwsA(isA<T>()))' or 'expect(() => syncCall(), throwsA(isA<T>()))'.",
+        "Asynchronous completion checks use 'await expectLater(..., completion(...))' to prevent race conditions.",
+        "The refactored test file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos').",
+        "All test assertions pass successfully when running 'dart test'."
+      ],
+      "agent_config": "bare-agent"
+    }
+  ]
+}
