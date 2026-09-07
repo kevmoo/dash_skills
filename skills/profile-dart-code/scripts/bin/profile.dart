@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:cli_util/cli_util.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
-void main(List<String> arguments) async {
+Future<void> main(List<String> arguments) async {
   final parser = ArgParser()
     ..addOption(
       'out',
@@ -28,10 +29,18 @@ void main(List<String> arguments) async {
     );
 
   final results = parser.parse(arguments);
-  if (results['help'] as bool || results.rest.isEmpty) {
+  if (results['help'] as bool) {
     print('Usage: dart profile.dart [options] -- <target.dart> [args...]');
     print(parser.usage);
-    exit(results['help'] as bool ? 0 : 64);
+    return;
+  }
+  if (results.rest.isEmpty) {
+    stderr.writeln(
+      'Usage: dart profile.dart [options] -- <target.dart> [args...]',
+    );
+    stderr.writeln(parser.usage);
+    exitCode = 64;
+    return;
   }
 
   final outPath = results['out'] as String;
@@ -40,8 +49,9 @@ void main(List<String> arguments) async {
   final targetArgs = results.rest.sublist(1);
 
   if (!File(targetScript).existsSync()) {
-    print('Error: Target script not found at $targetScript');
-    exit(66);
+    stderr.writeln('Error: Target script not found at $targetScript');
+    exitCode = 66;
+    return;
   }
 
   print('Launching target: $targetScript ${targetArgs.join(' ')}');
@@ -54,7 +64,8 @@ void main(List<String> arguments) async {
     ...targetArgs,
   ];
 
-  final process = await Process.start(Platform.resolvedExecutable, vmArgs);
+  final dartExe = dartExecutable ?? 'dart';
+  final process = await Process.start(dartExe, vmArgs);
 
   final wsUriCompleter = Completer<Uri>();
   final uriRegex = RegExp(
@@ -98,14 +109,15 @@ void main(List<String> arguments) async {
     },
   );
 
-  final wsUri = await wsUriCompleter.future.timeout(
-    const Duration(seconds: 15),
-    onTimeout: () {
-      print('Timeout waiting for VM service URI.');
-      process.kill();
-      exit(1);
-    },
-  );
+  Uri? wsUri;
+  try {
+    wsUri = await wsUriCompleter.future.timeout(const Duration(seconds: 15));
+  } on TimeoutException {
+    stderr.writeln('Timeout waiting for VM service URI.');
+    process.kill();
+    exitCode = 1;
+    return;
+  }
 
   print('Connecting to VM service at $wsUri...');
   final service = await vmServiceConnectUri(wsUri.toString());
@@ -113,9 +125,10 @@ void main(List<String> arguments) async {
   final vm = await service.getVM();
   final isolates = vm.isolates ?? [];
   if (isolates.isEmpty) {
-    print('Error: No isolates found.');
+    stderr.writeln('Error: No isolates found.');
     process.kill();
-    exit(1);
+    exitCode = 1;
+    return;
   }
 
   final isolateRef = isolates.first;
@@ -144,23 +157,24 @@ void main(List<String> arguments) async {
       break;
     }
 
-    final exitCode = await process.exitCode.timeout(
+    final procExitCode = await process.exitCode.timeout(
       const Duration(milliseconds: 50),
       onTimeout: () => -1,
     );
-    if (exitCode != -1) {
-      print('Target process exited with code $exitCode');
+    if (procExitCode != -1) {
+      print('Target process exited with code $procExitCode');
       break;
     }
     await Future.delayed(const Duration(milliseconds: 100));
   }
 
   if (!isPausedAtExit) {
-    print(
+    stderr.writeln(
       'Error: Target process did not pause at exit. Cannot retrieve CPU profile.',
     );
     await service.dispose();
-    exit(1);
+    exitCode = 1;
+    return;
   }
 
   print('Target execution finished. Retrieving CPU profile samples...');
