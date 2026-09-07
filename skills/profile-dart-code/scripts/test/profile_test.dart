@@ -68,4 +68,45 @@ void main() {
     await process.shouldExit(0);
     expect(File(outJson).existsSync(), isTrue);
   }, timeout: const Timeout(Duration(minutes: 1)));
+
+  test(
+    'profile script exits with 64 when no target script is provided',
+    () async {
+      final scriptPath = _locateProfileScript();
+      final process = await TestProcess.start(Platform.resolvedExecutable, [
+        scriptPath,
+      ]);
+      await expectLater(
+        process.stderr,
+        emitsThrough(contains('Usage: dart profile.dart')),
+      );
+      await process.shouldExit(64);
+    },
+  );
+
+  test('profile script exits with 64 on invalid CLI flag', () async {
+    final scriptPath = _locateProfileScript();
+    final process = await TestProcess.start(Platform.resolvedExecutable, [
+      scriptPath,
+      '--not-a-valid-flag',
+    ]);
+    await process.shouldExit(64);
+  });
+
+  test(
+    'profile script exits with 66 when target script does not exist',
+    () async {
+      final scriptPath = _locateProfileScript();
+      final process = await TestProcess.start(Platform.resolvedExecutable, [
+        scriptPath,
+        '--',
+        'non_existent_script_12345.dart',
+      ]);
+      await expectLater(
+        process.stderr,
+        emitsThrough(contains('Error: Target script not found')),
+      );
+      await process.shouldExit(66);
+    },
+  );
 }
