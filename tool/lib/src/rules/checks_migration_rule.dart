@@ -8,6 +8,8 @@ import '../rule.dart';
 /// **Target Skill**:
 /// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-migrate-to-checks-package
 class ChecksMigrationRule extends DiscoveryRule {
+  const ChecksMigrationRule();
+
   @override
   String get id => 'checks-migration';
 

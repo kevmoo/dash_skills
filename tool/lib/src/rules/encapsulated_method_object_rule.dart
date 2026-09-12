@@ -9,6 +9,8 @@ import '../rule.dart';
 /// **Target Skill**:
 /// - GitHub: https://github.com/kevmoo/dash_skills/tree/main/skills/encapsulated-method-object
 class EncapsulatedMethodObjectRule extends FileDiscoveryRule {
+  const EncapsulatedMethodObjectRule();
+
   @override
   String get id => 'encapsulated-method-object';
 

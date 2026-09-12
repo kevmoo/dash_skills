@@ -9,6 +9,8 @@ import '../rule.dart';
 /// **Target Skill**:
 /// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-use-pattern-matching
 class PatternMatchingRule extends FileDiscoveryRule {
+  const PatternMatchingRule();
+
   static final _typeCascadePattern = RegExp(
     r'else\s+if\s*\([^)]+\s+is\s+[^)]+\)',
   );

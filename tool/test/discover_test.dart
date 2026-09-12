@@ -3,10 +3,6 @@ import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 import '../lib/src/discovery_engine.dart';
 import '../lib/src/outline_generator.dart';
-import '../lib/src/rules/checks_migration_rule.dart';
-import '../lib/src/rules/cli_app_rule.dart';
-import '../lib/src/rules/doc_examples_rule.dart';
-import '../lib/src/rules/pattern_matching_rule.dart';
 import '../lib/src/skills_catalog.dart';
 import '../lib/src/static_discovery.dart';
 
@@ -169,6 +165,26 @@ void foo() {}
       expect(ids, contains('generate-test-mocks'));
       expect(ids, contains('encapsulated-method-object'));
     });
+
+    test(
+      'all rules can be instantiated as const with identity canonicalization',
+      () {
+        const rule1 = ChecksMigrationRule();
+        const rule2 = ChecksMigrationRule();
+        expect(identical(rule1, rule2), isTrue);
+
+        const constSet = <DiscoveryRule>{
+          ChecksMigrationRule(),
+          PatternMatchingRule(),
+          DocExamplesRule(),
+          CliAppRule(),
+          PathPackageRule(),
+          MockGenerationRule(),
+          EncapsulatedMethodObjectRule(),
+        };
+        expect(constSet, hasLength(7));
+      },
+    );
 
     test('runs complete discovery report on package', () {
       final engine = DiscoveryEngine(repoRoot.path);

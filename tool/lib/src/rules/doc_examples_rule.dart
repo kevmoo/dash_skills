@@ -9,6 +9,8 @@ import '../rule.dart';
 /// **Target Skill**:
 /// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-use-doc-examples
 class DocExamplesRule extends FileDiscoveryRule {
+  const DocExamplesRule();
+
   static final _docExamplePattern = RegExp(r'///\s*```dart');
 
   @override

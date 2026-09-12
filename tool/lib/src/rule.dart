@@ -4,6 +4,8 @@ import 'models.dart';
 
 /// Base contract for a discovery rule aligning project signals with an upstream skill.
 abstract class DiscoveryRule {
+  const DiscoveryRule();
+
   /// Unique machine identifier for this rule (e.g. `checks-migration`).
   String get id;
 
@@ -25,6 +27,8 @@ abstract class DiscoveryRule {
 
 /// A discovery rule that evaluates source files in a single pass.
 abstract class FileDiscoveryRule extends DiscoveryRule {
+  const FileDiscoveryRule();
+
   /// Returns matching evidence string if the file triggers this rule, or null.
   String? checkFile(File file, String content, PackageContext context);
 

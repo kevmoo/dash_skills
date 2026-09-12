@@ -9,6 +9,8 @@ import '../rule.dart';
 /// **Target Skill**:
 /// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-use-path-package
 class PathPackageRule extends FileDiscoveryRule {
+  const PathPackageRule();
+
   static final _pathInterpolationPattern = RegExp(
     r'''(?<!['"/])\$\{?[a-zA-Z0-9_]+\}?/(?:lib|test|bin|src|[a-zA-Z0-9_-]+\.dart)''',
   );
