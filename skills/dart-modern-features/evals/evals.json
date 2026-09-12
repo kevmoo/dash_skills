@@ -1,0 +1,46 @@
+{
+  "repo_criteria": [
+    "evals/code_quality_rubric.json"
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Refactor the handleResponse function in lib/src/network.dart from an imperative if-else type check chain on sealed ApiResponse into an exhaustive Dart 3 switch expression.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "The polymorphic if-else cascade is replaced with a concise Dart 3 switch expression.",
+        "Pattern destructuring is used to unpack payload properties.",
+        "The refactored file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 2,
+      "prompt": "Refactor parseUserInfo in lib/src/user_parser.dart to replace nested containsKey and manual casting with a Dart 3 map pattern match.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "Manual containsKey and type assertions are replaced with an if-case map pattern.",
+        "Matched variables are bound directly in the pattern.",
+        "The refactored file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 3,
+      "prompt": "Refactor the single-variable type check in lib/src/event_handler.dart: 'if (event is MouseEvent) { handleMouse(event); }' to use pattern matching with 'if (event case MouseEvent m)'.",
+      "expected_chat_output": [
+        "The agent must explicitly decline or abstain from replacing standard single-variable type promotion 'if (x is Foo)' with 'if (x case Foo f)', citing the pragmatic balance rule against unnecessary alias variables."
+      ],
+      "expected_repo_state": [
+        "No modifications are made to lib/src/event_handler.dart.",
+        "The standard 'if (event is MouseEvent)' type promotion check is preserved.",
+        "The file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    }
+  ]
+}

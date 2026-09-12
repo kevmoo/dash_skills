@@ -43,6 +43,19 @@
         "The refactored file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
       ],
       "agent_config": "bare-agent"
+    },
+    {
+      "id": 4,
+      "prompt": "Refactor the single-line log message in lib/src/logger.dart: 'print(\"Service started successfully on port $port\");' into a triple-quoted multi-line string.",
+      "expected_chat_output": [
+        "The agent must explicitly abstain from refactoring short single-line string outputs into multiline strings."
+      ],
+      "expected_repo_state": [
+        "No modifications are made to lib/src/logger.dart.",
+        "The single-line print statement remains unchanged.",
+        "The file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
     }
   ]
 }

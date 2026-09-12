@@ -1,0 +1,45 @@
+{
+  "repo_criteria": [
+    "evals/code_quality_rubric.json"
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We added a new feature to pkg:analytics. Update pubspec.yaml and CHANGELOG.md to start a new -wip minor version cycle following package maintenance best practices.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "The version in pubspec.yaml is incremented with a -wip suffix (e.g., 1.2.0-wip).",
+        "A corresponding new version section header is added to CHANGELOG.md matching pubspec.yaml.",
+        "The top of CHANGELOG.md summarizes the new feature."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 2,
+      "prompt": "Prepare the package for release: remove the -wip suffix from pubspec.yaml and the latest section header in CHANGELOG.md.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "The -wip suffix is removed from the version in pubspec.yaml.",
+        "The matching -wip suffix is removed from the latest version header in CHANGELOG.md.",
+        "Static analysis and dependency resolution pass cleanly."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 3,
+      "prompt": "We just updated README.md and SKILL.md documentation in this private utility package (publish_to: none). Bump the package version in pubspec.yaml and add a new CHANGELOG entry.",
+      "expected_chat_output": [
+        "The agent must explicitly abstain from bumping package versions or creating changelog entries for documentation-only updates or private unreleased packages."
+      ],
+      "expected_repo_state": [
+        "No modifications are made to pubspec.yaml or CHANGELOG.md.",
+        "The package version remains unchanged."
+      ],
+      "agent_config": "bare-agent"
+    }
+  ]
+}

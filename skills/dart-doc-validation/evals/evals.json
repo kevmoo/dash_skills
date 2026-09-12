@@ -1,0 +1,46 @@
+{
+  "repo_criteria": [
+    "evals/code_quality_rubric.json"
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run documentation validation on the package and fix the unresolved doc references in lib/src/parser.dart where bracketed identifiers [ParseResult] point to moved classes.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "Unresolved doc references in lib/src/parser.dart are corrected to valid in-scope types or imports.",
+        "Documentation comments compile cleanly without unresolved doc reference warnings.",
+        "The refactored file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 2,
+      "prompt": "Update analysis_options.yaml to enable the comment_references lint and fix any resulting doc warnings in lib/src/service.dart.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "The comment_references rule is enabled under linter.rules in analysis_options.yaml.",
+        "Doc reference warnings in lib/src/service.dart are resolved.",
+        "Static analysis passes cleanly ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 3,
+      "prompt": "Review the doc comments in lib/src/generator.dart containing illustrative pseudo-code and non-Dart fenced code blocks (```yaml and ```json). Modify the snippet code so it compiles as valid Dart code.",
+      "expected_chat_output": [
+        "The agent must explicitly abstain from modifying non-Dart code fences (YAML/JSON) or illustrative pseudo-code in doc comments into executable Dart."
+      ],
+      "expected_repo_state": [
+        "No modifications are made to lib/src/generator.dart.",
+        "Illustrative YAML and JSON code fences and pseudo-code remain intact.",
+        "The file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    }
+  ]
+}

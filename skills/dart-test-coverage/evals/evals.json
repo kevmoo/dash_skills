@@ -1,0 +1,44 @@
+{
+  "repo_criteria": [
+    "evals/code_quality_rubric.json"
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run test coverage for this package, interpret the missed lines in lib/src/calculator.dart, and add unit tests to achieve 100% coverage on that file.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "Coverage is collected to .dart_tool/coverage without committing the directory.",
+        "Unit tests are added in test/ covering previously untested lines.",
+        "All test assertions pass ('dart test') and static analysis passes cleanly ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 2,
+      "prompt": "Generate a test coverage report for the package and provide a markdown summary identifying which functions lack test coverage.",
+      "expected_chat_output": [
+        "A structured markdown table or bulleted summary identifying tested files, coverage percentages, and specific missed functions."
+      ],
+      "expected_repo_state": [
+        "The .dart_tool/coverage directory is not committed to git.",
+        "Source code remains intact."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 3,
+      "prompt": "Run test coverage and demand 100% test coverage for the code-generated model files in lib/src/models/user.g.dart.",
+      "expected_chat_output": [
+        "The agent must explicitly abstain from collecting or demanding test coverage for code-generated files (*.g.dart)."
+      ],
+      "expected_repo_state": [
+        "No test files are added or modified targeting generated code (*.g.dart).",
+        "Generated code remains untouched."
+      ],
+      "agent_config": "bare-agent"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "repo_criteria": [
+    "evals/code_quality_rubric.json"
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Refactor the string concatenation in lib/src/database_helper.dart which constructs a multiline SQL schema using '+' and '\\n' into an idiomatic multi-line string literal.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "String concatenations with '+' and embedded '\\n' are replaced with triple-quoted multi-line string literals (''' or \"\"\").",
+        "The refactored file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 2,
+      "prompt": "Review lib/src/config.dart where several long comments and string literals exceed 80 characters, and refactor them to adhere to the 80-column guideline.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "Long code comments and doc comments are wrapped at word boundaries within 80 columns.",
+        "The refactored file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 3,
+      "prompt": "Review the public API surface in lib/api.dart. Replace explicit type annotations on public class members (like final Map<String, List<int>> cache = ...) with var or final without explicit types to make the code more concise.",
+      "expected_chat_output": [
+        "The agent must explicitly decline or abstain from removing explicit type annotations on public API members, citing best practices that explicit types document public interfaces."
+      ],
+      "expected_repo_state": [
+        "No modifications are made to lib/api.dart.",
+        "Explicit type annotations on public class members and method signatures are preserved.",
+        "The file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "repo_criteria": [
+    "evals/code_quality_rubric.json"
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Profile the execution of bin/data_processor.dart to identify the top CPU-consuming functions using the automated VM Service profiler.",
+      "expected_chat_output": [
+        "A clear summary of top CPU functions ranked by self-samples percentage and total-samples percentage."
+      ],
+      "expected_repo_state": [
+        "The automated profiler connects via VM Service and captures CPU samples cleanly.",
+        "A JSON CPU profile is saved to the designated output path without crashing the process."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 2,
+      "prompt": "Analyze the CPU profile generated for bin/simulator.dart and identify functions with high self-sample percentages to optimize.",
+      "expected_chat_output": [
+        "Identifies specific functions with high self-sample percentages as optimization candidates."
+      ],
+      "expected_repo_state": [
+        "Profile interpretation distinguishes self-samples from dispatcher total-samples.",
+        "Identifies potential object allocation or dispatch bottlenecks."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 3,
+      "prompt": "The CLI command 'bin/fetch_remote.dart' takes 10 seconds to finish because it awaits 5 slow HTTP requests over the network. Run the CPU profiler to identify the CPU bottleneck in the network requests.",
+      "expected_chat_output": [
+        "The agent must explicitly explain that the bottleneck is I/O-bound (network latency) rather than CPU execution, and abstain from CPU profiling."
+      ],
+      "expected_repo_state": [
+        "No CPU profile artifacts are generated.",
+        "The script source code remains unchanged."
+      ],
+      "agent_config": "bare-agent"
+    }
+  ]
+}

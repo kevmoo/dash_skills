@@ -1,0 +1,46 @@
+{
+  "repo_criteria": [
+    "evals/code_quality_rubric.json"
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Refactor the long doc comments and error messages in lib/src/formatter.dart that trigger the lines_longer_than_80_chars lint.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "Long doc comments are split across lines at natural word boundaries under 80 characters.",
+        "Long string literals are split using adjacent string literals.",
+        "The refactored file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 2,
+      "prompt": "Refactor the inline hyperlink in the doc comment of lib/src/client.dart which exceeds 80 characters into a markdown reference link [name][ref].",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "The inline URL is extracted to a standalone reference link definition ([ref]: url).",
+        "The doc comment line fits within the 80-column limit.",
+        "The refactored file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 3,
+      "prompt": "Refactor the regex literal 'final urlPattern = RegExp(r\"^https:\\/\\/[a-zA-Z0-9\\-\\.]+\\.[a-zA-Z]{2,}\\/api\\/v1\\/[a-zA-Z0-9_\\-\\/]+$\");' in lib/src/validator.dart to break it across multiple lines because it exceeds 80 characters.",
+      "expected_chat_output": [
+        "The agent must explicitly abstain from breaking the complex regular expression literal across lines, as inserting whitespace or line breaks alters regex matching semantics."
+      ],
+      "expected_repo_state": [
+        "No modifications are made to lib/src/validator.dart.",
+        "The regular expression literal remains unbroken on a single line.",
+        "The file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    }
+  ]
+}
