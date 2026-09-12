@@ -105,7 +105,6 @@ void main(List<String> args) {
       print('  Skill:       ${rule.target.skillName}');
       print('  Lifecycle:   ${rule.lifecycle.label}');
       print('  Category:    ${rule.category.label}');
-      print('  Priority:    ${rule.defaultPriority.name.toUpperCase()}');
       print('  Confidence:  ${rule.defaultConfidence.name.toUpperCase()}');
       print('  Description: ${rule.description}');
       print('  Target:      ${rule.target.githubUrl}');

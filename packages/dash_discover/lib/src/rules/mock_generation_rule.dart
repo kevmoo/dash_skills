@@ -37,9 +37,6 @@ final class MockGenerationRule extends FileDiscoveryRule {
       'Detects handwritten fake or mock class definitions without mockito or mocktail.';
 
   @override
-  Priority get defaultPriority => Priority.medium;
-
-  @override
   Confidence get defaultConfidence => Confidence.medium;
 
   @override

@@ -19,27 +19,14 @@ enum SkillLifecycle {
   /// One-time migration to a modern API or pattern (finite goal).
   migration('One-Time Migration'),
 
-  /// Recurring hygiene sweep or threshold-driven audit (continuous health).
-  hygiene('Periodic Hygiene'),
-
   /// Architectural capability or scaffold triggered by contextual intent.
-  architecture('Architectural Capability');
+  architecture('Architectural Capability'),
+
+  /// Recurring hygiene sweep or threshold-driven audit (continuous health).
+  hygiene('Periodic Hygiene');
 
   final String label;
   const SkillLifecycle(this.label);
-
-  @override
-  String toString() => label;
-}
-
-/// Priority tier of an identified opportunity.
-enum Priority {
-  high('High'),
-  medium('Medium'),
-  low('Low');
-
-  final String label;
-  const Priority(this.label);
 
   @override
   String toString() => label;
@@ -92,11 +79,10 @@ class SkillTarget {
 }
 
 /// A discovered latent modernization opportunity.
-class Opportunity {
+class Opportunity implements Comparable<Opportunity> {
   final SkillTarget target;
   final RuleCategory category;
   final SkillLifecycle lifecycle;
-  final Priority priority;
   final Confidence confidence;
   final int affectedCount;
   final String diagnosis;
@@ -107,7 +93,6 @@ class Opportunity {
     required this.target,
     required this.category,
     required this.lifecycle,
-    required this.priority,
     this.confidence = Confidence.high,
     this.affectedCount = 1,
     required this.diagnosis,
@@ -117,6 +102,20 @@ class Opportunity {
 
   String get skill => target.skillName;
 
+  @override
+  int compareTo(Opportunity other) {
+    // 1. Lifecycle order: migration, architecture, hygiene
+    final lifeComp = lifecycle.index.compareTo(other.lifecycle.index);
+    if (lifeComp != 0) return lifeComp;
+
+    // 2. Confidence order: high, medium, low
+    final confComp = confidence.index.compareTo(other.confidence.index);
+    if (confComp != 0) return confComp;
+
+    // 3. Affected file count descending: larger scope first
+    return other.affectedCount.compareTo(affectedCount);
+  }
+
   Map<String, dynamic> toJson() => {
     'skill': skill,
     'target': target.toJson(),
@@ -124,7 +123,6 @@ class Opportunity {
     'category_label': category.label,
     'lifecycle': lifecycle.name,
     'lifecycle_label': lifecycle.label,
-    'priority': priority.name.toUpperCase(),
     'confidence': confidence.name.toUpperCase(),
     'affected_count': affectedCount,
     'diagnosis': diagnosis,

@@ -40,8 +40,7 @@ class DiscoveryReport {
         '## 🎯 Detected Opportunities (${staticOpportunities.length})\n',
       );
       for (final opp in staticOpportunities) {
-        final badge = opp.priority == Priority.high ? '🔴 HIGH' : '🟡 MEDIUM';
-        buffer.writeln('### $badge: `${opp.skill}` (${opp.category.label})\n');
+        buffer.writeln('### `${opp.skill}` (${opp.category.label})\n');
         buffer.writeln('- **Lifecycle**: ${opp.lifecycle.label}');
         buffer.writeln('- **Confidence**: ${opp.confidence.label}');
         buffer.writeln('- **Impact**: ${opp.affectedCount} file(s)');
@@ -106,7 +105,7 @@ Please return your response in the following structured JSON format:
   "recommendations": [
     {
       "skill": "<skill-name>",
-      "priority": "HIGH" | "MEDIUM",
+      "confidence": "HIGH" | "MEDIUM" | "LOW",
       "diagnosis": "<1-2 sentence explanation of the latent gap or modernization opportunity>",
       "evidence": "<specific files, functions, or pubspec lines from the outline>",
       "prescription": "<concrete architectural or code modernization change to apply>"

@@ -21,9 +21,6 @@ abstract class DiscoveryRule {
   /// Concise summary of what this rule detects.
   String get description;
 
-  /// Default recommendation priority.
-  Priority get defaultPriority;
-
   /// Confidence level in this rule's detection accuracy.
   Confidence get defaultConfidence => Confidence.high;
 
@@ -63,7 +60,6 @@ abstract class FileDiscoveryRule extends DiscoveryRule {
         target: target,
         category: category,
         lifecycle: lifecycle,
-        priority: defaultPriority,
         confidence: defaultConfidence,
         affectedCount: matchedFiles.length,
         diagnosis: diagnosisTemplate.replaceAll(
