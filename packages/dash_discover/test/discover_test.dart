@@ -146,17 +146,56 @@ void parse(Object x) {
         expect(opps.single.skill, 'dart-use-pattern-matching');
       },
     );
+
+    test(
+      'MatcherBestPracticesRule detects suboptimal expect() calls in test files',
+      () {
+        File(p.join(tempDir.path, 'pubspec.yaml')).writeAsStringSync('''
+name: sample_test_pkg
+environment:
+  sdk: ^3.0.0
+dev_dependencies:
+  test: ^1.24.0
+''');
+        final testDir = Directory(p.join(tempDir.path, 'test'))..createSync();
+        File(p.join(testDir.path, 'sample_test.dart')).writeAsStringSync('''
+import 'package:test/test.dart';
+
+void main() {
+  test('sample', () {
+    final list = [1, 2, 3];
+    expect(list.length, 3);
+    expect(list.isEmpty, true);
+  });
+}
+''');
+
+        final context = PackageContext.load(tempDir.path);
+        final rule = MatcherBestPracticesRule();
+
+        expect(rule.appliesTo(context), isTrue);
+        final opps = rule.evaluate(context).toList();
+
+        expect(opps, hasLength(1));
+        expect(opps.single.skill, 'dart-matcher-best-practices');
+        expect(opps.single.target.org, 'kevmoo');
+        expect(opps.single.category, RuleCategory.testing);
+        expect(opps.single.lifecycle, SkillLifecycle.hygiene);
+        expect(opps.single.confidence, Confidence.high);
+      },
+    );
   });
 
   group('DiscoveryEngine & Registry', () {
-    test('defaultDiscoveryRules contains all 5 rules', () {
-      expect(defaultDiscoveryRules, hasLength(5));
+    test('defaultDiscoveryRules contains all 6 rules', () {
+      expect(defaultDiscoveryRules, hasLength(6));
       final ids = defaultDiscoveryRules.map((r) => r.id).toSet();
       expect(ids, contains('checks-migration'));
       expect(ids, contains('pattern-matching'));
       expect(ids, contains('build-cli-app'));
       expect(ids, contains('use-path-package'));
       expect(ids, contains('generate-test-mocks'));
+      expect(ids, contains('matcher-best-practices'));
     });
 
     test('all rules define valid category and lifecycle metadata', () {
@@ -181,8 +220,9 @@ void parse(Object x) {
           CliAppRule(),
           PathPackageRule(),
           MockGenerationRule(),
+          MatcherBestPracticesRule(),
         };
-        expect(constSet, hasLength(5));
+        expect(constSet, hasLength(6));
       },
     );
 
@@ -277,7 +317,7 @@ void parse(Object x) {
       final block = generateDiscoveryRulesBlock();
       expect(block, startsWith(discoveryRulesStartTag));
       expect(block, endsWith(discoveryRulesEndTag));
-      expect(block, contains('across 5 built-in rules:'));
+      expect(block, contains('across 6 built-in rules:'));
       for (final rule in defaultDiscoveryRules) {
         expect(block, contains(rule.category.label));
         expect(block, contains(rule.target.skillName));
