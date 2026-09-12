@@ -96,6 +96,10 @@ dev_dependencies:
       expect(opps, hasLength(1));
       expect(opps.single.skill, 'dart-migrate-to-checks-package');
       expect(opps.single.target.org, 'dart-lang');
+      expect(opps.single.category, RuleCategory.testing);
+      expect(opps.single.lifecycle, SkillLifecycle.migration);
+      expect(opps.single.confidence, Confidence.high);
+      expect(opps.single.affectedCount, 1);
     });
 
     test('CliAppRule flags ad-hoc CLI entrypoints without CommandRunner', () {
@@ -174,6 +178,15 @@ void foo() {}
       expect(ids, contains('encapsulated-method-object'));
     });
 
+    test('all rules define valid category and lifecycle metadata', () {
+      for (final rule in defaultDiscoveryRules) {
+        expect(rule.category, isA<RuleCategory>());
+        expect(rule.lifecycle, isA<SkillLifecycle>());
+        expect(rule.defaultConfidence, isA<Confidence>());
+        expect(rule.description, isNotEmpty);
+      }
+    });
+
     test(
       'all rules can be instantiated as const with identity canonicalization',
       () {
@@ -213,7 +226,7 @@ void foo() {}
       expect(block, endsWith(discoveryRulesEndTag));
       expect(block, contains('across 7 built-in rules:'));
       for (final rule in defaultDiscoveryRules) {
-        expect(block, contains(rule.category));
+        expect(block, contains(rule.category.label));
         expect(block, contains(rule.target.skillName));
         expect(block, contains(rule.description));
       }

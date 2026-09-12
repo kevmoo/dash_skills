@@ -7,7 +7,7 @@ import '../rule.dart';
 ///
 /// **Target Skill**:
 /// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-build-cli-app
-class CliAppRule extends DiscoveryRule {
+final class CliAppRule extends DiscoveryRule {
   const CliAppRule();
 
   @override
@@ -22,7 +22,10 @@ class CliAppRule extends DiscoveryRule {
   );
 
   @override
-  String get category => 'CLI Architecture';
+  RuleCategory get category => RuleCategory.cli;
+
+  @override
+  SkillLifecycle get lifecycle => SkillLifecycle.architecture;
 
   @override
   String get description =>
@@ -30,6 +33,9 @@ class CliAppRule extends DiscoveryRule {
 
   @override
   Priority get defaultPriority => Priority.high;
+
+  @override
+  Confidence get defaultConfidence => Confidence.high;
 
   @override
   bool appliesTo(PackageContext context) => context.binFiles.isNotEmpty;
@@ -51,7 +57,10 @@ class CliAppRule extends DiscoveryRule {
       yield Opportunity(
         target: target,
         category: category,
+        lifecycle: lifecycle,
         priority: defaultPriority,
+        confidence: defaultConfidence,
+        affectedCount: nonRunnerFiles.length,
         diagnosis:
             '${nonRunnerFiles.length} CLI entrypoint(s) in bin/ use ad-hoc main() without CommandRunner.',
         prescription:

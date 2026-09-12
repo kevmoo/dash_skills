@@ -8,7 +8,7 @@ import '../rule.dart';
 ///
 /// **Target Skill**:
 /// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-generate-test-mocks
-class MockGenerationRule extends FileDiscoveryRule {
+final class MockGenerationRule extends FileDiscoveryRule {
   const MockGenerationRule();
 
   static final _fakeClassPattern = RegExp(
@@ -27,7 +27,10 @@ class MockGenerationRule extends FileDiscoveryRule {
   );
 
   @override
-  String get category => 'Testing Architecture';
+  RuleCategory get category => RuleCategory.testing;
+
+  @override
+  SkillLifecycle get lifecycle => SkillLifecycle.architecture;
 
   @override
   String get description =>
@@ -35,6 +38,9 @@ class MockGenerationRule extends FileDiscoveryRule {
 
   @override
   Priority get defaultPriority => Priority.medium;
+
+  @override
+  Confidence get defaultConfidence => Confidence.medium;
 
   @override
   List<File> selectFiles(PackageContext context) => context.testFiles;

@@ -8,7 +8,7 @@ import '../rule.dart';
 ///
 /// **Target Skill**:
 /// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-use-doc-examples
-class DocExamplesRule extends FileDiscoveryRule {
+final class DocExamplesRule extends FileDiscoveryRule {
   const DocExamplesRule();
 
   static final _docExamplePattern = RegExp(r'///\s*```dart');
@@ -25,7 +25,10 @@ class DocExamplesRule extends FileDiscoveryRule {
   );
 
   @override
-  String get category => 'Documentation & Testing';
+  RuleCategory get category => RuleCategory.documentation;
+
+  @override
+  SkillLifecycle get lifecycle => SkillLifecycle.hygiene;
 
   @override
   String get description =>
@@ -33,6 +36,9 @@ class DocExamplesRule extends FileDiscoveryRule {
 
   @override
   Priority get defaultPriority => Priority.medium;
+
+  @override
+  Confidence get defaultConfidence => Confidence.medium;
 
   @override
   String get diagnosisTemplate =>

@@ -8,7 +8,7 @@ import '../rule.dart';
 ///
 /// **Target Skill**:
 /// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-use-path-package
-class PathPackageRule extends FileDiscoveryRule {
+final class PathPackageRule extends FileDiscoveryRule {
   const PathPackageRule();
 
   static final _pathInterpolationPattern = RegExp(
@@ -27,7 +27,10 @@ class PathPackageRule extends FileDiscoveryRule {
   );
 
   @override
-  String get category => 'Cross-Platform Robustness';
+  RuleCategory get category => RuleCategory.platform;
+
+  @override
+  SkillLifecycle get lifecycle => SkillLifecycle.migration;
 
   @override
   String get description =>
@@ -35,6 +38,9 @@ class PathPackageRule extends FileDiscoveryRule {
 
   @override
   Priority get defaultPriority => Priority.high;
+
+  @override
+  Confidence get defaultConfidence => Confidence.medium;
 
   @override
   String get diagnosisTemplate =>
