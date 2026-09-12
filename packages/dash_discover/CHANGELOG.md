@@ -8,3 +8,4 @@
 - Added `--category` and `--lifecycle` CLI filter flags to `dash_discover`.
 - Removed synthetic `Priority` enum in favor of deterministic sorting by `SkillLifecycle`, `Confidence`, and affected file count.
 - Removed `EncapsulatedMethodObjectRule` and its heuristic regex scanner.
+- Removed `DocExamplesRule` to eliminate false-positive flags on standard inline markdown doc examples.
