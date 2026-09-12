@@ -47,6 +47,20 @@
         "All test assertions pass successfully when running 'dart test'."
       ],
       "agent_config": "bare-agent"
+    },
+    {
+      "id": 4,
+      "prompt": "Review test/non_collection_test.dart and determine if package:matcher best practices should be applied to refactor any assertions.",
+      "expected_chat_output": [
+        "The agent must explicitly state that no changes are needed or abstain from modifying non-collection length checks and already idiomatic assertions."
+      ],
+      "expected_repo_state": [
+        "No modifications are made to test/non_collection_test.dart.",
+        "Scalar properties and non-collection length assertions remain unchanged.",
+        "The test file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos').",
+        "All test assertions pass successfully when running 'dart test'."
+      ],
+      "agent_config": "bare-agent"
     }
   ]
 }
