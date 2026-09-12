@@ -11,8 +11,16 @@ import '../rule.dart';
 final class PatternMatchingRule extends FileDiscoveryRule {
   const PatternMatchingRule();
 
+  // Matches type cascades where at least two branches perform `is` checks:
+  // Either `if (x is A) ... else if (x is B)`
+  // Or `else if (x is A) ... else if (x is B)`
   static final _typeCascadePattern = RegExp(
-    r'else\s+if\s*\([^)]+\s+is\s+[^)]+\)',
+    r'(?:\bif\s*\([^)]+\s+is\s+[^)]+\)[^{}]*\{[^{}]*\}\s*else\s+if\s*\([^)]+\s+is\s+[^)]+\)|else\s+if\s*\([^)]+\s+is\s+[^)]+\)[^{}]*\{[^{}]*\}\s*else\s+if\s*\([^)]+\s+is\s+[^)]+\))',
+  );
+
+  // Switch statement where a case immediately returns or throws (linear matching without backtracking):
+  static final _returningSwitchPattern = RegExp(
+    r'\bswitch\s*\([^)]+\)\s*\{[^{}]*?\b(?:case\b[^:]+|default)\s*:\s*(?:return\b|throw\b)',
   );
 
   @override
@@ -49,8 +57,12 @@ final class PatternMatchingRule extends FileDiscoveryRule {
 
   @override
   String? checkFile(File file, String content, PackageContext context) {
-    return _typeCascadePattern.hasMatch(content)
-        ? 'Legacy type cascade found'
-        : null;
+    if (_typeCascadePattern.hasMatch(content)) {
+      return 'Legacy type cascade found';
+    }
+    if (_returningSwitchPattern.hasMatch(content)) {
+      return 'Legacy returning switch statement found';
+    }
+    return null;
   }
 }
