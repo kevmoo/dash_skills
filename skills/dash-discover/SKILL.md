@@ -37,8 +37,9 @@ Do NOT run or prescribe discovery scans when:
   `pubspec.yaml` or Dart source files (e.g. pure documentation repositories or
   external language services).
 - **Targeted Single-File Edits or Bug Fixes**: The user is requesting a
-  narrow, isolated bug fix or single-file adjustment. Do not derail the turn into
-  a broad repository-wide architectural audit unless specifically solicited.
+  narrow, isolated bug fix or single-file adjustment. Do not derail the
+  turn into a broad repository-wide architectural audit unless specifically
+  solicited.
 - **Active In-Flight Breaking Migrations**: The repository is midway through a
   breaking SDK upgrade or uncommitted refactoring. Allow primary migrations to
   stabilize before running discovery sweeps.

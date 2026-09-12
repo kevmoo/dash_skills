@@ -30,11 +30,11 @@ Do NOT apply modern features or refactor code when:
   where standard `if (x is Foo)` is clearer, more concise, and avoids creating
   unnecessary alias variables compared to `if (x case final Foo f)`.
 - **Non-Algebraic Boolean Branching**: Branching on independent boolean flags,
-  side-effecting conditions, or early-exit guard clauses (`if (!condition) return;`).
-  Do not force these into switch expressions.
+  side-effecting conditions, or early-exit guard clauses
+  (`if (!condition) return;`). Do not force these into switch expressions.
 - **Deep Expression Nesting**: Complex multi-step operations where converting a
-  switch statement into a deeply nested switch expression obscures intent, harms
-  debugger step-through capability, or hurts stack trace readability.
+  switch statement into a deeply nested switch expression obscures intent,
+  harms debugger step-through capability, or hurts stack trace readability.
 
 ## Discovery
 

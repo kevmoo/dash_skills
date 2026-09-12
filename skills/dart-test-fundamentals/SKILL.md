@@ -25,8 +25,8 @@ Use this skill when:
 
 Do NOT apply this skill or refactor existing tests when:
 - **Legacy Single-Group Churn**: Do NOT remove or reformat existing `group`
-  hierarchies in untouched existing tests unless explicitly asked, as this causes
-  unwanted diff churn.
+  hierarchies in untouched existing tests unless explicitly asked, as this
+  causes unwanted diff churn.
 - **Alternative Assertion Frameworks**: The package has migrated to
   `package:checks` or a specialized testing framework; do not revert tests back
   to legacy `package:matcher` idioms.
