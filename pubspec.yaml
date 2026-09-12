@@ -5,6 +5,7 @@ environment:
   sdk: ^3.9.0
 
 workspace:
+  - packages/dash_discover
   - tool
   - skills/dart-test-coverage/example
   - skills/dart-test-coverage/scripts
