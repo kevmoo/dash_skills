@@ -24,9 +24,11 @@ void main() {
     });
 
     test('exception checks', () {
+      void throwError() => throw StateError('bad state');
+
       // Suboptimal try/catch with fail() (should be throwsA(isA<StateError>()))
       try {
-        throw StateError('bad state');
+        throwError();
         fail('should have thrown');
       } catch (e) {
         expect(e, isA<StateError>());
