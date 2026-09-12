@@ -166,8 +166,8 @@ void foo() {}
   });
 
   group('DiscoveryEngine & Registry', () {
-    test('defaultDiscoveryRules contains all 7 rules', () {
-      expect(defaultDiscoveryRules, hasLength(7));
+    test('defaultDiscoveryRules contains all 6 rules', () {
+      expect(defaultDiscoveryRules, hasLength(6));
       final ids = defaultDiscoveryRules.map((r) => r.id).toSet();
       expect(ids, contains('checks-migration'));
       expect(ids, contains('pattern-matching'));
@@ -175,7 +175,6 @@ void foo() {}
       expect(ids, contains('build-cli-app'));
       expect(ids, contains('use-path-package'));
       expect(ids, contains('generate-test-mocks'));
-      expect(ids, contains('encapsulated-method-object'));
     });
 
     test('all rules define valid category and lifecycle metadata', () {
@@ -201,9 +200,8 @@ void foo() {}
           CliAppRule(),
           PathPackageRule(),
           MockGenerationRule(),
-          EncapsulatedMethodObjectRule(),
         };
-        expect(constSet, hasLength(7));
+        expect(constSet, hasLength(6));
       },
     );
 
@@ -298,7 +296,7 @@ void foo() {}
       final block = generateDiscoveryRulesBlock();
       expect(block, startsWith(discoveryRulesStartTag));
       expect(block, endsWith(discoveryRulesEndTag));
-      expect(block, contains('across 7 built-in rules:'));
+      expect(block, contains('across 6 built-in rules:'));
       for (final rule in defaultDiscoveryRules) {
         expect(block, contains(rule.category.label));
         expect(block, contains(rule.target.skillName));

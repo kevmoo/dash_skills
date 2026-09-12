@@ -68,14 +68,13 @@ dart run dash_discover <path-to-target-package> --json
 ```
 
 <!-- DISCOVERY_RULES_START -->
-The static scanner performs rapid, zero-network checks across 7 built-in rules:
+The static scanner performs rapid, zero-network checks across 6 built-in rules:
 1. **Testing Architecture (`dart-migrate-to-checks-package`)**: Detects test or flutter_test in dependencies when checks is absent.
 2. **Dart 3 Language Idioms (`dart-use-pattern-matching`)**: Detects legacy else if (... is ...) type cascades and returning switch statements.
 3. **Documentation & Testing (`dart-use-doc-examples`)**: Detects markdown code blocks in doc comments lacking {@example} integration.
 4. **CLI Architecture (`dart-build-cli-app`)**: Detects bin/*.dart CLI entrypoints lacking CommandRunner.
 5. **Cross-Platform Robustness (`dart-use-path-package`)**: Detects manual path string concatenation without package:path.
 6. **Testing Architecture (`dart-generate-test-mocks`)**: Detects handwritten fake or mock class definitions without mockito or mocktail.
-7. **Refactoring & Code Quality (`encapsulated-method-object`)**: Detects oversized methods with deeply nested closures.
 <!-- DISCOVERY_RULES_END -->
 
 ### Tier 2: Token-Efficient Outline Probing

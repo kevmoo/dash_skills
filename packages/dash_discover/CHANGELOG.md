@@ -7,3 +7,4 @@
 - Strengthened rule types: marked all rule classes `final`, introduced typed `RuleCategory`, `SkillLifecycle` (migration vs. hygiene vs. architecture), and `Confidence` metrics.
 - Added `--category` and `--lifecycle` CLI filter flags to `dash_discover`.
 - Removed synthetic `Priority` enum in favor of deterministic sorting by `SkillLifecycle`, `Confidence`, and affected file count.
+- Removed `EncapsulatedMethodObjectRule` and its heuristic regex scanner.
