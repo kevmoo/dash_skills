@@ -25,6 +25,10 @@ class EncapsulatedMethodObjectRule extends FileDiscoveryRule {
   String get category => 'Refactoring & Readability';
 
   @override
+  String get description =>
+      'Detects oversized methods with deeply nested closures.';
+
+  @override
   Priority get defaultPriority => Priority.medium;
 
   @override

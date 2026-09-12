@@ -33,6 +33,18 @@ void main(List<String> args) {
       help: 'Optional directory path containing skills to catalog.',
     )
     ..addFlag(
+      'update-skill',
+      negatable: false,
+      help:
+          'Updates the discovery rules block in skills/dash-discover/SKILL.md.',
+    )
+    ..addFlag(
+      'validate-skill',
+      negatable: false,
+      help:
+          'Validates that skills/dash-discover/SKILL.md is in sync with registered rules.',
+    )
+    ..addFlag(
       'help',
       abbr: 'h',
       negatable: false,
@@ -41,21 +53,47 @@ void main(List<String> args) {
 
   final results = parser.parse(args);
   if (results['help'] as bool) {
-    print(
-      'Usage: dart tool/bin/discover.dart [path-to-target-package] [options]\n',
-    );
+    print('Usage: dart run dash_discover [path-to-target-package] [options]\n');
     print(parser.usage);
     exit(0);
+  }
+
+  if (results['update-skill'] as bool || results['validate-skill'] as bool) {
+    final skillFile = findSkillFile();
+    if (skillFile == null) {
+      stderr.writeln('Error: Could not find skills/dash-discover/SKILL.md');
+      exit(1);
+    }
+    final content = skillFile.readAsStringSync();
+    final updated = updateSkillContent(content);
+    if (results['validate-skill'] as bool) {
+      if (content == updated) {
+        print('skills/dash-discover/SKILL.md is up-to-date!');
+        exit(0);
+      } else {
+        stderr.writeln('Error: skills/dash-discover/SKILL.md is out of date.');
+        stderr.writeln(
+          'Run `dart run dash_discover --update-skill` to update it.',
+        );
+        exit(1);
+      }
+    }
+    if (results['update-skill'] as bool) {
+      skillFile.writeAsStringSync(updated);
+      print('Successfully updated ${skillFile.path} with the latest rules!');
+      exit(0);
+    }
   }
 
   if (results['list-rules'] as bool) {
     print('Available Discovery Rules (${defaultDiscoveryRules.length}):\n');
     for (final rule in defaultDiscoveryRules) {
       print('• ${rule.id} (${rule.category})');
-      print('  Skill:  ${rule.target.skillName}');
-      print('  Target: ${rule.target.githubUrl}');
+      print('  Skill:       ${rule.target.skillName}');
+      print('  Description: ${rule.description}');
+      print('  Target:      ${rule.target.githubUrl}');
       if (rule.target.commitSha != null) {
-        print('  Pinned: ${rule.target.commitSha}');
+        print('  Pinned:      ${rule.target.commitSha}');
       }
       print('');
     }

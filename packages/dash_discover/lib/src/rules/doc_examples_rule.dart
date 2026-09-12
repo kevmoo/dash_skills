@@ -28,6 +28,10 @@ class DocExamplesRule extends FileDiscoveryRule {
   String get category => 'Documentation & Testing';
 
   @override
+  String get description =>
+      'Detects markdown code blocks in doc comments lacking {@example} integration.';
+
+  @override
   Priority get defaultPriority => Priority.medium;
 
   @override

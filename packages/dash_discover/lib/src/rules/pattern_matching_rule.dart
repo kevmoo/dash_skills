@@ -30,6 +30,10 @@ class PatternMatchingRule extends FileDiscoveryRule {
   String get category => 'Dart 3 Language Idioms';
 
   @override
+  String get description =>
+      'Detects legacy else if (... is ...) type cascades and returning switch statements.';
+
+  @override
   Priority get defaultPriority => Priority.high;
 
   @override

@@ -67,19 +67,16 @@ Or for structured machine ingestion:
 dart run dash_discover <path-to-target-package> --json
 ```
 
-The static scanner performs rapid, zero-network checks:
-1. **Testing Hygiene (`dart-migrate-to-checks-package`)**: Detects `test` or
-   `flutter_test` in dependencies when `checks` is absent.
-2. **Dart 3 Language Idioms (`dart-use-pattern-matching`)**: Detects legacy
-   `else if (... is ...)` type cascades and returning switch statements.
-3. **Documentation Health (`dart-use-doc-examples`)**: Detects markdown code
-   blocks in doc comments lacking `{@example}` integration.
-4. **CLI Architecture (`dart-build-cli-app`)**: Detects `bin/*.dart` files
-   lacking `CommandRunner`.
-5. **Mock Automation (`dart-generate-test-mocks`)**: Detects handwritten
-   `class Fake...` or `class Mock...` definitions without mockito/mocktail.
-6. **Structural Health (`encapsulated-method-object`)**: Detects oversized
-   methods with deeply nested closures.
+<!-- DISCOVERY_RULES_START -->
+The static scanner performs rapid, zero-network checks across 7 built-in rules:
+1. **Testing Architecture (`dart-migrate-to-checks-package`)**: Detects test or flutter_test in dependencies when checks is absent.
+2. **Dart 3 Language Idioms (`dart-use-pattern-matching`)**: Detects legacy else if (... is ...) type cascades and returning switch statements.
+3. **Documentation & Testing (`dart-use-doc-examples`)**: Detects markdown code blocks in doc comments lacking {@example} integration.
+4. **CLI Architecture (`dart-build-cli-app`)**: Detects bin/*.dart CLI entrypoints lacking CommandRunner.
+5. **Cross-Platform Robustness (`dart-use-path-package`)**: Detects manual path string concatenation without package:path.
+6. **Testing Architecture (`dart-generate-test-mocks`)**: Detects handwritten fake or mock class definitions without mockito or mocktail.
+7. **Refactoring & Readability (`encapsulated-method-object`)**: Detects oversized methods with deeply nested closures.
+<!-- DISCOVERY_RULES_END -->
 
 ### Tier 2: Token-Efficient Outline Probing
 

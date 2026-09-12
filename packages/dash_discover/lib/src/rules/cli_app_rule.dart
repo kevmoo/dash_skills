@@ -25,6 +25,10 @@ class CliAppRule extends DiscoveryRule {
   String get category => 'CLI Architecture';
 
   @override
+  String get description =>
+      'Detects bin/*.dart CLI entrypoints lacking CommandRunner.';
+
+  @override
   Priority get defaultPriority => Priority.high;
 
   @override

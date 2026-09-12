@@ -25,6 +25,10 @@ class ChecksMigrationRule extends DiscoveryRule {
   String get category => 'Testing Architecture';
 
   @override
+  String get description =>
+      'Detects test or flutter_test in dependencies when checks is absent.';
+
+  @override
   Priority get defaultPriority => Priority.high;
 
   @override

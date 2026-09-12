@@ -30,6 +30,10 @@ class PathPackageRule extends FileDiscoveryRule {
   String get category => 'Cross-Platform Robustness';
 
   @override
+  String get description =>
+      'Detects manual path string concatenation without package:path.';
+
+  @override
   Priority get defaultPriority => Priority.high;
 
   @override

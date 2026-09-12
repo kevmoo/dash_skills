@@ -30,6 +30,10 @@ class MockGenerationRule extends FileDiscoveryRule {
   String get category => 'Testing Architecture';
 
   @override
+  String get description =>
+      'Detects handwritten fake or mock class definitions without mockito or mocktail.';
+
+  @override
   Priority get defaultPriority => Priority.medium;
 
   @override

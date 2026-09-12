@@ -15,6 +15,9 @@ abstract class DiscoveryRule {
   /// Architectural category (e.g. 'Testing Architecture', 'Dart 3 Language Idioms').
   String get category;
 
+  /// Concise summary of what this rule detects.
+  String get description;
+
   /// Default recommendation priority.
   Priority get defaultPriority;
 

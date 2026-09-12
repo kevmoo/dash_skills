@@ -205,4 +205,37 @@ void foo() {}
       expect(report.toJson(), containsPair('package_name', report.packageName));
     });
   });
+
+  group('SKILL.md documentation synchronization', () {
+    test('generateDiscoveryRulesBlock formats all rules and descriptions', () {
+      final block = generateDiscoveryRulesBlock();
+      expect(block, startsWith(discoveryRulesStartTag));
+      expect(block, endsWith(discoveryRulesEndTag));
+      expect(block, contains('across 7 built-in rules:'));
+      for (final rule in defaultDiscoveryRules) {
+        expect(block, contains(rule.category));
+        expect(block, contains(rule.target.skillName));
+        expect(block, contains(rule.description));
+      }
+    });
+
+    test('skills/dash-discover/SKILL.md is in sync with defaultDiscoveryRules', () {
+      final skillFile = findSkillFile(repoRoot);
+      expect(
+        skillFile,
+        isNotNull,
+        reason:
+            'Could not find skills/dash-discover/SKILL.md in repo root: ${repoRoot.path}',
+      );
+      final content = skillFile!.readAsStringSync();
+      final updated = updateSkillContent(content);
+      expect(
+        content,
+        equals(updated),
+        reason:
+            'skills/dash-discover/SKILL.md is out of date with defaultDiscoveryRules.\n'
+            'Run `dart run dash_discover --update-skill` to update it.',
+      );
+    });
+  });
 }
