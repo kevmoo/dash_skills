@@ -7,7 +7,7 @@ import '../rule.dart';
 ///
 /// **Target Skill**:
 /// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-migrate-to-checks-package
-class ChecksMigrationRule extends DiscoveryRule {
+final class ChecksMigrationRule extends DiscoveryRule {
   const ChecksMigrationRule();
 
   @override
@@ -22,7 +22,10 @@ class ChecksMigrationRule extends DiscoveryRule {
   );
 
   @override
-  String get category => 'Testing Architecture';
+  RuleCategory get category => RuleCategory.testing;
+
+  @override
+  SkillLifecycle get lifecycle => SkillLifecycle.migration;
 
   @override
   String get description =>
@@ -30,6 +33,9 @@ class ChecksMigrationRule extends DiscoveryRule {
 
   @override
   Priority get defaultPriority => Priority.high;
+
+  @override
+  Confidence get defaultConfidence => Confidence.high;
 
   @override
   bool appliesTo(PackageContext context) {
@@ -46,7 +52,10 @@ class ChecksMigrationRule extends DiscoveryRule {
     yield Opportunity(
       target: target,
       category: category,
+      lifecycle: lifecycle,
       priority: defaultPriority,
+      confidence: defaultConfidence,
+      affectedCount: context.testFiles.length,
       diagnosis:
           'Repository depends on `package:test` but does not use `package:checks`.',
       prescription:

@@ -41,7 +41,10 @@ class DiscoveryReport {
       );
       for (final opp in staticOpportunities) {
         final badge = opp.priority == Priority.high ? '🔴 HIGH' : '🟡 MEDIUM';
-        buffer.writeln('### $badge: `${opp.skill}` (${opp.category})\n');
+        buffer.writeln('### $badge: `${opp.skill}` (${opp.category.label})\n');
+        buffer.writeln('- **Lifecycle**: ${opp.lifecycle.label}');
+        buffer.writeln('- **Confidence**: ${opp.confidence.label}');
+        buffer.writeln('- **Impact**: ${opp.affectedCount} file(s)');
         buffer.writeln('- **Diagnosis**: ${opp.diagnosis}');
         buffer.writeln('- **Prescription**: ${opp.prescription}');
         buffer.writeln('- **Evidence**:');

@@ -12,14 +12,20 @@ abstract class DiscoveryRule {
   /// The exact upstream GitHub skill target this rule aligns with.
   SkillTarget get target;
 
-  /// Architectural category (e.g. 'Testing Architecture', 'Dart 3 Language Idioms').
-  String get category;
+  /// Architectural category organizing this rule.
+  RuleCategory get category;
+
+  /// Skill lifecycle type: one-time migration, periodic hygiene, or architecture.
+  SkillLifecycle get lifecycle;
 
   /// Concise summary of what this rule detects.
   String get description;
 
   /// Default recommendation priority.
   Priority get defaultPriority;
+
+  /// Confidence level in this rule's detection accuracy.
+  Confidence get defaultConfidence => Confidence.high;
 
   /// Fast precondition check before running full evaluation.
   bool appliesTo(PackageContext context) => true;
@@ -56,7 +62,10 @@ abstract class FileDiscoveryRule extends DiscoveryRule {
       yield Opportunity(
         target: target,
         category: category,
+        lifecycle: lifecycle,
         priority: defaultPriority,
+        confidence: defaultConfidence,
+        affectedCount: matchedFiles.length,
         diagnosis: diagnosisTemplate.replaceAll(
           '{count}',
           '${matchedFiles.length}',

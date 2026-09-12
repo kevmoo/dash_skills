@@ -8,7 +8,7 @@ import '../rule.dart';
 ///
 /// **Target Skill**:
 /// - GitHub: https://github.com/kevmoo/dash_skills/tree/main/skills/encapsulated-method-object
-class EncapsulatedMethodObjectRule extends FileDiscoveryRule {
+final class EncapsulatedMethodObjectRule extends FileDiscoveryRule {
   const EncapsulatedMethodObjectRule();
 
   @override
@@ -22,7 +22,10 @@ class EncapsulatedMethodObjectRule extends FileDiscoveryRule {
   );
 
   @override
-  String get category => 'Refactoring & Readability';
+  RuleCategory get category => RuleCategory.codeQuality;
+
+  @override
+  SkillLifecycle get lifecycle => SkillLifecycle.hygiene;
 
   @override
   String get description =>
@@ -30,6 +33,9 @@ class EncapsulatedMethodObjectRule extends FileDiscoveryRule {
 
   @override
   Priority get defaultPriority => Priority.medium;
+
+  @override
+  Confidence get defaultConfidence => Confidence.high;
 
   @override
   String get diagnosisTemplate =>

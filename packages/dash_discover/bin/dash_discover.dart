@@ -23,6 +23,19 @@ void main(List<String> args) {
       help:
           'Run only a specific rule by ID (e.g. checks-migration, pattern-matching).',
     )
+    ..addOption(
+      'category',
+      abbr: 'c',
+      allowed: RuleCategory.values.map((c) => c.name).toList(),
+      help: 'Filter rules by category.',
+    )
+    ..addOption(
+      'lifecycle',
+      abbr: 'l',
+      allowed: SkillLifecycle.values.map((l) => l.name).toList(),
+      help:
+          'Filter rules by skill lifecycle (migration, hygiene, architecture).',
+    )
     ..addFlag(
       'list-rules',
       negatable: false,
@@ -88,8 +101,12 @@ void main(List<String> args) {
   if (results['list-rules'] as bool) {
     print('Available Discovery Rules (${defaultDiscoveryRules.length}):\n');
     for (final rule in defaultDiscoveryRules) {
-      print('• ${rule.id} (${rule.category})');
+      print('• ${rule.id} (${rule.category.label}) [${rule.lifecycle.label}]');
       print('  Skill:       ${rule.target.skillName}');
+      print('  Lifecycle:   ${rule.lifecycle.label}');
+      print('  Category:    ${rule.category.label}');
+      print('  Priority:    ${rule.defaultPriority.name.toUpperCase()}');
+      print('  Confidence:  ${rule.defaultConfidence.name.toUpperCase()}');
       print('  Description: ${rule.description}');
       print('  Target:      ${rule.target.githubUrl}');
       if (rule.target.commitSha != null) {
@@ -109,12 +126,21 @@ void main(List<String> args) {
   }
 
   final ruleId = results['rule'] as String?;
-  final activeRules = ruleId != null
-      ? defaultDiscoveryRules.where((r) => r.id == ruleId).toList()
-      : defaultDiscoveryRules;
+  final categoryFilter = results['category'] as String?;
+  final lifecycleFilter = results['lifecycle'] as String?;
 
-  if (ruleId != null && activeRules.isEmpty) {
-    stderr.writeln('Error: No rule found matching ID "$ruleId".');
+  final activeRules = defaultDiscoveryRules.where((r) {
+    if (ruleId != null && r.id != ruleId) return false;
+    if (categoryFilter != null && r.category.name != categoryFilter)
+      return false;
+    if (lifecycleFilter != null && r.lifecycle.name != lifecycleFilter) {
+      return false;
+    }
+    return true;
+  }).toList();
+
+  if (activeRules.isEmpty) {
+    stderr.writeln('Error: No rules match the specified filters.');
     stderr.writeln(
       'Available rules: ${defaultDiscoveryRules.map((r) => r.id).join(', ')}',
     );

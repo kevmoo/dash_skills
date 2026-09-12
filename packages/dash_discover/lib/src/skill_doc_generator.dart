@@ -19,7 +19,7 @@ String generateDiscoveryRulesBlock([List<DiscoveryRule>? rules]) {
     final rule = activeRules[i];
     final num = i + 1;
     buffer.writeln(
-      '$num. **${rule.category} (`${rule.target.skillName}`)**: '
+      '$num. **${rule.category.label} (`${rule.target.skillName}`)**: '
       '${rule.description}',
     );
   }

@@ -8,7 +8,7 @@ import '../rule.dart';
 ///
 /// **Target Skill**:
 /// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-use-pattern-matching
-class PatternMatchingRule extends FileDiscoveryRule {
+final class PatternMatchingRule extends FileDiscoveryRule {
   const PatternMatchingRule();
 
   static final _typeCascadePattern = RegExp(
@@ -27,7 +27,10 @@ class PatternMatchingRule extends FileDiscoveryRule {
   );
 
   @override
-  String get category => 'Dart 3 Language Idioms';
+  RuleCategory get category => RuleCategory.language;
+
+  @override
+  SkillLifecycle get lifecycle => SkillLifecycle.migration;
 
   @override
   String get description =>
@@ -35,6 +38,9 @@ class PatternMatchingRule extends FileDiscoveryRule {
 
   @override
   Priority get defaultPriority => Priority.high;
+
+  @override
+  Confidence get defaultConfidence => Confidence.high;
 
   @override
   String get diagnosisTemplate =>
