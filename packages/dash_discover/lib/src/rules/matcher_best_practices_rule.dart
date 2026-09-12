@@ -12,8 +12,31 @@ import '../rule.dart';
 final class MatcherBestPracticesRule extends FileDiscoveryRule {
   const MatcherBestPracticesRule();
 
-  static final _suboptimalMatcherPattern = RegExp(
-    r'expect\(\s*[^,]+?\.(?:length\b|isEmpty\b|isNotEmpty\b|contains\([^)]*\))\s*,',
+  // Matches collection boolean and membership checks:
+  // e.g. expect(x.isEmpty, true), expect(x.contains('a'), true)
+  static final _booleanOrContainsPattern = RegExp(
+    r'expect\(\s*[^,]+?\.(?:isEmpty\b|isNotEmpty\b|contains\([^)]*\))\s*,',
+  );
+
+  // Matches .length checks and captures the expected argument for inspection:
+  // e.g. expect(x.length, 3) or expect(x.length, equals(3))
+  static final _lengthPattern = RegExp(
+    r'expect\(\s*[^,]+?\.length\b\s*,\s*([^,)]+)',
+  );
+
+  // Checks if the expected argument is a floating-point number (e.g. 25.0 or equals(25.0)):
+  static final _floatPattern = RegExp(r'^(?:equals\(\s*)?\d+\.\d+');
+
+  // Matches map string key lookups:
+  // e.g. expect(map['key'], value)
+  static final _mapStringLookupPattern = RegExp(
+    r'''expect\(\s*[^,]+?\[\s*['"][^'"]+['"]\s*\]\s*,''',
+  );
+
+  // Matches imperative try/catch blocks that use fail():
+  // e.g. try { fn(); fail('should throw'); } catch (e) { ... }
+  static final _tryCatchFailPattern = RegExp(
+    r'\btry\s*\{[\s\S]*?\bfail\s*\([^;]*\);[\s\S]*?\}\s*(?:on\s+\w+\s*)?catch\b',
   );
 
   @override
@@ -58,9 +81,19 @@ final class MatcherBestPracticesRule extends FileDiscoveryRule {
 
   @override
   String? checkFile(File file, String content, PackageContext context) {
-    if (_suboptimalMatcherPattern.hasMatch(content)) {
+    if (_booleanOrContainsPattern.hasMatch(content) ||
+        _mapStringLookupPattern.hasMatch(content) ||
+        _tryCatchFailPattern.hasMatch(content)) {
       return 'Suboptimal expect() assertion found';
     }
+
+    for (final match in _lengthPattern.allMatches(content)) {
+      final expectedArg = match.group(1)?.trim() ?? '';
+      if (!_floatPattern.hasMatch(expectedArg)) {
+        return 'Suboptimal expect() assertion found';
+      }
+    }
+
     return null;
   }
 }
