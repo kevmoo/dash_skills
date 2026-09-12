@@ -146,32 +146,14 @@ void parse(Object x) {
         expect(opps.single.skill, 'dart-use-pattern-matching');
       },
     );
-
-    test('DocExamplesRule detects unverified inline doc examples', () {
-      final libDir = Directory(p.join(tempDir.path, 'lib'))..createSync();
-      File(p.join(libDir.path, 'source.dart')).writeAsStringSync('''
-/// ```dart
-/// var x = 1;
-/// ```
-void foo() {}
-''');
-
-      final context = PackageContext.load(tempDir.path);
-      final rule = DocExamplesRule();
-      final opps = rule.evaluate(context).toList();
-
-      expect(opps, hasLength(1));
-      expect(opps.single.skill, 'dart-use-doc-examples');
-    });
   });
 
   group('DiscoveryEngine & Registry', () {
-    test('defaultDiscoveryRules contains all 6 rules', () {
-      expect(defaultDiscoveryRules, hasLength(6));
+    test('defaultDiscoveryRules contains all 5 rules', () {
+      expect(defaultDiscoveryRules, hasLength(5));
       final ids = defaultDiscoveryRules.map((r) => r.id).toSet();
       expect(ids, contains('checks-migration'));
       expect(ids, contains('pattern-matching'));
-      expect(ids, contains('doc-examples'));
       expect(ids, contains('build-cli-app'));
       expect(ids, contains('use-path-package'));
       expect(ids, contains('generate-test-mocks'));
@@ -196,12 +178,11 @@ void foo() {}
         const constSet = <DiscoveryRule>{
           ChecksMigrationRule(),
           PatternMatchingRule(),
-          DocExamplesRule(),
           CliAppRule(),
           PathPackageRule(),
           MockGenerationRule(),
         };
-        expect(constSet, hasLength(6));
+        expect(constSet, hasLength(5));
       },
     );
 
@@ -296,7 +277,7 @@ void foo() {}
       final block = generateDiscoveryRulesBlock();
       expect(block, startsWith(discoveryRulesStartTag));
       expect(block, endsWith(discoveryRulesEndTag));
-      expect(block, contains('across 6 built-in rules:'));
+      expect(block, contains('across 5 built-in rules:'));
       for (final rule in defaultDiscoveryRules) {
         expect(block, contains(rule.category.label));
         expect(block, contains(rule.target.skillName));
