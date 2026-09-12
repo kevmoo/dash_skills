@@ -32,9 +32,6 @@ final class ChecksMigrationRule extends DiscoveryRule {
       'Detects test or flutter_test in dependencies when checks is absent.';
 
   @override
-  Priority get defaultPriority => Priority.high;
-
-  @override
   Confidence get defaultConfidence => Confidence.high;
 
   @override
@@ -53,7 +50,6 @@ final class ChecksMigrationRule extends DiscoveryRule {
       target: target,
       category: category,
       lifecycle: lifecycle,
-      priority: defaultPriority,
       confidence: defaultConfidence,
       affectedCount: context.testFiles.length,
       diagnosis:

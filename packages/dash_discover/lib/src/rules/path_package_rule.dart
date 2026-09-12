@@ -37,9 +37,6 @@ final class PathPackageRule extends FileDiscoveryRule {
       'Detects manual path string concatenation without package:path.';
 
   @override
-  Priority get defaultPriority => Priority.high;
-
-  @override
   Confidence get defaultConfidence => Confidence.medium;
 
   @override

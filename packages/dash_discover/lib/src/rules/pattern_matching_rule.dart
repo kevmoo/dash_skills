@@ -37,9 +37,6 @@ final class PatternMatchingRule extends FileDiscoveryRule {
       'Detects legacy else if (... is ...) type cascades and returning switch statements.';
 
   @override
-  Priority get defaultPriority => Priority.high;
-
-  @override
   Confidence get defaultConfidence => Confidence.high;
 
   @override

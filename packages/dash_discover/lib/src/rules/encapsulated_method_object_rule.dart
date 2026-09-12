@@ -32,9 +32,6 @@ final class EncapsulatedMethodObjectRule extends FileDiscoveryRule {
       'Detects oversized methods with deeply nested closures.';
 
   @override
-  Priority get defaultPriority => Priority.medium;
-
-  @override
   Confidence get defaultConfidence => Confidence.high;
 
   @override

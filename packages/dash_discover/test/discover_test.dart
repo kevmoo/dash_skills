@@ -207,6 +207,80 @@ void foo() {}
       },
     );
 
+    test('Opportunity sorts by lifecycle, confidence, and affectedCount', () {
+      const target = SkillTarget(
+        org: 'dart-lang',
+        repo: 'skills',
+        path: 'skills/test',
+      );
+      const oppMigrationHigh = Opportunity(
+        target: target,
+        category: RuleCategory.testing,
+        lifecycle: SkillLifecycle.migration,
+        confidence: Confidence.high,
+        affectedCount: 5,
+        diagnosis: 'd',
+        prescription: 'p',
+        evidence: [],
+      );
+      const oppMigrationLow = Opportunity(
+        target: target,
+        category: RuleCategory.testing,
+        lifecycle: SkillLifecycle.migration,
+        confidence: Confidence.low,
+        affectedCount: 20,
+        diagnosis: 'd',
+        prescription: 'p',
+        evidence: [],
+      );
+      const oppArchitectureHigh = Opportunity(
+        target: target,
+        category: RuleCategory.cli,
+        lifecycle: SkillLifecycle.architecture,
+        confidence: Confidence.high,
+        affectedCount: 1,
+        diagnosis: 'd',
+        prescription: 'p',
+        evidence: [],
+      );
+      const oppHygieneHighMany = Opportunity(
+        target: target,
+        category: RuleCategory.codeQuality,
+        lifecycle: SkillLifecycle.hygiene,
+        confidence: Confidence.high,
+        affectedCount: 50,
+        diagnosis: 'd',
+        prescription: 'p',
+        evidence: [],
+      );
+      const oppHygieneHighFew = Opportunity(
+        target: target,
+        category: RuleCategory.codeQuality,
+        lifecycle: SkillLifecycle.hygiene,
+        confidence: Confidence.high,
+        affectedCount: 2,
+        diagnosis: 'd',
+        prescription: 'p',
+        evidence: [],
+      );
+
+      final list = [
+        oppHygieneHighFew,
+        oppArchitectureHigh,
+        oppHygieneHighMany,
+        oppMigrationLow,
+        oppMigrationHigh,
+      ]..sort();
+
+      expect(list, [
+        oppMigrationHigh,
+        oppMigrationLow,
+        oppArchitectureHigh,
+        oppHygieneHighMany,
+        oppHygieneHighFew,
+      ]);
+    });
+
     test('runs complete discovery report on package', () {
       final engine = DiscoveryEngine(repoRoot.path);
       final report = engine.run();

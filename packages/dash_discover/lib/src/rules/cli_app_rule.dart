@@ -32,9 +32,6 @@ final class CliAppRule extends DiscoveryRule {
       'Detects bin/*.dart CLI entrypoints lacking CommandRunner.';
 
   @override
-  Priority get defaultPriority => Priority.high;
-
-  @override
   Confidence get defaultConfidence => Confidence.high;
 
   @override
@@ -58,7 +55,6 @@ final class CliAppRule extends DiscoveryRule {
         target: target,
         category: category,
         lifecycle: lifecycle,
-        priority: defaultPriority,
         confidence: defaultConfidence,
         affectedCount: nonRunnerFiles.length,
         diagnosis:

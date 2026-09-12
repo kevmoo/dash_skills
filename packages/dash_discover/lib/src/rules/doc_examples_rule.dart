@@ -35,9 +35,6 @@ final class DocExamplesRule extends FileDiscoveryRule {
       'Detects markdown code blocks in doc comments lacking {@example} integration.';
 
   @override
-  Priority get defaultPriority => Priority.medium;
-
-  @override
   Confidence get defaultConfidence => Confidence.medium;
 
   @override

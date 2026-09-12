@@ -98,9 +98,11 @@ To capture complex cross-cutting architectural patterns beyond regexes:
 ## 4. Remediation Workflow
 
 When `dash-discover` produces recommendations:
-1. **Triage by Priority**:
-   - Focus on `HIGH` priority items first (e.g. core language modernization and
-     testing migrations).
+1. **Triage by Lifecycle & Confidence**:
+   - Focus on finite migrations first (e.g. core language modernization and
+     testing migrations), prioritized by confidence and affected file count.
+   - Treat periodic hygiene audits (e.g. cognitive complexity, doc validation)
+     as recurring sweeps rather than one-time migrations.
    - Throttle ubiquitous recommendations (e.g. at most one test framework
      migration at a time).
 2. **Invoke Specialized Skills**:

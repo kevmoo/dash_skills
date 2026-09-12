@@ -23,7 +23,7 @@ class StaticDiscoveryEngine {
     return StaticDiscoveryEngine(PackageContext.load(path), rules: rules);
   }
 
-  /// Runs all applicable rules against the package context.
+  /// Runs all applicable rules against the package context, sorted deterministically.
   List<Opportunity> scan() {
     final opportunities = <Opportunity>[];
     for (final rule in rules) {
@@ -31,6 +31,7 @@ class StaticDiscoveryEngine {
         opportunities.addAll(rule.evaluate(context));
       }
     }
+    opportunities.sort();
     return opportunities;
   }
 }
