@@ -1,0 +1,8 @@
+name: path_known_false_positives
+description: >-
+  Fixture package documenting slashes that are NOT filesystem separators but
+  which the Tier 2 rule currently flags anyway.
+publish_to: none
+
+environment:
+  sdk: ^3.9.0

@@ -187,8 +187,8 @@ void main() {
   });
 
   group('DiscoveryEngine & Registry', () {
-    test('defaultDiscoveryRules contains all 6 rules', () {
-      expect(defaultDiscoveryRules, hasLength(6));
+    test('defaultDiscoveryRules contains all 7 rules', () {
+      expect(defaultDiscoveryRules, hasLength(7));
       final ids = defaultDiscoveryRules.map((r) => r.id).toSet();
       expect(ids, contains('checks-migration'));
       expect(ids, contains('pattern-matching'));
@@ -196,6 +196,7 @@ void main() {
       expect(ids, contains('use-path-package'));
       expect(ids, contains('generate-test-mocks'));
       expect(ids, contains('matcher-best-practices'));
+      expect(ids, contains('seal-type-hierarchies'));
     });
 
     test('all rules define valid category and lifecycle metadata', () {
@@ -221,8 +222,9 @@ void main() {
           PathPackageRule(),
           MockGenerationRule(),
           MatcherBestPracticesRule(),
+          SealedHierarchyRule(),
         };
-        expect(constSet, hasLength(6));
+        expect(constSet, hasLength(7));
       },
     );
 
@@ -317,7 +319,7 @@ void main() {
       final block = generateDiscoveryRulesBlock();
       expect(block, startsWith(discoveryRulesStartTag));
       expect(block, endsWith(discoveryRulesEndTag));
-      expect(block, contains('across 6 built-in rules:'));
+      expect(block, contains('across 7 built-in rules:'));
       for (final rule in defaultDiscoveryRules) {
         expect(block, contains(rule.category.label));
         expect(block, contains(rule.target.skillName));

@@ -1,1 +1,6 @@
 ## 0.1.0-wip
+
+- Introduce package-level AST fact analysis (`PackageFacts`) via `package:analyzer`.
+- Add `SealedHierarchyRule` to detect unsealed closed algebraic type hierarchies.
+- Rewrite `PathPackageRule` using AST string interpolation visitor.
+- Add `dart-seal-type-hierarchies` skill with abstention guardrails.
