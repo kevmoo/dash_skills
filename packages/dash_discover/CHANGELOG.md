@@ -9,3 +9,4 @@
 - Removed synthetic `Priority` enum in favor of deterministic sorting by `SkillLifecycle`, `Confidence`, and affected file count.
 - Removed `EncapsulatedMethodObjectRule` and its heuristic regex scanner.
 - Removed `DocExamplesRule` to eliminate false-positive flags on standard inline markdown doc examples.
+- Added `MatcherBestPracticesRule` to detect unidiomatic `expect()` matcher assertions in test suites.
