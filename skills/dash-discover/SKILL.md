@@ -30,6 +30,19 @@ Use this skill when:
   still harbor outdated pre-Dart 3 constructs, legacy matcher assertions,
   unstructured CLI entrypoints, or rotting doc examples.
 
+### When NOT to use (Abstention Guardrails)
+
+Do NOT run or prescribe discovery scans when:
+- **Non-Dart / Non-Flutter Projects**: The repository or directory has no
+  `pubspec.yaml` or Dart source files (e.g. pure documentation repositories or
+  external language services).
+- **Targeted Single-File Edits or Bug Fixes**: The user is requesting a
+  narrow, isolated bug fix or single-file adjustment. Do not derail the turn into
+  a broad repository-wide architectural audit unless specifically solicited.
+- **Active In-Flight Breaking Migrations**: The repository is midway through a
+  breaking SDK upgrade or uncommitted refactoring. Allow primary migrations to
+  stabilize before running discovery sweeps.
+
 ---
 
 ## 2. Core Mental Model: The Analyzer Blindspot

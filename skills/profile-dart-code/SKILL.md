@@ -22,6 +22,20 @@ bottlenecks in Dart command-line applications.
 - When investigating hot loops, heavy function calls, or unexpected execution
   overhead.
 
+### When NOT to use (Abstention Guardrails)
+
+Do NOT profile using this skill when:
+- **Pure I/O-Bound Bottlenecks**: The performance bottleneck is network
+  latency, database queries, or disk I/O wait rather than CPU execution.
+- **Flutter UI Applications**: The target is a Flutter application requiring
+  frame profiling, raster thread inspection, or widget rebuild tracking (use
+  Flutter DevTools or `widget_inspector`).
+- **Short-Lived Micro-Benchmarks**: Micro-benchmarks running for only a few
+  milliseconds where VM warmup and sampling overhead skew results (use
+  `package:benchmark_harness` or `package:bench_press` instead).
+- **Target Does Not Run Cleanly**: If the target script fails to compile or
+  crashes on startup, fix functional bugs before attempting CPU profiling.
+
 ## Workflow
 1. **Ensure clean compilation**: Make sure the target Dart script runs cleanly
    (`dart run <script.dart>`).

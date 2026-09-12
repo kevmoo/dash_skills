@@ -20,6 +20,22 @@ Use this skill when:
 - Looking for idiomatic ways to handle multiple return values, deep data
   extraction, or exhaustive checking.
 
+### When NOT to use (Abstention Guardrails)
+
+Do NOT apply modern features or refactor code when:
+- **SDK Constraint < 3.0.0**: The package's `pubspec.yaml` specifies an SDK
+  constraint that supports Dart 2.x (e.g., `sdk: '>=2.19.0 <4.0.0'`).
+  Refactoring to Dart 3 features will introduce syntax errors for Dart 2 users.
+- **Single-Variable Type Promotion**: Checking a single variable or parameter
+  where standard `if (x is Foo)` is clearer, more concise, and avoids creating
+  unnecessary alias variables compared to `if (x case final Foo f)`.
+- **Non-Algebraic Boolean Branching**: Branching on independent boolean flags,
+  side-effecting conditions, or early-exit guard clauses (`if (!condition) return;`).
+  Do not force these into switch expressions.
+- **Deep Expression Nesting**: Complex multi-step operations where converting a
+  switch statement into a deeply nested switch expression obscures intent, harms
+  debugger step-through capability, or hurts stack trace readability.
+
 ## Discovery
 
 To find candidates for modernization:

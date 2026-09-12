@@ -23,6 +23,21 @@ Use this skill when:
 -   Formatting large user-facing text output (like CLI help menus, reports, or
     templated messages) to be readable, maintainable, and performant.
 
+### When NOT to use (Abstention Guardrails)
+
+Do NOT refactor to multiline strings when:
+- **Short, Single-Line Outputs**: Strings that comfortably fit on a single line
+  (<80 chars) without embedded newlines.
+- **Localized String Catalogs**: Strings that are looked up from localization
+  bundles (e.g. `intl`, ARB files), where line breaks or formatting must
+  conform to external translation tooling.
+- **Raw Query Strings with Strict Whitespace Semantics**: Protocol strings,
+  strict CSV rows, or queries where indentation whitespace inside triple quotes
+  would alter payload semantics or introduce unintended leading spaces.
+- **Streaming or Incremental I/O**: Progress bars, spinners, or interactive
+  console streams where individual writes occur with delays or flushing between
+  lines.
+
 ## Discovery
 
 To find candidate code blocks for multi-line string refactoring:
