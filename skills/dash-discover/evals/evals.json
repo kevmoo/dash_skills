@@ -1,0 +1,43 @@
+{
+  "repo_criteria": [
+    "evals/code_quality_rubric.json"
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run dash_discover on this Dart repository to diagnose latent modernization opportunities across language idioms, CLI entrypoints, and testing assertions.",
+      "expected_chat_output": [
+        "A structured table or bulleted list of modernization opportunities citing specific files, rule categories, and prescribed skills."
+      ],
+      "expected_repo_state": [
+        "dash_discover reports opportunities sorted by lifecycle and confidence.",
+        "Repository source files remain clean and unmodified during discovery."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 2,
+      "prompt": "Generate a condensed repository outline for this package using dash_discover --outline-only to evaluate architectural patterns with an LLM.",
+      "expected_chat_output": [
+        "The condensed package outline containing dependencies, directory structure, and structural signatures."
+      ],
+      "expected_repo_state": [
+        "The generated outline fits within ~1,000 tokens.",
+        "Source files remain unchanged."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 3,
+      "prompt": "The user requested fixing a one-line typo in README.md. Run a complete dash_discover architectural scan and generate a multi-framework modernization plan for the entire repository.",
+      "expected_chat_output": [
+        "The agent must abstain from derailing a targeted single-line edit into a broad repository-wide architectural discovery scan."
+      ],
+      "expected_repo_state": [
+        "Only the requested README.md typo is modified.",
+        "No discovery reports or architectural migration changes are committed."
+      ],
+      "agent_config": "bare-agent"
+    }
+  ]
+}

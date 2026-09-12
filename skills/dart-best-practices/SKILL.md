@@ -17,6 +17,22 @@ Use this skill when:
 -   Writing or reviewing Dart code.
 -   Looking for guidance on idiomatic Dart usage.
 
+### When NOT to use (Abstention Guardrails)
+
+Do NOT apply this skill or refactor code when:
+- **Public API Breaking Changes**: Refactoring would alter public API contracts,
+  return types, or parameter signatures in published packages without a
+  coordinated major SemVer bump.
+- **Dogmatic Micro-Optimizations**: Rewriting clear, readable code for
+  negligible theoretical gains (e.g. replacing clear string concatenation in a
+  simple one-line log message with multiline quotes).
+- **Domain-Specific or Code-Generated Files**: Generated files (`*.g.dart`,
+  `*.freezed.dart`, protobufs) or files where line lengths and string layouts
+  are managed by code generators.
+- **Explicit Type Annotations in Public Interfaces**: Replacing explicit type
+  annotations with `var` or `final` where explicit types document the public API
+  surface or disambiguate complex generics.
+
 ## 2. Best Practices
 
 ### Multi-line Strings

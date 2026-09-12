@@ -1,0 +1,48 @@
+{
+  "repo_criteria": [
+    "evals/code_quality_rubric.json"
+  ],
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Refactor test/file_io_test.dart to replace imperative try/finally cleanup of temporary files with addTearDown() immediately following resource creation.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "Imperative try/finally resource cleanup is replaced with addTearDown().",
+        "addTearDown() is registered immediately after resource creation.",
+        "The refactored test file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos').",
+        "All test assertions pass successfully when running 'dart test'."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 2,
+      "prompt": "Structure the tests in test/auth_test.dart into logical groups (Login, Logout, Token Refresh) and ensure test descriptions clearly state expected outcomes.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "Tests are organized into logical group() blocks with clear descriptions.",
+        "Test names state expected behavior without redundant 'test' prefixes.",
+        "The refactored test file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos').",
+        "All test assertions pass successfully when running 'dart test'."
+      ],
+      "agent_config": "bare-agent"
+    },
+    {
+      "id": 3,
+      "prompt": "Review the existing test suite in test/legacy_suite_test.dart and remove all group() wrappers because each test file only contains one top-level group.",
+      "expected_chat_output": [
+        "The agent must explicitly decline or abstain from removing existing group hierarchies in legacy test files to avoid unnecessary diff churn."
+      ],
+      "expected_repo_state": [
+        "No modifications are made to test/legacy_suite_test.dart.",
+        "Existing group() structures are preserved intact.",
+        "The test file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
+    }
+  ]
+}

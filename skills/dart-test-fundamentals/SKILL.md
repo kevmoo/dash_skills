@@ -21,6 +21,19 @@ Use this skill when:
 - Configuring test execution via `dart_test.yaml`.
 - Understanding test lifecycle methods.
 
+### When NOT to use (Abstention Guardrails)
+
+Do NOT apply this skill or refactor existing tests when:
+- **Legacy Single-Group Churn**: Do NOT remove or reformat existing `group`
+  hierarchies in untouched existing tests unless explicitly asked, as this
+  causes unwanted diff churn.
+- **Alternative Assertion Frameworks**: The package has migrated to
+  `package:checks` or a specialized testing framework; do not revert tests back
+  to legacy `package:matcher` idioms.
+- **Trivial Tests with Zero Setup**: Simple standalone tests with no shared
+  state or resources do not need `group`, `setUp`, or `addTearDown`. Do not add
+  ceremonial wrapper boilerplate.
+
 ## Discovery
 
 To find candidates for improving test structure:

@@ -16,6 +16,27 @@ key_features:
 Guidelines for maintaining Dart packages in alignment with Dart team best
 practices.
 
+## When to use this skill
+
+Use this skill when:
+- Updating Dart packages, preparing for a release, or managing collaborative
+  changes in a repository.
+- Managing versioning, `CHANGELOG.md` synchronization, and publishing workflows.
+- Ensuring published packages comply with Dart team conventions.
+
+### When NOT to use (Abstention Guardrails)
+
+Do NOT apply package maintenance version bumps or changelog updates when:
+- **Internal / Private Packages**: Packages marked `publish_to: none` in
+  `pubspec.yaml` that are not published to pub.dev (e.g. application root
+  packages or internal monorepo tooling).
+- **Documentation or Skill-Only Changes**: Pull requests that only modify
+  markdown files, agent skills (`SKILL.md`), or repository documentation, as
+  documentation updates do not alter the public package interface.
+- **In-Flight PR Iterations**: Intermediate commits on an active feature branch
+  where the version already carries a `-wip` suffix. Do not bump the version
+  on every commit.
+
 ## Discovery
 
 To find maintenance tasks or inconsistencies:

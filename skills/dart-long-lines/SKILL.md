@@ -19,6 +19,22 @@ Use this skill when:
 -   Refactoring code to comply with the `lines_longer_than_80_chars` lint.
     Reference: https://dart.dev/tools/linter-rules/lines_longer_than_80_chars
 
+### When NOT to use (Abstention Guardrails)
+
+Do NOT break lines or alter code when:
+- **Unbreakable URLs & URIs**: Lines contain long HTTP/HTTPS URLs, import URIs,
+  or file paths where breaking them across lines would invalidate the link.
+- **Complex Regular Expression Literals**: Long RegExp patterns
+  (`RegExp(r'...')`) where inserting whitespace or line breaks changes the
+  matching semantics.
+- **ASCII Art, Tables, or Preformatted Diagrams**: Preformatted text blocks,
+  table rows, or ASCII diagrams inside comments or strings where wrapping lines
+  destroys visual alignment.
+- **Prior to Automated Formatting**: Do NOT manually break code lines before
+  running `dart format`. Let `dart format` handle code wrapping automatically;
+  only manually wrap comments, docs, and multi-line strings that the formatter
+  does not re-wrap.
+
 ## Discovery
 
 To find lines that exceed the limit:
