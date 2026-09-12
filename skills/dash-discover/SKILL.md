@@ -55,16 +55,16 @@ the specialized skills equipped to remediate them.
 
 ### Tier 1: Fast Static Heuristics (<50ms)
 
-Run the local discovery CLI tool from the repository root:
+Run the discovery CLI from anywhere in the workspace:
 
 ```bash
-dart run tool/bin/discover.dart <path-to-target-package>
+dart run dash_discover <path-to-target-package>
 ```
 
 Or for structured machine ingestion:
 
 ```bash
-dart run tool/bin/discover.dart <path-to-target-package> --json
+dart run dash_discover <path-to-target-package> --json
 ```
 
 The static scanner performs rapid, zero-network checks:
@@ -86,7 +86,7 @@ The static scanner performs rapid, zero-network checks:
 To capture complex cross-cutting architectural patterns beyond regexes:
 1. Generate the condensed repository outline (~1k tokens):
    ```bash
-   dart run tool/bin/discover.dart <path-to-target-package> --outline-only
+   dart run dash_discover <path-to-target-package> --outline-only
    ```
 2. The outline captures:
    - `pubspec.yaml` (dependencies, dev-dependencies, SDK constraints).

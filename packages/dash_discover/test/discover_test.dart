@@ -1,15 +1,23 @@
 import 'dart:io';
+import 'package:dash_discover/dash_discover.dart';
+import 'package:dash_discover/src/outline_generator.dart';
+import 'package:dash_discover/src/skills_catalog.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
-import '../lib/src/discovery_engine.dart';
-import '../lib/src/outline_generator.dart';
-import '../lib/src/skills_catalog.dart';
-import '../lib/src/static_discovery.dart';
+
+Directory _findRepoRoot(Directory start) {
+  var dir = start.absolute;
+  while (dir.path != dir.parent.path) {
+    if (Directory(p.join(dir.path, 'skills')).existsSync()) {
+      return dir;
+    }
+    dir = dir.parent;
+  }
+  return start;
+}
 
 void main() {
-  final repoRoot = Directory.current.path.endsWith('tool')
-      ? Directory.current.parent
-      : Directory.current;
+  final repoRoot = _findRepoRoot(Directory.current);
 
   group('SkillsCatalog', () {
     test('discovers skills in repo root', () {

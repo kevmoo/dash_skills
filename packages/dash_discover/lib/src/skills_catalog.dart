@@ -28,15 +28,23 @@ class SkillsCatalog {
 
   SkillsCatalog(this.skills);
 
-  factory SkillsCatalog.discover({List<String>? searchPaths}) {
-    final paths = searchPaths ?? [];
+  factory SkillsCatalog.discover({
+    List<String>? searchPaths,
+    Directory? workingDirectory,
+  }) {
+    final paths = searchPaths != null
+        ? List<String>.from(searchPaths)
+        : <String>[];
     if (paths.isEmpty) {
-      // Default search: repo skills/ directory
-      final current = Directory.current;
-      final repoRoot = current.path.endsWith('tool') ? current.parent : current;
-      final localSkills = Directory(p.join(repoRoot.path, 'skills'));
-      if (localSkills.existsSync()) {
-        paths.add(localSkills.path);
+      // Walk up to find repo skills/ directory
+      var dir = (workingDirectory ?? Directory.current).absolute;
+      while (dir.path != dir.parent.path) {
+        final localSkills = Directory(p.join(dir.path, 'skills'));
+        if (localSkills.existsSync()) {
+          paths.add(localSkills.path);
+          break;
+        }
+        dir = dir.parent;
       }
     }
 

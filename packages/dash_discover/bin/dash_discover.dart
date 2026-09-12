@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:args/args.dart';
-import '../lib/src/discovery_engine.dart';
-import '../lib/src/rules_registry.dart';
-import '../lib/src/skills_catalog.dart';
-import '../lib/src/static_discovery.dart';
+import 'package:dash_discover/dash_discover.dart';
+import 'package:dash_discover/src/skills_catalog.dart';
 
 void main(List<String> args) {
   final parser = ArgParser()

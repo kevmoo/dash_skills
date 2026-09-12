@@ -1,0 +1,16 @@
+name: dash_discover
+description: Meta-skill discovery engine for Dart and Flutter workspaces.
+version: 0.1.0-wip
+repository: https://github.com/kevmoo/dash_skills/tree/main/packages/dash_discover
+
+environment:
+  sdk: ^3.9.0
+resolution: workspace
+
+dependencies:
+  args: ^2.4.0
+  path: ^1.9.0
+  yaml: ^3.1.0
+
+dev_dependencies:
+  test: ^1.24.0
