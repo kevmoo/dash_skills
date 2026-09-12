@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:args/args.dart';
 import '../lib/src/discovery_engine.dart';
+import '../lib/src/rules_registry.dart';
 import '../lib/src/skills_catalog.dart';
+import '../lib/src/static_discovery.dart';
 
 void main(List<String> args) {
   final parser = ArgParser()
@@ -16,6 +18,17 @@ void main(List<String> args) {
       'prompt-only',
       negatable: false,
       help: 'Output only the assembled LLM probe prompt.',
+    )
+    ..addOption(
+      'rule',
+      abbr: 'r',
+      help:
+          'Run only a specific rule by ID (e.g. checks-migration, pattern-matching).',
+    )
+    ..addFlag(
+      'list-rules',
+      negatable: false,
+      help: 'List all available discovery rules and their upstream targets.',
     )
     ..addOption(
       'skills-dir',
@@ -37,6 +50,20 @@ void main(List<String> args) {
     exit(0);
   }
 
+  if (results['list-rules'] as bool) {
+    print('Available Discovery Rules (${defaultDiscoveryRules.length}):\n');
+    for (final rule in defaultDiscoveryRules) {
+      print('• ${rule.id} (${rule.category})');
+      print('  Skill:  ${rule.target.skillName}');
+      print('  Target: ${rule.target.githubUrl}');
+      if (rule.target.commitSha != null) {
+        print('  Pinned: ${rule.target.commitSha}');
+      }
+      print('');
+    }
+    exit(0);
+  }
+
   final targetPath = results.rest.isNotEmpty ? results.rest.first : '.';
   final absPath = Directory(targetPath).absolute.path;
 
@@ -45,12 +72,25 @@ void main(List<String> args) {
     exit(1);
   }
 
+  final ruleId = results['rule'] as String?;
+  final activeRules = ruleId != null
+      ? defaultDiscoveryRules.where((r) => r.id == ruleId).toList()
+      : defaultDiscoveryRules;
+
+  if (ruleId != null && activeRules.isEmpty) {
+    stderr.writeln('Error: No rule found matching ID "$ruleId".');
+    stderr.writeln(
+      'Available rules: ${defaultDiscoveryRules.map((r) => r.id).join(', ')}',
+    );
+    exit(1);
+  }
+
   final skillsDir = results['skills-dir'] as String?;
   final catalog = SkillsCatalog.discover(
     searchPaths: skillsDir != null ? [skillsDir] : null,
   );
 
-  final engine = DiscoveryEngine(absPath, catalog: catalog);
+  final engine = DiscoveryEngine(absPath, catalog: catalog, rules: activeRules);
   final report = engine.run();
 
   if (results['outline-only'] as bool) {

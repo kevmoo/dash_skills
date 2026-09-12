@@ -59,15 +59,19 @@ class DiscoveryReport {
 class DiscoveryEngine {
   final String packagePath;
   final SkillsCatalog catalog;
+  final List<DiscoveryRule>? rules;
 
-  DiscoveryEngine(this.packagePath, {SkillsCatalog? catalog})
+  DiscoveryEngine(this.packagePath, {SkillsCatalog? catalog, this.rules})
     : catalog = catalog ?? SkillsCatalog.discover();
 
   DiscoveryReport run() {
     final packageName = p.basename(packagePath);
 
     // Tier 1: Fast Static Heuristics (<50ms)
-    final staticEngine = StaticDiscoveryEngine(packagePath);
+    final staticEngine = StaticDiscoveryEngine.forPath(
+      packagePath,
+      rules: rules,
+    );
     final staticOpportunities = staticEngine.scan();
 
     // Tier 2: Token-Efficient Outline Assembly

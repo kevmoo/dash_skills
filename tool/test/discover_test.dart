@@ -3,6 +3,10 @@ import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 import '../lib/src/discovery_engine.dart';
 import '../lib/src/outline_generator.dart';
+import '../lib/src/rules/checks_migration_rule.dart';
+import '../lib/src/rules/cli_app_rule.dart';
+import '../lib/src/rules/doc_examples_rule.dart';
+import '../lib/src/rules/pattern_matching_rule.dart';
 import '../lib/src/skills_catalog.dart';
 import '../lib/src/static_discovery.dart';
 
@@ -44,18 +48,30 @@ void main() {
     });
   });
 
-  group('StaticDiscoveryEngine', () {
+  group('Individual Discovery Rules', () {
     late Directory tempDir;
 
     setUp(() {
-      tempDir = Directory.systemTemp.createTempSync('static_discovery_test_');
+      tempDir = Directory.systemTemp.createTempSync('rule_test_');
     });
 
     tearDown(() {
       tempDir.deleteSync(recursive: true);
     });
 
-    test('flags missing package:checks when package:test is used', () {
+    test('ChecksMigrationRule declares unambiguous upstream GitHub target', () {
+      final rule = ChecksMigrationRule();
+      expect(rule.target.org, 'dart-lang');
+      expect(rule.target.repo, 'skills');
+      expect(rule.target.path, 'skills/dart-migrate-to-checks-package');
+      expect(rule.target.commitSha, isNotNull);
+      expect(
+        rule.target.githubUrl.toString(),
+        contains('github.com/dart-lang/skills/tree/${rule.target.commitSha}'),
+      );
+    });
+
+    test('ChecksMigrationRule evaluates in-memory context', () {
       File(p.join(tempDir.path, 'pubspec.yaml')).writeAsStringSync('''
 name: sample_pkg
 environment:
@@ -68,16 +84,17 @@ dev_dependencies:
         p.join(testDir.path, 'sample_test.dart'),
       ).writeAsStringSync('void main() {}');
 
-      final engine = StaticDiscoveryEngine(tempDir.path);
-      final opps = engine.scan();
+      final context = PackageContext.load(tempDir.path);
+      final rule = ChecksMigrationRule();
 
-      expect(
-        opps.map((o) => o.skill),
-        contains('dart-migrate-to-checks-package'),
-      );
+      expect(rule.appliesTo(context), isTrue);
+      final opps = rule.evaluate(context).toList();
+      expect(opps, hasLength(1));
+      expect(opps.single.skill, 'dart-migrate-to-checks-package');
+      expect(opps.single.target.org, 'dart-lang');
     });
 
-    test('flags ad-hoc CLI entrypoints without CommandRunner', () {
+    test('CliAppRule flags ad-hoc CLI entrypoints without CommandRunner', () {
       File(p.join(tempDir.path, 'pubspec.yaml')).writeAsStringSync('''
 name: cli_pkg
 environment:
@@ -90,15 +107,70 @@ void main(List<String> args) {
 }
 ''');
 
-      final engine = StaticDiscoveryEngine(tempDir.path);
-      final opps = engine.scan();
+      final context = PackageContext.load(tempDir.path);
+      final rule = CliAppRule();
 
-      expect(opps.map((o) => o.skill), contains('dart-build-cli-app'));
+      expect(rule.appliesTo(context), isTrue);
+      final opps = rule.evaluate(context).toList();
+      expect(opps, hasLength(1));
+      expect(opps.single.skill, 'dart-build-cli-app');
+    });
+
+    test(
+      'PatternMatchingRule detects legacy type cascades in source files',
+      () {
+        final libDir = Directory(p.join(tempDir.path, 'lib'))..createSync();
+        File(p.join(libDir.path, 'source.dart')).writeAsStringSync('''
+void parse(Object x) {
+  if (x is int) {
+    print("int");
+  } else if (x is String) {
+    print("string");
+  }
+}
+''');
+
+        final context = PackageContext.load(tempDir.path);
+        final rule = PatternMatchingRule();
+        final opps = rule.evaluate(context).toList();
+
+        expect(opps, hasLength(1));
+        expect(opps.single.skill, 'dart-use-pattern-matching');
+      },
+    );
+
+    test('DocExamplesRule detects unverified inline doc examples', () {
+      final libDir = Directory(p.join(tempDir.path, 'lib'))..createSync();
+      File(p.join(libDir.path, 'source.dart')).writeAsStringSync('''
+/// ```dart
+/// var x = 1;
+/// ```
+void foo() {}
+''');
+
+      final context = PackageContext.load(tempDir.path);
+      final rule = DocExamplesRule();
+      final opps = rule.evaluate(context).toList();
+
+      expect(opps, hasLength(1));
+      expect(opps.single.skill, 'dart-use-doc-examples');
     });
   });
 
-  group('DiscoveryEngine', () {
-    test('runs complete discovery report', () {
+  group('DiscoveryEngine & Registry', () {
+    test('defaultDiscoveryRules contains all 7 rules', () {
+      expect(defaultDiscoveryRules, hasLength(7));
+      final ids = defaultDiscoveryRules.map((r) => r.id).toSet();
+      expect(ids, contains('checks-migration'));
+      expect(ids, contains('pattern-matching'));
+      expect(ids, contains('doc-examples'));
+      expect(ids, contains('build-cli-app'));
+      expect(ids, contains('use-path-package'));
+      expect(ids, contains('generate-test-mocks'));
+      expect(ids, contains('encapsulated-method-object'));
+    });
+
+    test('runs complete discovery report on package', () {
       final engine = DiscoveryEngine(repoRoot.path);
       final report = engine.run();
 
