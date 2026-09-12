@@ -52,5 +52,27 @@ void main() {
       final context = PackageContext.load(Directory.current.path);
       expect(rule.checkFile(file, content, context), isNotNull);
     });
+
+    test('detects complex dotted property interpolation', () {
+      const content = '''
+void main() {
+  final path = '\${config.dir}/lib/src/entry.dart';
+}
+''';
+      final file = File('test/isolated_dotted_interp.dart');
+      final context = PackageContext.load(Directory.current.path);
+      expect(rule.checkFile(file, content, context), isNotNull);
+    });
+
+    test('abstains on raw string literals', () {
+      const content = '''
+void main() {
+  const pattern = r'\$dir/lib';
+}
+''';
+      final file = File('test/isolated_raw_string.dart');
+      final context = PackageContext.load(Directory.current.path);
+      expect(rule.checkFile(file, content, context), isNull);
+    });
   });
 }

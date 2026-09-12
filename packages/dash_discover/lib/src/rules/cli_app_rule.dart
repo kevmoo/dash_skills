@@ -65,7 +65,10 @@ final class CliAppRule extends DiscoveryRule {
 
     // 3. Thin Trampoline Guardrail (<30 non-empty lines delegating to package library)
     final lines = content.split('\n').where((l) => l.trim().isNotEmpty).length;
-    if (lines <= 30 && content.contains('package:${context.packageName}/')) {
+    if (lines <= 30 &&
+        (content.contains('package:${context.packageName}/') ||
+            content.contains("import '../lib/") ||
+            content.contains('import "../lib/'))) {
       return null;
     }
 
@@ -98,11 +101,14 @@ final class CliAppRule extends DiscoveryRule {
     if (!appliesTo(context)) return;
 
     final adHocFiles = <String>[];
+    final monolithicFiles = <String>[];
     for (final file in context.binFiles) {
       final content = context.readContent(file);
       final check = checkFile(file, content, context);
-      if (check != null) {
+      if (check == 'Ad-hoc CLI entrypoint without package:args') {
         adHocFiles.add(context.relativePath(file));
+      } else if (check == 'Monolithic CLI entrypoint in bin/') {
+        monolithicFiles.add(context.relativePath(file));
       }
     }
 
@@ -118,6 +124,21 @@ final class CliAppRule extends DiscoveryRule {
         prescription:
             'Structure CLI with `package:args` (CommandRunner or ArgParser) for standardized flags, POSIX exit codes, and stdout/stderr separation.',
         evidence: adHocFiles,
+      );
+    }
+
+    if (monolithicFiles.isNotEmpty) {
+      yield Opportunity(
+        target: target,
+        category: category,
+        lifecycle: lifecycle,
+        confidence: Confidence.medium,
+        affectedCount: monolithicFiles.length,
+        diagnosis:
+            '${monolithicFiles.length} CLI entrypoint(s) in bin/ contain monolithic logic (>120 lines) directly in bin/.',
+        prescription:
+            'Adopt the thin entrypoint pattern by moving CLI logic to `lib/src/` or decompose into `CommandRunner`.',
+        evidence: monolithicFiles,
       );
     }
   }

@@ -23,6 +23,9 @@ class AbstentionDemo {
     // API route path
     final route = '/api/$endpoint';
 
-    print('$url1 $url2 $uri $fileUri $mime $textMime $ratio $route');
+    // Raw string: $ is not an interpolation
+    const rawPath = r'$dir/lib';
+
+    print('$url1 $url2 $uri $fileUri $mime $textMime $ratio $route $rawPath');
   }
 }

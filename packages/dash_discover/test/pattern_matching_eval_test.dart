@@ -88,5 +88,35 @@ void execute(Priority p) {
       final context = PackageContext.load(Directory.current.path);
       expect(rule.checkFile(file, content, context), isNull);
     });
+
+    test(
+      'abstains on separate methods with isolated single else-if checks',
+      () {
+        const content = '''
+void methodOne(Object? a) {
+  if (a == null) {
+    return;
+  } else if (a is String) {
+    print(a);
+  }
+}
+
+void methodTwo(Object? b) {
+  if (b == null) {
+    return;
+  } else if (b is int) {
+    print(b);
+  }
+}
+''';
+        final file = File('test/isolated_separate_methods.dart');
+        final context = PackageContext.load(Directory.current.path);
+        expect(
+          rule.checkFile(file, content, context),
+          isNull,
+          reason: 'Must not scan across separate method boundaries',
+        );
+      },
+    );
   });
 }

@@ -61,6 +61,20 @@ void main() {
       );
     });
 
+    test('abstains on thin entrypoint using relative lib import', () {
+      const content = '''
+import 'dart:io';
+import '../lib/src/runner.dart';
+
+Future<void> main(List<String> args) async {
+  exitCode = await run(args);
+}
+''';
+      final file = File('bin/runner.dart');
+      final context = PackageContext.load(Directory.current.path);
+      expect(rule.checkFile(file, content, context), isNull);
+    });
+
     test('abstains on HTTP server entrypoint (Abstention Guardrails)', () {
       final file = File(p.join(fixturesDir.path, 'negative_abstention.dart'));
       final context = PackageContext.load(Directory.current.path);

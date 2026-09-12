@@ -15,12 +15,12 @@ final class PatternMatchingRule extends FileDiscoveryRule {
   // Either `if (x is A) ... else if (x is B)`
   // Or `else if (x is A) ... else if (x is B)`
   static final _typeCascadePattern = RegExp(
-    r'(?:\bif\s*\([^)]+\s+is\s+[^)]+\)[^{}]*\{[^{}]*\}\s*else\s+if\s*\([^)]+\s+is\s+[^)]+\)|else\s+if\s*\([^)]+\s+is\s+[^)]+\)[\s\S]*?else\s+if\s*\([^)]+\s+is\s+[^)]+\))',
+    r'(?:\bif\s*\([^)]+\s+is\s+[^)]+\)[^{}]*\{[^{}]*\}\s*else\s+if\s*\([^)]+\s+is\s+[^)]+\)|else\s+if\s*\([^)]+\s+is\s+[^)]+\)[^{}]*\{[^{}]*\}\s*else\s+if\s*\([^)]+\s+is\s+[^)]+\))',
   );
 
-  // Switch statement where cases return values or throw (candidates for switch expressions):
+  // Switch statement where a case immediately returns or throws (linear matching without backtracking):
   static final _returningSwitchPattern = RegExp(
-    r'switch\s*\([^)]+\)\s*\{(?:[^{}]*?(?:case\s+[^:]+|default)\s*:\s*)+(?:return\s+[^;]+;|throw\s+[^;]+;)',
+    r'\bswitch\s*\([^)]+\)\s*\{[^{}]*?\b(?:case\b[^:]+|default)\s*:\s*(?:return\b|throw\b)',
   );
 
   @override

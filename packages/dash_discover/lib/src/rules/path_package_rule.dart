@@ -12,11 +12,11 @@ final class PathPackageRule extends FileDiscoveryRule {
   const PathPackageRule();
 
   static final _pathInterpolationPattern = RegExp(
-    r'''(?<![\w/])\$\{?[a-zA-Z0-9_]+\}?/(?:lib|test|bin|src|[a-zA-Z0-9_-]+\.dart)''',
+    r'''(?<![\w/])\$\{?[a-zA-Z0-9_.]+\}?/(?:lib|test|bin|src|[a-zA-Z0-9_-]+\.dart)''',
   );
 
   static final _fileOrDirInterpolationPattern = RegExp(
-    r'''\b(?:File|Directory)\s*\(\s*['"][^'"]*?\$\{?[a-zA-Z0-9_]+\}?''',
+    r'''\b(?:File|Directory)\s*\(\s*['"][^'"]*?\$\{?[a-zA-Z0-9_.]+\}?''',
   );
 
   static final _mathDivisionInInterp = RegExp(r'\$\{[^}]*?\s/\s[^}]*?\}');
@@ -60,6 +60,11 @@ final class PathPackageRule extends FileDiscoveryRule {
       if (trimmed.startsWith('//') ||
           trimmed.startsWith('/*') ||
           trimmed.startsWith('*')) {
+        continue;
+      }
+
+      // Abstain on raw string literals (r'...' or r"...") where $ is not interpolated
+      if (trimmed.contains("r'") || trimmed.contains('r"')) {
         continue;
       }
 
