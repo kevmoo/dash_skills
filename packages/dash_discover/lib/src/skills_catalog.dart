@@ -62,7 +62,8 @@ class SkillsCatalog {
         scanDirectoryAncestors(currentDir);
       }
 
-      final home = Platform.environment['HOME'];
+      final home =
+          Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
       if (home != null) {
         addIfDirExists(p.join(home, '.agents', 'skills'));
       }

@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:dash_discover/dash_discover.dart';
 import 'package:dash_discover/src/outline_generator.dart';
-import 'package:dash_discover/src/skills_catalog.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -415,6 +414,11 @@ void main() {
       expect(opp.target.resolvedUri.scheme, equals('file'));
       expect(File(opp.target.localPath!).existsSync(), isTrue);
       expect(report.toMarkdown(), contains('Local file'));
+
+      final json = opp.toJson();
+      expect(json['is_local'], isTrue);
+      expect(json['local_path'], equals(opp.target.localPath));
+      expect(json['resolved_uri'], equals(opp.target.resolvedUri.toString()));
     });
 
     test('falls back to remote githubUrl when skill is not in catalog', () {
@@ -454,6 +458,11 @@ void main() {
       expect(opp.target.localPath, isNull);
       expect(opp.target.resolvedUri.scheme, equals('https'));
       expect(report.toMarkdown(), contains('Remote GitHub'));
+
+      final json = opp.toJson();
+      expect(json['is_local'], isFalse);
+      expect(json.containsKey('local_path'), isFalse);
+      expect(json['resolved_uri'], equals(opp.target.resolvedUri.toString()));
     });
   });
 

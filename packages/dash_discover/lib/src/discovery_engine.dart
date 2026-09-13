@@ -46,7 +46,7 @@ class DiscoveryReport {
         );
         final targetDesc = opp.target.isLocal
             ? 'Local file (`${opp.target.localPath}`)'
-            : 'Remote GitHub (`${opp.target.githubUrl}`)';
+            : 'Remote GitHub (${opp.target.githubUrl})';
         buffer.writeln('- **Target Skill**: $targetDesc');
         buffer.writeln('- **Lifecycle**: ${opp.lifecycle.label}');
         buffer.writeln('- **Confidence**: ${opp.confidence.label}');

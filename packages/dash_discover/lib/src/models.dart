@@ -156,6 +156,9 @@ class Opportunity implements Comparable<Opportunity> {
   Map<String, dynamic> toJson() => {
     'skill': skill,
     'target': target.toJson(),
+    'is_local': isLocal,
+    'resolved_uri': resolvedUri.toString(),
+    if (target.localPath != null) 'local_path': target.localPath,
     'category': category.name,
     'category_label': category.label,
     'lifecycle': lifecycle.name,
