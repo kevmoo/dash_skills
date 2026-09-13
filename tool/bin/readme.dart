@@ -29,9 +29,7 @@ void main(List<String> arguments) async {
     exit(1);
   }
 
-  final repoName = p.basename(repoRoot.path);
-  final repoSlug =
-      Platform.environment['GITHUB_REPOSITORY'] ?? 'kevmoo/$repoName';
+  final repoSlug = _resolveRepoSlug(repoRoot);
 
   final skillsDir = Directory(p.join(repoRoot.path, 'skills'));
   if (!skillsDir.existsSync()) {
@@ -198,4 +196,35 @@ String _getSkillTitle(String content, String fallback) {
       .where((word) => word.isNotEmpty)
       .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
       .join(' ');
+}
+
+String _resolveRepoSlug(Directory repoRoot) {
+  final env = Platform.environment['GITHUB_REPOSITORY'];
+  if (env != null && env.isNotEmpty) return env;
+
+  try {
+    final result = Process.runSync('git', [
+      'remote',
+      'get-url',
+      'origin',
+    ], workingDirectory: repoRoot.path);
+    if (result.exitCode == 0) {
+      final url = result.stdout.toString().trim();
+      final match = RegExp(
+        r'github\.com[:/]([^/]+)/([^/.]+)(?:\.git)?$',
+      ).firstMatch(url);
+      if (match != null) {
+        return '${match.group(1)}/${match.group(2)}';
+      }
+    }
+  } catch (_) {}
+
+  var repoName = p.basename(repoRoot.path);
+  if (repoName.startsWith('_')) {
+    final dashIndex = repoName.indexOf('-');
+    if (dashIndex != -1) {
+      repoName = repoName.substring(1, dashIndex);
+    }
+  }
+  return 'kevmoo/$repoName';
 }

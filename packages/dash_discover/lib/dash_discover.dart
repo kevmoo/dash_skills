@@ -1,3 +1,4 @@
+export 'src/cli.dart';
 export 'src/context.dart';
 export 'src/discovery_engine.dart';
 export 'src/models.dart';
