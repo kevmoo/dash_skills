@@ -133,9 +133,9 @@ When `dash-discover` produces recommendations:
      `--json` and a clickable link in Markdown.
    - If the target skill is installed locally (`is_local: true`), inspect and
      follow the local `SKILL.md` directly (`file://...`).
-   - If not installed locally, inspect the upstream definition at the
-     provided `github_url` or install the skill into your agent environment
-     before applying changes.
+   - If not installed locally, inspect the upstream definition at the provided
+     `github_url` or install the skill into your agent environment before
+     applying changes.
 3. **Verify Empirically**:
    - Ensure tests continue to pass (`dart test`).
    - Ensure analysis remains clean (`dart analyze`).
