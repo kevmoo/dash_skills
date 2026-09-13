@@ -15,6 +15,7 @@ key_features:
 ## 1. When to use this skill
 
 Use this skill when:
+
 - Writing or reviewing Dart code targeting Dart 3.0 or later.
 - Refactoring legacy Dart code to use modern, concise, and safe features.
 - Looking for idiomatic ways to handle multiple return values, deep data
@@ -23,6 +24,7 @@ Use this skill when:
 ### When NOT to use (Abstention Guardrails)
 
 Do NOT apply modern features or refactor code when:
+
 - **SDK Constraint < 3.0.0**: The package's `pubspec.yaml` specifies an SDK
   constraint that supports Dart 2.x (e.g., `sdk: '>=2.19.0 <4.0.0'`).
   Refactoring to Dart 3 features will introduce syntax errors for Dart 2 users.
@@ -33,40 +35,49 @@ Do NOT apply modern features or refactor code when:
   side-effecting conditions, or early-exit guard clauses
   (`if (!condition) return;`). Do not force these into switch expressions.
 - **Deep Expression Nesting**: Complex multi-step operations where converting a
-  switch statement into a deeply nested switch expression obscures intent,
-  harms debugger step-through capability, or hurts stack trace readability.
+  switch statement into a deeply nested switch expression obscures intent, harms
+  debugger step-through capability, or hurts stack trace readability.
 
 ## Discovery
 
 To find candidates for modernization:
 
 ### Switch Expressions
-Search for switch statements where every case assigns to the same variable
-or returns:
+
+Search for switch statements where every case assigns to the same variable or
+returns:
+
 - **Regex**: `switch\s*\([^)]+\)\s*\{\s*case`
 
 ### Pattern Matching Candidates
+
 Search for manual map or JSON property extraction and type checking:
+
 - **Regex**: `containsKey\(['"][^'"]+['"]\)`
 - **Regex**: `json\[['"][^'"]+['"]\]\s+is\s+`
 
 ### Null-Aware Elements
+
 Search for collection `if` statements checking for null:
+
 - **Regex**: `if\s*\(\w+\s*!=\s*null\)\s*\w+`
 
 ### Digit Separators
+
 Search for long numbers without separators:
+
 - **Regex**: `\b\d{6,}\b` (Matches numbers with 6 or more digits).
 
 ## 2. Features
 
 ### Records
+
 Use records as anonymous, immutable, aggregate structures to bundle multiple
 objects without defining a custom class. Prefer them for returning multiple
 values from a function or grouping related data temporarily.
 
-**Avoid:**
-Creating a dedicated class for simple multiple-value returns.
+**Avoid:** Creating a dedicated class for simple multiple-value returns.
+
 ```dart
 class UserResult {
   final String name;
@@ -79,8 +90,8 @@ UserResult fetchUser() {
 }
 ```
 
-**Prefer:**
-Using records to bundle types seamlessly on the fly.
+**Prefer:** Using records to bundle types seamlessly on the fly.
+
 ```dart
 (String, int) fetchUser() {
   return ('Alice', 42);
@@ -93,12 +104,13 @@ void main() {
 ```
 
 ### Patterns and Pattern Matching
+
 Use patterns to destructure complex data into local variables and match against
 specific shapes or values. Use them in `switch`, `if-case`, or variable
 declarations to unpack data directly.
 
-**Avoid:**
-Manually checking types, nulls, and keys for data extraction.
+**Avoid:** Manually checking types, nulls, and keys for data extraction.
+
 ```dart
 void processJson(Map<String, dynamic> json) {
   if (json.containsKey('name') && json['name'] is String &&
@@ -110,8 +122,9 @@ void processJson(Map<String, dynamic> json) {
 }
 ```
 
-**Prefer:**
-Combining type-checking, validation, and assignment into a single statement.
+**Prefer:** Combining type-checking, validation, and assignment into a single
+statement.
+
 ```dart
 void processJson(Map<String, dynamic> json) {
   if (json case {'name': String name, 'age': int age}) {
@@ -121,11 +134,13 @@ void processJson(Map<String, dynamic> json) {
 ```
 
 ### Switch Expressions
+
 Use switch expressions to return a value directly, eliminating bulky `case` and
 `break` statements.
 
-**Avoid:**
-Using switch statements where every branch simply returns or assigns a value.
+**Avoid:** Using switch statements where every branch simply returns or assigns
+a value.
+
 ```dart
 String describeStatus(int code) {
   switch (code) {
@@ -139,8 +154,8 @@ String describeStatus(int code) {
 }
 ```
 
-**Prefer:**
-Returning the evaluated expression directly using the `=>` syntax.
+**Prefer:** Returning the evaluated expression directly using the `=>` syntax.
+
 ```dart
 String describeStatus(int code) => switch (code) {
   200 => 'Success',
@@ -150,12 +165,14 @@ String describeStatus(int code) => switch (code) {
 ```
 
 ### Class Modifiers
+
 Use class modifiers (`sealed`, `final`, `base`, `interface`) to restrict how
 classes can be used outside their defines library. Prefer `sealed` for defining
 closed families of subtypes to enable exhaustive checking.
 
-**Avoid:**
-Using open `abstract` classes when the set of subclasses is known and fixed.
+**Avoid:** Using open `abstract` classes when the set of subclasses is known and
+fixed.
+
 ```dart
 abstract class Result {}
 
@@ -169,8 +186,9 @@ String handle(Result r) {
 }
 ```
 
-**Prefer:**
-Using `sealed` to guarantee to the compiler that all cases are covered.
+**Prefer:** Using `sealed` to guarantee to the compiler that all cases are
+covered.
+
 ```dart
 sealed class Result {}
 
@@ -184,11 +202,13 @@ String handle(Result r) => switch(r) {
 ```
 
 ### Extension Types
+
 Use extension types for a zero-cost wrapper around an existing type. Use them to
 restrict operations or add custom behavior without runtime overhead.
 
-**Avoid:**
-Allocating new wrapper objects just for domain-specific logic or type safety.
+**Avoid:** Allocating new wrapper objects just for domain-specific logic or type
+safety.
+
 ```dart
 class Id {
   final int value;
@@ -197,8 +217,9 @@ class Id {
 }
 ```
 
-**Prefer:**
-Using extension types which compile down to the underlying type at runtime.
+**Prefer:** Using extension types which compile down to the underlying type at
+runtime.
+
 ```dart
 extension type Id(int value) {
   bool get isValid => value > 0;
@@ -206,35 +227,38 @@ extension type Id(int value) {
 ```
 
 ### Digit Separators
+
 Use underscores (`_`) in number literals strictly to improve visual readability
 of large numeric values.
 
-**Avoid:**
-Long number literals that are difficult to read at a glance.
+**Avoid:** Long number literals that are difficult to read at a glance.
+
 ```dart
 const int oneMillion = 1000000;
 ```
 
-**Prefer:**
-Using underscores to separate thousands or other groupings.
+**Prefer:** Using underscores to separate thousands or other groupings.
+
 ```dart
 const int oneMillion = 1_000_000;
 ```
 
 ### Wildcard Variables
+
 Use wildcards (`_`) as non-binding variables or parameters to explicitly signal
 that a value is intentionally unused.
 
-**Avoid:**
-Inventing clunky, distinct variable names to avoid "unused variable" warnings.
+**Avoid:** Inventing clunky, distinct variable names to avoid "unused variable"
+warnings.
+
 ```dart
 void handleEvent(String ignoredName, int status) {
   print('Status: $status');
 }
 ```
 
-**Prefer:**
-Explicitly dropping the binding with an underscore.
+**Prefer:** Explicitly dropping the binding with an underscore.
+
 ```dart
 void handleEvent(String _, int status) {
   print('Status: $status');
@@ -242,11 +266,12 @@ void handleEvent(String _, int status) {
 ```
 
 ### Null-Aware Elements
+
 Use null-aware elements (`?`) inside collection literals to conditionally
 include items only if they evaluate to a non-null value.
 
-**Avoid:**
-Using collection `if` statements for simple null checks.
+**Avoid:** Using collection `if` statements for simple null checks.
+
 ```dart
 var names = [
   'Alice',
@@ -255,37 +280,42 @@ var names = [
 ];
 ```
 
-**Prefer:**
-Using the `?` prefix inline.
+**Prefer:** Using the `?` prefix inline.
+
 ```dart
 var names = ['Alice', ?optionalName, 'Charlie'];
 ```
 
 ### Dot Shorthands
+
 Use dot shorthands to omit the explicit type name when it can be confidently
 inferred from context, such as with enums or static fields.
 
-**Avoid:**
-Fully qualifying type names when the type is obvious from the context.
+**Avoid:** Fully qualifying type names when the type is obvious from the
+context.
+
 ```dart
 LogLevel currentLevel = LogLevel.info;
 ```
 
-**Prefer:**
-Reducing visual noise with inferred shorthand.
+**Prefer:** Reducing visual noise with inferred shorthand.
+
 ```dart
 LogLevel currentLevel = .info;
 ```
 
 ### Pragmatic Balance: When NOT to Over-Patternize
+
 Pattern matching and switch expressions should simplify code, not add syntactic
 overhead.
 
 #### 1. Prefer `is` Type Promotion over `if-case` for Single Variables
+
 If you only need to check a type or promote a variable, use standard `is` checks
 instead of `if-case` or `case` patterns that introduce shadow aliases.
 
 **Avoid:**
+
 ```dart
 // ❌ Anti-pattern: Introduces unnecessary alias variable `k`
 for (final MapEntry(:key, :value) in map.entries) {
@@ -296,6 +326,7 @@ for (final MapEntry(:key, :value) in map.entries) {
 ```
 
 **Prefer:**
+
 ```dart
 // ✅ Promotes `key` directly in-place without extra variables
 for (final MapEntry(:key, :value) in map.entries) {
@@ -306,11 +337,13 @@ for (final MapEntry(:key, :value) in map.entries) {
 ```
 
 #### 2. Consolidate Nullable Types in Switch Arms
+
 When mapping or returning values in a switch expression where both `null` and a
 type `T` are valid and passed through, match the nullable type `T?` directly
 rather than creating redundant `null` arms.
 
 **Avoid:**
+
 ```dart
 // ❌ Redundant separate null arm
 switch (value) {
@@ -321,6 +354,7 @@ switch (value) {
 ```
 
 **Prefer:**
+
 ```dart
 // ✅ Clean nullable pattern match
 switch (value) {
@@ -331,8 +365,8 @@ switch (value) {
 
 ## Related Skills
 
-- **[dart-best-practices]**: General code
-  style and foundational Dart idioms that predate or complement the modern
-  syntax features.
+- **[dart-best-practices]**: General code style and foundational Dart idioms
+  that predate or complement the modern syntax features.
 
-[dart-best-practices]: https://github.com/kevmoo/dash_skills/blob/main/skills/dart-best-practices/SKILL.md
+[dart-best-practices]:
+  https://github.com/kevmoo/dash_skills/blob/main/skills/dart-best-practices/SKILL.md

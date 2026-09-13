@@ -11,10 +11,13 @@ String generateDiscoveryRulesBlock([List<DiscoveryRule>? rules]) {
   final activeRules = rules ?? defaultDiscoveryRules;
   final buffer = StringBuffer();
   buffer.writeln(discoveryRulesStartTag);
+  buffer.writeln();
   buffer.writeln(
     'The static scanner performs rapid, zero-network checks across '
     '${activeRules.length} built-in rules:',
   );
+  buffer.writeln();
+  buffer.writeln('<!-- prettier-ignore -->');
   for (var i = 0; i < activeRules.length; i++) {
     final rule = activeRules[i];
     final num = i + 1;
@@ -23,6 +26,7 @@ String generateDiscoveryRulesBlock([List<DiscoveryRule>? rules]) {
       '${rule.description}',
     );
   }
+  buffer.writeln();
   buffer.write(discoveryRulesEndTag);
   return buffer.toString();
 }

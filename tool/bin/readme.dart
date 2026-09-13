@@ -54,11 +54,12 @@ void main(List<String> arguments) async {
         ..sort((a, b) => p.basename(a.path).compareTo(p.basename(b.path)));
 
   final listBuffer = StringBuffer();
-  listBuffer.writeln('<!-- SKILLS_LIST_START -->');
-  listBuffer.writeln('To install any skill individually:');
+  listBuffer.writeln('<!-- SKILLS_LIST_START -->\n');
+  listBuffer.writeln('To install any skill individually:\n');
   listBuffer.writeln('```bash');
   listBuffer.writeln('npx skills add $repoSlug --skill <skill-name>');
   listBuffer.writeln('```\n');
+  listBuffer.writeln('<!-- prettier-ignore -->');
   listBuffer.writeln('| Skill | Description | Key Features |');
   listBuffer.writeln('|-------|-------------|--------------|');
   for (final dir in skillDirs) {
@@ -96,7 +97,7 @@ void main(List<String> arguments) async {
       '| **[$title](skills/$skillName/SKILL.md)** | $cleanDescription | $cleanFeatures |',
     );
   }
-  listBuffer.write('<!-- SKILLS_LIST_END -->');
+  listBuffer.write('\n<!-- SKILLS_LIST_END -->');
 
   final generatedTable = listBuffer.toString();
 

@@ -17,6 +17,7 @@ Guidelines and automated tools for capturing CPU profiles and identifying
 bottlenecks in Dart command-line applications.
 
 ## When to use this skill
+
 - When asked to profile, optimize, or benchmark CPU execution of a Dart script
   or CLI tool.
 - When investigating hot loops, heavy function calls, or unexpected execution
@@ -25,8 +26,9 @@ bottlenecks in Dart command-line applications.
 ### When NOT to use (Abstention Guardrails)
 
 Do NOT profile using this skill when:
-- **Pure I/O-Bound Bottlenecks**: The performance bottleneck is network
-  latency, database queries, or disk I/O wait rather than CPU execution.
+
+- **Pure I/O-Bound Bottlenecks**: The performance bottleneck is network latency,
+  database queries, or disk I/O wait rather than CPU execution.
 - **Flutter UI Applications**: The target is a Flutter application requiring
   frame profiling, raster thread inspection, or widget rebuild tracking (use
   Flutter DevTools or `widget_inspector`).
@@ -37,14 +39,15 @@ Do NOT profile using this skill when:
   crashes on startup, fix functional bugs before attempting CPU profiling.
 
 ## Workflow
+
 1. **Ensure clean compilation**: Make sure the target Dart script runs cleanly
    (`dart run <script.dart>`).
 2. **Run Profiler Script**: Use the automated profiling helper script inside
    this skill directory to launch the target app with VM Service observability
    enabled, capture CPU samples, and output top-consuming functions.
-3. **Analyze & Optimize**: Review the self and total sample percentages
-   reported by the tool to pinpoint bottlenecks (e.g., excessive object
-   allocation, costly hashing, virtual dispatch overhead).
+3. **Analyze & Optimize**: Review the self and total sample percentages reported
+   by the tool to pinpoint bottlenecks (e.g., excessive object allocation,
+   costly hashing, virtual dispatch overhead).
 
 ## Running the Profiler Helper Script
 
@@ -54,11 +57,13 @@ for execution to complete (`--pause-isolates-on-exit`), retrieves CPU samples,
 and prints a clean summary while exporting the full JSON profile.
 
 Run it from any working directory:
+
 ```bash
 dart run <dash_skills_repo>/skills/profile-dart-code/scripts/bin/profile.dart --out=cpu_profile.json -- <path_to_target.dart> [target_arguments...]
 ```
 
 ### Script Arguments
+
 - `-o, --out=<file>`: Output file path to save the raw JSON CPU profile
   (default: `cpu_profile.json`).
 - `-p, --period=<micros>`: Sampling interval in microseconds (default: `1000`µs
@@ -66,13 +71,13 @@ dart run <dash_skills_repo>/skills/profile-dart-code/scripts/bin/profile.dart --
 - `-- <target.dart> [args...]`: The Dart script to profile, followed by any
   arguments passed to `main()`.
 
-> [!WARNING]
-> **Potential Hangs**: When profiling or debugging Dart targets using VM services,
-> target exceptions or connection issues can cause the process to hang
-> indefinitely. Ensure your target script handles timeouts, and monitor the
+> [!WARNING] **Potential Hangs**: When profiling or debugging Dart targets using
+> VM services, target exceptions or connection issues can cause the process to
+> hang indefinitely. Ensure your target script handles timeouts, and monitor the
 > process output.
 
 ### Example Output
+
 ```
 Connecting to VM service at ws://127.0.0.1:8181/ws...
 Target execution paused at exit. Retrieving CPU profile samples...
@@ -86,6 +91,7 @@ Saved complete JSON profile to: cpu_profile.json
 ```
 
 ## Best Practices for Interpreting Profiles
+
 1. **Focus on Self % vs. Total %**: High `self %` indicates where CPU time is
    spent directly inside a function's own body (math, loop branching, array
    indexing). High `total %` with low `self %` indicates a dispatcher or outer

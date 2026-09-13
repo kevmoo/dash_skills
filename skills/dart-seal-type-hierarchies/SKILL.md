@@ -17,8 +17,8 @@ key_features:
 
 Use this skill when:
 
-- A package declares an abstract base type whose subtypes are all defined in
-  the same library, but the base type is not marked `sealed`.
+- A package declares an abstract base type whose subtypes are all defined in the
+  same library, but the base type is not marked `sealed`.
 - Code branches over the members of such a hierarchy with `is` checks or a
   non-exhaustive `switch`, so adding a subtype later fails silently at runtime
   instead of loudly at compile time.
@@ -30,14 +30,13 @@ Use this skill when:
 Do NOT seal a type when:
 
 - **Subtypes span multiple libraries**: `sealed` requires every direct subtype
-  to be declared in the same library as the base type. If subtypes live in
-  other files (and are not `part of` the same library), the code will not
-  compile. Either move them or leave the hierarchy open.
-- **The type is public API and external extension is intended**: Sealing a
-  type exported from a published package is a **breaking change** for any
-  downstream package that extends or implements it. Plugin interfaces,
-  visitor bases, and extension points are meant to be open. Do not seal them
-  to win exhaustiveness.
+  to be declared in the same library as the base type. If subtypes live in other
+  files (and are not `part of` the same library), the code will not compile.
+  Either move them or leave the hierarchy open.
+- **The type is public API and external extension is intended**: Sealing a type
+  exported from a published package is a **breaking change** for any downstream
+  package that extends or implements it. Plugin interfaces, visitor bases, and
+  extension points are meant to be open. Do not seal them to win exhaustiveness.
 - **The base type is concrete and instantiated**: `sealed` implies `abstract`.
   If callers construct the base type directly, sealing it breaks them, and the
   fix is a larger refactor than this skill covers.
@@ -63,8 +62,8 @@ present-day compile error.
 
 This is a different concern from preferring pattern matching for readability.
 Pattern matching over an unsealed hierarchy is a style choice. Sealing the
-hierarchy is a correctness guarantee, and the ergonomic payoff is a
-consequence, not the goal.
+hierarchy is a correctness guarantee, and the ergonomic payoff is a consequence,
+not the goal.
 
 ## 3. Detection
 
@@ -73,16 +72,16 @@ A type is a candidate when all of the following hold:
 1. It is declared `abstract` and is not already `sealed`.
 2. It has two or more direct subtypes.
 3. Every direct subtype is declared in the **same library** as the base type.
-4. Sealing it is not a breaking change: it lives under `lib/src/`, or is
-   already marked `final`, or the package is an application rather than a
-   published library.
+4. Sealing it is not a breaking change: it lives under `lib/src/`, or is already
+   marked `final`, or the package is an application rather than a published
+   library.
 
-Conditions 1 through 3 are decidable from the syntax tree. Condition 4
-requires knowing the author's intent about the public API and is the part a
-human or an LLM must confirm.
+Conditions 1 through 3 are decidable from the syntax tree. Condition 4 requires
+knowing the author's intent about the public API and is the part a human or an
+LLM must confirm.
 
-This detection is **not expressible as a single-file regular expression**. It
-is a question about the package-wide type graph: you must collect every type
+This detection is **not expressible as a single-file regular expression**. It is
+a question about the package-wide type graph: you must collect every type
 declaration and every `extends`/`implements`/`with` edge before you can tell
 whether a hierarchy is closed.
 
@@ -143,17 +142,16 @@ message are gone.
 
 1. Add `sealed` to the base type declaration.
 2. Run `dart analyze`. Every non-exhaustive switch over the hierarchy now
-   reports an error; every subtype declared outside the library reports one
-   too.
+   reports an error; every subtype declared outside the library reports one too.
 3. Convert `is` cascades to `switch` expressions, removing the trailing
    `throw`/`default` that existed only to satisfy the return type.
 4. Consider marking leaf subtypes `final` to prevent further extension.
 
 ## 5. Interaction with other skills
 
-- **`dart-use-pattern-matching`** / **`dart-modern-features`**: apply *after*
+- **`dart-use-pattern-matching`** / **`dart-modern-features`**: apply _after_
   sealing. Rewriting an `is` cascade as a switch over an unsealed type is a
-  readability change only; the same rewrite over a sealed type is checked by
-  the compiler.
+  readability change only; the same rewrite over a sealed type is checked by the
+  compiler.
 - Do not treat this skill as a reason to seal a hierarchy you do not own the
   evolution of.

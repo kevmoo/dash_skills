@@ -5,16 +5,18 @@ For official skills, see:
 - https://github.com/flutter/skills
 - https://github.com/dart-lang/skills
 
-These skills follow the
-[Agent Skills](https://agentskills.io/) standard, enabling agents to perform
-complex specialized tasks with high reliability.
+These skills follow the [Agent Skills](https://agentskills.io/) standard,
+enabling agents to perform complex specialized tasks with high reliability.
 
 <!-- SKILLS_LIST_START -->
+
 To install any skill individually:
+
 ```bash
 npx skills add kevmoo/dash_skills --skill <skill-name>
 ```
 
+<!-- prettier-ignore -->
 | Skill | Description | Key Features |
 |-------|-------------|--------------|
 | **[dart-best-practices](skills/dart-best-practices/SKILL.md)** | General best practices for Dart development. Covers code style, effective Dart, and language features. | Code style guidelines, Effective Dart idioms, Language feature recommendations |
@@ -29,6 +31,7 @@ npx skills add kevmoo/dash_skills --skill <skill-name>
 | **[dart-test-fundamentals](skills/dart-test-fundamentals/SKILL.md)** | Core concepts and best practices for `package:test`. Covers `test`, `group`, lifecycle methods (`setUp`, `tearDown`), and configuration (`dart_test.yaml`). | Package test core concepts, Test lifecycle (setUp, tearDown), dart_test.yaml configuration |
 | **[dash-discover](skills/dash-discover/SKILL.md)** | Diagnoses latent architectural modernization opportunities across Dart and Flutter packages (language idioms, testing hygiene, CLI patterns, doc rot) and prescribes matching specialized skills. | Architectural Gap Diagnosis, Latent Modernization Discovery, Two-Tier Prescriptions & Evidence |
 | **[profile-dart-code](skills/profile-dart-code/SKILL.md)** | Profile Dart command-line applications using the VM Service protocol to capture CPU samples and identify performance bottlenecks. Helps agents automate CPU profiling, generate function call breakdown summaries, and export JSON profiles without a browser or DevTools. | Automated VM Service WebSocket connection, CPU sampling and top-function call summary, JSON trace export for further analysis |
+
 <!-- SKILLS_LIST_END -->
 
 ## 🚀 Usage
@@ -53,8 +56,10 @@ To use these skills with another agent (like
 [Gemini CLI](https://github.com/google/gemini-cli)):
 
 1.  **Ingest**: The agent reads the `skills` directory.
-2.  **Activate**: Each skill contains a `SKILL.md` defining when and how it should be used.
-3.  **Execute**: The agent follows the structured workflows and patterns defined in the skill files.
+2.  **Activate**: Each skill contains a `SKILL.md` defining when and how it
+    should be used.
+3.  **Execute**: The agent follows the structured workflows and patterns defined
+    in the skill files.
 
 ## 🛠️ Contributing
 
