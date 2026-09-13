@@ -100,6 +100,10 @@ void main(List<String> args) {
 
   if (results['list-rules'] as bool) {
     print('Available Discovery Rules (${defaultDiscoveryRules.length}):\n');
+    final skillsDir = results['skills-dir'] as String?;
+    final catalog = SkillsCatalog.discover(
+      searchPaths: skillsDir != null ? [skillsDir] : null,
+    );
     for (final rule in defaultDiscoveryRules) {
       print('• ${rule.id} (${rule.category.label}) [${rule.lifecycle.label}]');
       print('  Skill:       ${rule.target.skillName}');
@@ -107,9 +111,14 @@ void main(List<String> args) {
       print('  Category:    ${rule.category.label}');
       print('  Confidence:  ${rule.defaultConfidence.name.toUpperCase()}');
       print('  Description: ${rule.description}');
-      print('  Target:      ${rule.target.githubUrl}');
+      final local = catalog.findByName(rule.target.skillName);
+      if (local != null) {
+        print('  Resolution:  Local (${local.skillPath})');
+      } else {
+        print('  Resolution:  Remote (${rule.target.githubUrl})');
+      }
       if (rule.target.commitSha != null) {
-        print('  Pinned:      ${rule.target.commitSha}');
+        print('  Pinned SHA:  ${rule.target.commitSha}');
       }
       print('');
     }

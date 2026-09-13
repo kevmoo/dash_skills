@@ -34,11 +34,76 @@ void main() {
       expect(modern.keyFeatures, isNotEmpty);
     });
 
+    test('finds skills by name', () {
+      final catalog = SkillsCatalog.discover();
+      expect(catalog.findByName('dart-modern-features'), isNotNull);
+      expect(catalog.findByName('non-existent-skill-12345'), isNull);
+    });
+
     test('formats prompt text', () {
       final catalog = SkillsCatalog.discover();
       final text = catalog.formatForPrompt();
       expect(text, contains('AVAILABLE SKILLS CATALOG'));
       expect(text, contains('dart-modern-features'));
+    });
+  });
+
+  group('SkillTarget resolution', () {
+    test('defaults to remote githubUrl when localPath is null', () {
+      const target = SkillTarget(
+        org: 'dart-lang',
+        repo: 'skills',
+        path: 'skills/dart-use-path-package',
+        commitSha: '26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e',
+      );
+
+      expect(target.isLocal, isFalse);
+      expect(target.localPath, isNull);
+      expect(
+        target.githubUrl.toString(),
+        'https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-use-path-package',
+      );
+      expect(target.resolvedUri, equals(target.githubUrl));
+
+      final json = target.toJson();
+      expect(json['is_local'], isFalse);
+      expect(json['resolved_uri'], target.githubUrl.toString());
+      expect(json.containsKey('local_path'), isFalse);
+    });
+
+    test('resolves to file:// URI when localPath is provided', () {
+      const target = SkillTarget(
+        org: 'kevmoo',
+        repo: 'dash_skills',
+        path: 'skills/dart-matcher-best-practices',
+        localPath: '/path/to/SKILL.md',
+      );
+
+      expect(target.isLocal, isTrue);
+      expect(target.localPath, '/path/to/SKILL.md');
+      expect(target.resolvedUri.scheme, 'file');
+      expect(target.resolvedUri.toFilePath(), '/path/to/SKILL.md');
+
+      final json = target.toJson();
+      expect(json['is_local'], isTrue);
+      expect(json['local_path'], '/path/to/SKILL.md');
+      expect(json['resolved_uri'], 'file:///path/to/SKILL.md');
+    });
+
+    test('withLocalPath creates updated target copy', () {
+      const target = SkillTarget(
+        org: 'dart-lang',
+        repo: 'skills',
+        path: 'skills/test',
+      );
+      final updated = target.withLocalPath('/local/test/SKILL.md');
+
+      expect(target.isLocal, isFalse);
+      expect(updated.isLocal, isTrue);
+      expect(updated.localPath, '/local/test/SKILL.md');
+      expect(updated.org, target.org);
+      expect(updated.repo, target.repo);
+      expect(updated.path, target.path);
     });
   });
 
@@ -311,6 +376,84 @@ void main() {
       expect(report.probePrompt, contains('Meta Skill Discovery Engine'));
       expect(report.toMarkdown(), contains('Meta-Skill Discovery Report'));
       expect(report.toJson(), containsPair('package_name', report.packageName));
+    });
+
+    test('resolves local skill targets when installed in catalog', () {
+      final temp = Directory.systemTemp.createTempSync('discovery_test_');
+      addTearDown(() => temp.deleteSync(recursive: true));
+
+      File(p.join(temp.path, 'pubspec.yaml')).writeAsStringSync('''
+name: mock_pkg
+environment:
+  sdk: ^3.5.0
+dev_dependencies:
+  test: ^1.25.0
+''');
+      final testDir = Directory(p.join(temp.path, 'test'))..createSync();
+      File(p.join(testDir.path, 'foo_test.dart')).writeAsStringSync('''
+import 'package:test/test.dart';
+void main() {
+  test('bad matcher', () {
+    expect(items.length, 5);
+  });
+}
+''');
+
+      final catalog = SkillsCatalog.discover(workingDirectory: repoRoot);
+      final engine = DiscoveryEngine(
+        temp.path,
+        catalog: catalog,
+        rules: const [MatcherBestPracticesRule()],
+      );
+      final report = engine.run();
+
+      expect(report.staticOpportunities, hasLength(1));
+      final opp = report.staticOpportunities.first;
+      expect(opp.skill, equals('dart-matcher-best-practices'));
+      expect(opp.target.isLocal, isTrue);
+      expect(opp.target.localPath, isNotNull);
+      expect(opp.target.resolvedUri.scheme, equals('file'));
+      expect(File(opp.target.localPath!).existsSync(), isTrue);
+      expect(report.toMarkdown(), contains('Local file'));
+    });
+
+    test('falls back to remote githubUrl when skill is not in catalog', () {
+      final temp = Directory.systemTemp.createTempSync(
+        'discovery_fallback_test_',
+      );
+      addTearDown(() => temp.deleteSync(recursive: true));
+
+      File(p.join(temp.path, 'pubspec.yaml')).writeAsStringSync('''
+name: mock_pkg
+environment:
+  sdk: ^3.5.0
+dev_dependencies:
+  test: ^1.25.0
+''');
+      final testDir = Directory(p.join(temp.path, 'test'))..createSync();
+      File(p.join(testDir.path, 'foo_test.dart')).writeAsStringSync('''
+import 'package:test/test.dart';
+void main() {
+  test('bad matcher', () {
+    expect(items.length, 5);
+  });
+}
+''');
+
+      final emptyCatalog = SkillsCatalog(const []);
+      final engine = DiscoveryEngine(
+        temp.path,
+        catalog: emptyCatalog,
+        rules: const [MatcherBestPracticesRule()],
+      );
+      final report = engine.run();
+
+      expect(report.staticOpportunities, hasLength(1));
+      final opp = report.staticOpportunities.first;
+      expect(opp.target.isLocal, isFalse);
+      expect(opp.target.localPath, isNull);
+      expect(opp.target.resolvedUri.scheme, equals('https'));
+      expect(report.toMarkdown(), contains('Remote GitHub'));
     });
   });
 

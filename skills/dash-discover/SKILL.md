@@ -128,12 +128,14 @@ When `dash-discover` produces recommendations:
      as recurring sweeps rather than one-time migrations.
    - Throttle ubiquitous recommendations (e.g. at most one test framework
      migration at a time).
-2. **Invoke Specialized Skills**:
-   - For pattern matching: invoke `dart-modern-features` or
-     `dart-use-pattern-matching`.
-   - For test assertions: invoke `dart-migrate-to-checks-package`.
-   - For doc rot: invoke `dart-doc-validation` or `dart-use-doc-examples`.
-   - For CLI architecture: invoke `dart-build-cli-app`.
+2. **Follow the Resolved Skill Target**:
+   - Each opportunity output by `dash-discover` includes a `resolved_uri` in
+     `--json` and a clickable link in Markdown.
+   - If the target skill is installed locally (`is_local: true`), inspect and
+     follow the local `SKILL.md` directly (`file://...`).
+   - If not installed locally, inspect the upstream definition at the
+     provided `github_url` or install the skill into your agent environment
+     before applying changes.
 3. **Verify Empirically**:
    - Ensure tests continue to pass (`dart test`).
    - Ensure analysis remains clean (`dart analyze`).
