@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:dash_discover/dash_discover.dart';
-import 'package:dash_discover/src/skills_catalog.dart';
 
 void main(List<String> args) {
   final parser = ArgParser()
@@ -98,24 +97,6 @@ void main(List<String> args) {
     }
   }
 
-  if (results['list-rules'] as bool) {
-    print('Available Discovery Rules (${defaultDiscoveryRules.length}):\n');
-    for (final rule in defaultDiscoveryRules) {
-      print('• ${rule.id} (${rule.category.label}) [${rule.lifecycle.label}]');
-      print('  Skill:       ${rule.target.skillName}');
-      print('  Lifecycle:   ${rule.lifecycle.label}');
-      print('  Category:    ${rule.category.label}');
-      print('  Confidence:  ${rule.defaultConfidence.name.toUpperCase()}');
-      print('  Description: ${rule.description}');
-      print('  Target:      ${rule.target.githubUrl}');
-      if (rule.target.commitSha != null) {
-        print('  Pinned:      ${rule.target.commitSha}');
-      }
-      print('');
-    }
-    exit(0);
-  }
-
   final targetPath = results.rest.isNotEmpty ? results.rest.first : '.';
   final absPath = Directory(targetPath).absolute.path;
 
@@ -124,14 +105,43 @@ void main(List<String> args) {
     exit(1);
   }
 
+  if (results['list-rules'] as bool) {
+    print('Available Discovery Rules (${defaultDiscoveryRules.length}):\n');
+    final skillsDir = results['skills-dir'] as String?;
+    final catalog = SkillsCatalog.discover(
+      searchPaths: skillsDir != null ? [skillsDir] : null,
+      workingDirectory: Directory(absPath),
+    );
+    for (final rule in defaultDiscoveryRules) {
+      print('• ${rule.id} (${rule.category.label}) [${rule.lifecycle.label}]');
+      print('  Skill:       ${rule.target.skillName}');
+      print('  Lifecycle:   ${rule.lifecycle.label}');
+      print('  Category:    ${rule.category.label}');
+      print('  Confidence:  ${rule.defaultConfidence.name.toUpperCase()}');
+      print('  Description: ${rule.description}');
+      final local = catalog.findByName(rule.target.skillName);
+      if (local != null) {
+        print('  Resolution:  Local (${local.skillPath})');
+      } else {
+        print('  Resolution:  Remote (${rule.target.githubUrl})');
+      }
+      if (rule.target.commitSha != null) {
+        print('  Pinned SHA:  ${rule.target.commitSha}');
+      }
+      print('');
+    }
+    exit(0);
+  }
+
   final ruleId = results['rule'] as String?;
   final categoryFilter = results['category'] as String?;
   final lifecycleFilter = results['lifecycle'] as String?;
 
   final activeRules = defaultDiscoveryRules.where((r) {
     if (ruleId != null && r.id != ruleId) return false;
-    if (categoryFilter != null && r.category.name != categoryFilter)
+    if (categoryFilter != null && r.category.name != categoryFilter) {
       return false;
+    }
     if (lifecycleFilter != null && r.lifecycle.name != lifecycleFilter) {
       return false;
     }
@@ -149,6 +159,7 @@ void main(List<String> args) {
   final skillsDir = results['skills-dir'] as String?;
   final catalog = SkillsCatalog.discover(
     searchPaths: skillsDir != null ? [skillsDir] : null,
+    workingDirectory: Directory(absPath),
   );
 
   final engine = DiscoveryEngine(absPath, catalog: catalog, rules: activeRules);

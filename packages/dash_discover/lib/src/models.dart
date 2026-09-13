@@ -52,12 +52,14 @@ class SkillTarget {
   final String repo;
   final String path;
   final String? commitSha;
+  final String? localPath;
 
   const SkillTarget({
     required this.org,
     required this.repo,
     required this.path,
     this.commitSha,
+    this.localPath,
   });
 
   /// The basename identifier of the skill (e.g. `dart-migrate-to-checks-package`).
@@ -69,12 +71,30 @@ class SkillTarget {
     return Uri.parse('https://github.com/$org/$repo/tree/$ref/$path');
   }
 
+  /// Resolved URI: local `file://` URI if installed, otherwise remote [githubUrl].
+  Uri get resolvedUri => localPath != null ? Uri.file(localPath!) : githubUrl;
+
+  /// Whether this target has been resolved to a locally installed SKILL.md.
+  bool get isLocal => localPath != null;
+
+  /// Returns a copy of this target with a resolved local file path.
+  SkillTarget withLocalPath(String? localPath) => SkillTarget(
+    org: org,
+    repo: repo,
+    path: path,
+    commitSha: commitSha,
+    localPath: localPath,
+  );
+
   Map<String, dynamic> toJson() => {
     'org': org,
     'repo': repo,
     'path': path,
     if (commitSha != null) 'commit_sha': commitSha,
     'github_url': githubUrl.toString(),
+    if (localPath != null) 'local_path': localPath,
+    'resolved_uri': resolvedUri.toString(),
+    'is_local': isLocal,
   };
 }
 
@@ -102,6 +122,23 @@ class Opportunity implements Comparable<Opportunity> {
 
   String get skill => target.skillName;
 
+  /// Resolved URI pointing to the local SKILL.md if installed, or upstream GitHub.
+  Uri get resolvedUri => target.resolvedUri;
+
+  /// Whether this opportunity's target skill is installed locally.
+  bool get isLocal => target.isLocal;
+
+  Opportunity withTarget(SkillTarget newTarget) => Opportunity(
+    target: newTarget,
+    category: category,
+    lifecycle: lifecycle,
+    confidence: confidence,
+    affectedCount: affectedCount,
+    diagnosis: diagnosis,
+    prescription: prescription,
+    evidence: evidence,
+  );
+
   @override
   int compareTo(Opportunity other) {
     // 1. Lifecycle order: migration, architecture, hygiene
@@ -119,6 +156,9 @@ class Opportunity implements Comparable<Opportunity> {
   Map<String, dynamic> toJson() => {
     'skill': skill,
     'target': target.toJson(),
+    'is_local': isLocal,
+    'resolved_uri': resolvedUri.toString(),
+    if (target.localPath != null) 'local_path': target.localPath,
     'category': category.name,
     'category_label': category.label,
     'lifecycle': lifecycle.name,

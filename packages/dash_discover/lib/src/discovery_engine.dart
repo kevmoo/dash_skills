@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'outline_generator.dart';
 import 'skills_catalog.dart';
@@ -40,7 +41,13 @@ class DiscoveryReport {
         '## 🎯 Detected Opportunities (${staticOpportunities.length})\n',
       );
       for (final opp in staticOpportunities) {
-        buffer.writeln('### `${opp.skill}` (${opp.category.label})\n');
+        buffer.writeln(
+          '### [${opp.skill}](${opp.target.resolvedUri}) (${opp.category.label})\n',
+        );
+        final targetDesc = opp.target.isLocal
+            ? 'Local file (`${opp.target.localPath}`)'
+            : 'Remote GitHub (${opp.target.githubUrl})';
+        buffer.writeln('- **Target Skill**: $targetDesc');
         buffer.writeln('- **Lifecycle**: ${opp.lifecycle.label}');
         buffer.writeln('- **Confidence**: ${opp.confidence.label}');
         buffer.writeln('- **Impact**: ${opp.affectedCount} file(s)');
@@ -64,7 +71,9 @@ class DiscoveryEngine {
   final List<DiscoveryRule>? rules;
 
   DiscoveryEngine(this.packagePath, {SkillsCatalog? catalog, this.rules})
-    : catalog = catalog ?? SkillsCatalog.discover();
+    : catalog =
+          catalog ??
+          SkillsCatalog.discover(workingDirectory: Directory(packagePath));
 
   DiscoveryReport run() {
     final packageName = p.basename(packagePath);
@@ -74,7 +83,16 @@ class DiscoveryEngine {
       packagePath,
       rules: rules,
     );
-    final staticOpportunities = staticEngine.scan();
+    final rawOpportunities = staticEngine.scan();
+
+    // Resolve skill targets against catalog (prefer local SKILL.md over remote GitHub)
+    final staticOpportunities = rawOpportunities.map((opp) {
+      final localMeta = catalog.findByName(opp.target.skillName);
+      if (localMeta != null) {
+        return opp.withTarget(opp.target.withLocalPath(localMeta.skillPath));
+      }
+      return opp;
+    }).toList();
 
     // Tier 2: Token-Efficient Outline Assembly
     final outlineGen = OutlineGenerator(packagePath);

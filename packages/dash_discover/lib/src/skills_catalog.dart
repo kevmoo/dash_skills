@@ -25,8 +25,11 @@ class SkillMetadata {
 
 class SkillsCatalog {
   final List<SkillMetadata> skills;
+  final Map<String, SkillMetadata> _byName;
 
-  SkillsCatalog(this.skills);
+  SkillsCatalog(this.skills) : _byName = {for (final s in skills) s.name: s};
+
+  SkillMetadata? findByName(String name) => _byName[name];
 
   factory SkillsCatalog.discover({
     List<String>? searchPaths,
@@ -36,15 +39,33 @@ class SkillsCatalog {
         ? List<String>.from(searchPaths)
         : <String>[];
     if (paths.isEmpty) {
-      // Walk up to find repo skills/ directory
-      var dir = (workingDirectory ?? Directory.current).absolute;
-      while (dir.path != dir.parent.path) {
-        final localSkills = Directory(p.join(dir.path, 'skills'));
-        if (localSkills.existsSync()) {
-          paths.add(localSkills.path);
-          break;
+      void addIfDirExists(String dirPath) {
+        if (!paths.contains(dirPath) && Directory(dirPath).existsSync()) {
+          paths.add(dirPath);
         }
-        dir = dir.parent;
+      }
+
+      void scanDirectoryAncestors(Directory start) {
+        var dir = start.absolute;
+        while (dir.path != dir.parent.path) {
+          addIfDirExists(p.join(dir.path, 'skills'));
+          addIfDirExists(p.join(dir.path, '.agents', 'skills'));
+          dir = dir.parent;
+        }
+      }
+
+      final targetDir = (workingDirectory ?? Directory.current).absolute;
+      scanDirectoryAncestors(targetDir);
+
+      final currentDir = Directory.current.absolute;
+      if (currentDir.path != targetDir.path) {
+        scanDirectoryAncestors(currentDir);
+      }
+
+      final home =
+          Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
+      if (home != null) {
+        addIfDirExists(p.join(home, '.agents', 'skills'));
       }
     }
 
@@ -66,7 +87,8 @@ class SkillsCatalog {
             skillFile.path,
           );
           if (meta != null) {
-            discovered[meta.name] = meta;
+            // First search path wins (preserves search order priority)
+            discovered.putIfAbsent(meta.name, () => meta);
           }
         } catch (_) {
           // Ignore invalid files
