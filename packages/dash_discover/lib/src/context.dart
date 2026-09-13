@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
+import 'package_facts.dart';
+
 /// Cached evaluation context for a target Dart or Flutter package.
 class PackageContext {
   final String packagePath;
@@ -90,5 +92,28 @@ class PackageContext {
     return _contentCache.putIfAbsent(file.path, () => file.readAsStringSync());
   }
 
+  List<File>? _allTestFiles;
+
+  /// Every `.dart` file under `test/`, not just `*_test.dart`.
+  ///
+  /// Shared fixtures and helper libraries can declare types too, and for
+  /// type-graph purposes they count exactly as much as the test files do.
+  List<File> get allTestFiles {
+    final testDir = Directory(p.join(packagePath, 'test'));
+    return _allTestFiles ??= testDir.existsSync()
+        ? testDir
+              .listSync(recursive: true)
+              .whereType<File>()
+              .where((f) => f.path.endsWith('.dart'))
+              .toList()
+        : <File>[];
+  }
+
   String relativePath(File file) => p.relative(file.path, from: packagePath);
+
+  PackageFacts? _facts;
+
+  /// Tier 2 syntactic facts for this package, parsed on first access and
+  /// cached thereafter so that N rules share a single parse of the tree.
+  PackageFacts get facts => _facts ??= PackageFacts.build(this);
 }

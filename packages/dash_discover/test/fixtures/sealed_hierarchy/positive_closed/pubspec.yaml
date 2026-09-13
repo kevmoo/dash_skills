@@ -1,0 +1,6 @@
+name: positive_closed
+description: Fixture package with a closed hierarchy that is not sealed.
+publish_to: none
+
+environment:
+  sdk: ^3.9.0

@@ -1,0 +1,6 @@
+name: negatives
+description: Fixture package where no hierarchy should be reported as sealable.
+publish_to: none
+
+environment:
+  sdk: ^3.9.0

@@ -1,0 +1,6 @@
+name: path_positive
+description: Fixture package with manual path construction the rule must flag.
+publish_to: none
+
+environment:
+  sdk: ^3.9.0
