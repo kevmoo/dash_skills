@@ -16,6 +16,7 @@ key_features:
 ## When to use this skill
 
 Use this skill when:
+
 - Writing assertions using `expect` and `package:matcher`.
 - Migrating legacy manual checks to cleaner matchers.
 - Debugging confusing test failures.
@@ -23,27 +24,42 @@ Use this skill when:
 ### When NOT to use (Abstention Guardrails)
 
 Do NOT apply this skill or refactor assertions when:
-- **Non-Collection Properties**: The property happens to be named `.length` but belongs to a non-collection class (e.g. geometric scalar magnitude on a `Vector`, duration on a buffer, or line segment distance). `hasLength(n)` expects an `int` on an `Iterable`, `Map`, or `String`.
-- **Custom Domain Booleans**: The boolean check tests an arbitrary domain property (e.g. `expect(switch.isEnabled, isTrue)`). Do not invent non-existent matchers.
-- **Alternative Assertion Frameworks**: The package has adopted `package:checks` (`check(x)...`). Do not revert `checks` back to `package:matcher`.
-- **Already Idiomatic Assertions**: Tests already use declarative matchers (`hasLength`, `isEmpty`, `isNotEmpty`, `contains`, `containsPair`, `isA`, `throwsA`). Abstain and make zero modifications.
+
+- **Non-Collection Properties**: The property happens to be named `.length` but
+  belongs to a non-collection class (e.g. geometric scalar magnitude on a
+  `Vector`, duration on a buffer, or line segment distance). `hasLength(n)`
+  expects an `int` on an `Iterable`, `Map`, or `String`.
+- **Custom Domain Booleans**: The boolean check tests an arbitrary domain
+  property (e.g. `expect(switch.isEnabled, isTrue)`). Do not invent non-existent
+  matchers.
+- **Alternative Assertion Frameworks**: The package has adopted `package:checks`
+  (`check(x)...`). Do not revert `checks` back to `package:matcher`.
+- **Already Idiomatic Assertions**: Tests already use declarative matchers
+  (`hasLength`, `isEmpty`, `isNotEmpty`, `contains`, `containsPair`, `isA`,
+  `throwsA`). Abstain and make zero modifications.
 
 ## Discovery
 
 To find candidates for improving matcher usage, search for suboptimal patterns:
 
 ### Suboptimal Length Checks
+
 Search for length checks that should use `hasLength`:
+
 - **Regex**: `expect\([^,]+.length,\s*`
 
 ### Suboptimal Boolean Checks
+
 Search for checks on boolean properties that have specific matchers:
+
 - **Regex**: `expect\([^,]+.isEmpty,\s*(true|equals\(true\))`
 - **Regex**: `expect\([^,]+.isNotEmpty,\s*(true|equals\(true\))`
 - **Regex**: `expect\([^,]+.contains\(.*\),\s*(true|equals\(true\))`
 
 ### Suboptimal Map Lookups
+
 Search for manual map lookups instead of `containsPair`:
+
 - **Regex**: `expect\([^,]+\[.*\],\s*`
 
 ## Core Matchers
@@ -81,7 +97,8 @@ Search for manual map lookups instead of `containsPair`:
 - **`TypeMatcher<T>`**:
   - Prefer when defining top-level reusable matchers.
   - **Use `const`**: `const isMyType = TypeMatcher<MyType>();`
-  - Chaining `.having()` works here too, but the resulting matcher is not `const`.
+  - Chaining `.having()` works here too, but the resulting matcher is not
+    `const`.
 
 ### 3. Object Properties (`having`)
 
@@ -116,7 +133,8 @@ failed.
 ### 5. Exception Testing (Avoid `try/catch` with `fail()`)
 
 - **Prefer `throwsA` over imperative `try/catch`**:
-  - Legacy tests often use `try { fn(); fail('should throw'); } catch (e) { expect(e, isA<T>()); }`.
+  - Legacy tests often use
+    `try { fn(); fail('should throw'); } catch (e) { expect(e, isA<T>()); }`.
   - Replace with declarative matchers:
     ```dart
     // Synchronous:
@@ -154,7 +172,8 @@ expect(sideEffectState, equals('done')); // Race condition!
 
 ## Related Skills
 
-- **[dart-test-fundamentals]**: Core
-  concepts for structuring tests, lifecycles, and configuration.
+- **[dart-test-fundamentals]**: Core concepts for structuring tests, lifecycles,
+  and configuration.
 
-[dart-test-fundamentals]: https://github.com/kevmoo/dash_skills/blob/main/skills/dart-test-fundamentals/SKILL.md
+[dart-test-fundamentals]:
+  https://github.com/kevmoo/dash_skills/blob/main/skills/dart-test-fundamentals/SKILL.md

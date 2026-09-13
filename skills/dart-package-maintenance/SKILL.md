@@ -19,6 +19,7 @@ practices.
 ## When to use this skill
 
 Use this skill when:
+
 - Updating Dart packages, preparing for a release, or managing collaborative
   changes in a repository.
 - Managing versioning, `CHANGELOG.md` synchronization, and publishing workflows.
@@ -27,6 +28,7 @@ Use this skill when:
 ### When NOT to use (Abstention Guardrails)
 
 Do NOT apply package maintenance version bumps or changelog updates when:
+
 - **Internal / Private Packages**: Packages marked `publish_to: none` in
   `pubspec.yaml` that are not published to pub.dev (e.g. application root
   packages or internal monorepo tooling).
@@ -34,21 +36,24 @@ Do NOT apply package maintenance version bumps or changelog updates when:
   markdown files, agent skills (`SKILL.md`), or repository documentation, as
   documentation updates do not alter the public package interface.
 - **In-Flight PR Iterations**: Intermediate commits on an active feature branch
-  where the version already carries a `-wip` suffix. Do not bump the version
-  on every commit.
+  where the version already carries a `-wip` suffix. Do not bump the version on
+  every commit.
 
 ## Discovery
 
 To find maintenance tasks or inconsistencies:
 
 ### Consistency Checks
+
 Ensure the latest version in `CHANGELOG.md` matches `pubspec.yaml`:
+
 - Compare the top header in `CHANGELOG.md` with the `version:` field in
   `pubspec.yaml`.
 
 ## Versioning
 
 ### Semantic Versioning
+
 - **Major**: Breaking changes.
 - **Minor**: New features (non-breaking API changes).
 - **Patch**: Bug fixes, documentation, or non-impacting changes.
@@ -56,6 +61,7 @@ Ensure the latest version in `CHANGELOG.md` matches `pubspec.yaml`:
 - **Recommendation**: Aim for `1.0.0` as soon as the package is stable.
 
 ### Pre-Edit Verification
+
 - **Check Published Versions**: Before modifying `CHANGELOG.md` or
   `pubspec.yaml`, ALWAYS check the currently released version (e.g., via
   `git tag` or `pub.dev`).
@@ -65,30 +71,33 @@ Ensure the latest version in `CHANGELOG.md` matches `pubspec.yaml`:
   matches a released tag, increment the version (e.g., usually to `-wip`) and
   create a new section in `CHANGELOG.md`.
 
-  - **Consistency**: The `CHANGELOG.md` header must match the new
-    `pubspec.yaml` version.
+  - **Consistency**: The `CHANGELOG.md` header must match the new `pubspec.yaml`
+    version.
 
   - **SemVer Guidelines**:
-    - **Breaking Changes**: Bump Major, reset Minor/Patch
-      (e.g., `2.0.0-wip`, `0.5.0-wip`).
-    - **New Features**: Bump Minor, reset Patch
-      (e.g., `1.1.0-wip`, `0.4.5-wip`).
+    - **Breaking Changes**: Bump Major, reset Minor/Patch (e.g., `2.0.0-wip`,
+      `0.5.0-wip`).
+    - **New Features**: Bump Minor, reset Patch (e.g., `1.1.0-wip`,
+      `0.4.5-wip`).
     - **Bug Fixes**: Bump Patch (e.g., `1.0.1-wip`).
 
 ### Changelog Content
+
 - **Focus on User Impact**: Entries in `CHANGELOG.md` should focus on changes
-  visible to or impacting the end-user (e.g., new features, bug fixes,
-  breaking changes).
-- **Omit Internal Changes**: Do not include internal refactorings, test
-  changes, or other modifications that do not affect the package's behavior
-  or API for the user.
+  visible to or impacting the end-user (e.g., new features, bug fixes, breaking
+  changes).
+- **Omit Internal Changes**: Do not include internal refactorings, test changes,
+  or other modifications that do not affect the package's behavior or API for
+  the user.
 
 ### Work-in-Progress (WIP) Versions
+
 - Immediately after a publish, or on the first change after a publish, update
   `pubspec.yaml` and `CHANGELOG.md` with a `-wip` suffix (e.g., `1.1.0-wip`).
 - This indicates the current state is not yet published.
 
 ### Breaking Changes
+
 - Evaluate the impact on dependent packages and internal projects.
 - Consider running changes through internal presubmits if possible.
 - Prefer incremental rollouts (e.g., new behavior as opt-in) to minimize
@@ -113,5 +122,5 @@ Ensure the latest version in `CHANGELOG.md` matches `pubspec.yaml`:
 - **Conflict Resolution**: Prefer merging `main` into the PR branch rather than
   rebasing to resolve conflicts. This preserves the review history and comments.
 - **Reviewing**: Add comments from the "Files changed" view to batch them.
-- **Local Inspection**: Use `gh pr checkout <number>` to inspect changes
-  locally in your IDE.
+- **Local Inspection**: Use `gh pr checkout <number>` to inspect changes locally
+  in your IDE.

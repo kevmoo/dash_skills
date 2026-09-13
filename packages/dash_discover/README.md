@@ -4,10 +4,14 @@ Meta-skill discovery engine for Dart and Flutter workspaces.
 
 ## Features
 
-- **Object-Oriented Discovery Rules**: Modular rules that inspect package structure, dependencies, and file contents.
-- **Skill Provenance & Drift Tracking**: Explicit metadata tracking upstream repository targets and commit SHAs.
-- **Fast Package Scanning**: Lightweight pre-indexing of `lib/`, `test/`, and `bin/` directories.
-- **Interactive & Batch CLI**: Run static scans, output JSON, or synthesize LLM evaluation prompts.
+- **Object-Oriented Discovery Rules**: Modular rules that inspect package
+  structure, dependencies, and file contents.
+- **Skill Provenance & Drift Tracking**: Explicit metadata tracking upstream
+  repository targets and commit SHAs.
+- **Fast Package Scanning**: Lightweight pre-indexing of `lib/`, `test/`, and
+  `bin/` directories.
+- **Interactive & Batch CLI**: Run static scans, output JSON, or synthesize LLM
+  evaluation prompts.
 
 ## Usage
 
