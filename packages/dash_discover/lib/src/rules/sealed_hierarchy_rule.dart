@@ -76,7 +76,7 @@ final class SealedHierarchyRule extends DiscoveryRule {
     // convention, so the change is safe; anything else needs a judgement call
     // that syntax alone cannot make.
     final allPrivate = candidates.every(
-      (c) => c.source.isImplementation || c.isFinal,
+      (c) => c.source.isImplementation || c.isFinal || c.name.startsWith('_'),
     );
 
     yield Opportunity(

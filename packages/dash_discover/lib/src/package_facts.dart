@@ -84,11 +84,6 @@ class TypeDeclarationFacts {
     this.isEnum = false,
     this.isMixin = false,
   });
-
-  /// True if this type can be subtyped from outside its defining library,
-  /// which makes sealing it a breaking change for downstream packages.
-  bool get isOpenToExternalSubtypes =>
-      !isSealed && !isFinal && !(isBase && source.isImplementation);
 }
 
 /// Package-scoped Tier 2 fact base.
@@ -141,9 +136,11 @@ class PackageFacts {
 
     // Only `lib/` declarations are candidates for findings.
     final typesByName = <String, TypeDeclarationFacts>{};
+    final allLibraryDeclarations = <TypeDeclarationFacts>[];
     final duplicates = <String>{};
     for (final source in librarySources) {
       for (final facts in _declaredTypes(source)) {
+        allLibraryDeclarations.add(facts);
         if (typesByName.containsKey(facts.name)) {
           duplicates.add(facts.name);
           continue;
@@ -167,7 +164,7 @@ class PackageFacts {
       }
     }
 
-    addEdges(typesByName.values);
+    addEdges(allLibraryDeclarations);
     for (final source in auxiliarySources) {
       addEdges(_declaredTypes(source));
     }

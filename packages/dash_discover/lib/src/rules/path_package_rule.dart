@@ -10,9 +10,8 @@ import '../rule.dart';
 ///
 /// This is a Tier 2 rule: it queries the parsed AST in [PackageFacts] rather
 /// than matching regular expressions against raw lines. That removes an entire
-/// class of lexical false positives -- a `/` inside a comment, a URL, a MIME
-/// type, or a division expression is simply not a string-literal separator, so
-/// no abstention heuristics are needed to exclude them.
+/// class of lexical false positives -- a `/` inside a comment or a division
+/// expression is simply not a string interpolation.
 ///
 /// **Target Skill**:
 /// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-use-path-package
@@ -155,11 +154,8 @@ class _PathJoinVisitor extends RecursiveAstVisitor<void> {
       current = current.parent
     ) {
       switch (current) {
-        case MethodInvocation(:final target, :final methodName):
+        case MethodInvocation(:final target):
           if (target?.toSource() == 'Uri') return true;
-          if (methodName.name == 'parse' && target?.toSource() == 'Uri') {
-            return true;
-          }
         case InstanceCreationExpression(:final constructorName):
           if (constructorName.type.toSource() == 'Uri') return true;
         case FunctionBody():
