@@ -9,7 +9,7 @@ on:
       - '.claude-plugin/**'
       - 'plugins/**'
       - 'pubspec.yaml'
-      - '.github/workflows/**'
+      - '.github/**'
   push:
     branches: [ main ]
     paths:
@@ -19,7 +19,7 @@ on:
       - '.claude-plugin/**'
       - 'plugins/**'
       - 'pubspec.yaml'
-      - '.github/workflows/**'
+      - '.github/**'
 
 jobs:
   validate:
