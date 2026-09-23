@@ -51,10 +51,18 @@ returns:
 
 ### Pattern Matching Candidates
 
-Search for manual map or JSON property extraction and type checking:
+Search for manual map/JSON property extraction, type checking, or list/segment
+indexing:
 
 - **Regex**: `containsKey\(['"][^'"]+['"]\)`
 - **Regex**: `json\[['"][^'"]+['"]\]\s+is\s+`
+- **Regex**: `\.length\s*(>=|==|>|<)\s*\d+` (Combined with manual list index
+  access like `\[0\]`, `\[1\]`, `.first`, or `\[\w+\.length\s*-\s*\d+\]`).
+- **Regex**: `\.skip\(1\)|\.sublist\(1\)` (Tail slicing replaceable by
+  `[head, ...final rest]`).
+- **Regex**: `\.split\([^)]+\)` (Followed by `.length` or index checks; note
+  that matching `[final first, final second, ...final rest]` guarantees at least
+  one delimiter was present).
 
 ### Null-Aware Elements
 
@@ -363,10 +371,73 @@ switch (value) {
 }
 ```
 
+#### 3. Use `switch` Expressions or Inline `if-case` for Boolean Returns
+
+In Dart 3 grammar, `<expr> case <pattern> [when <guard>]` is a `caseClause`
+valid only inside `if (...)`, `for (...; ...; ...)`, or `while (...)` headers.
+It is **not** a standalone boolean expression like `is`. To return a `bool` from
+a pattern check, either inline `if (segments case [...])` at the branch site or
+use a `switch` expression.
+
+**Avoid:**
+
+```dart
+// ❌ Compile error: 'case' cannot be used as a standalone expression
+bool isCommentsRoute(List<String> segments) =>
+    segments case ['api', 'comments', ...];
+```
+
+**Prefer:**
+
+```dart
+// ✅ Switch expression evaluates to a boolean value
+bool isCommentsRoute(List<String> segments) => switch (segments) {
+  ['api', 'comments', ...] => true,
+  _ => false,
+};
+```
+
+#### 4. Use `Set.contains` in `when` Guards over Long `||` Pattern Chains
+
+Each `||` logical-or pattern operator adds `+1` to cognitive complexity metrics
+(e.g., `analytica.dart`). When checking single-element membership against an
+existing `Set` or a large list of constant strings, bind the element in the list
+pattern and check `allowedSet.contains(first)` in the `when` guard (or keep a
+direct `Set.contains` check when no tail destructuring is needed).
+
+**Avoid:**
+
+```dart
+// ❌ High cognitive complexity (+6 for 7 literals chained with ||)
+if (segments case [
+  'status' || 'chat' || 'assets' || 'static' || 'api' || 'documents' || 'r',
+  ...final rest,
+]) {
+  handleRoute(rest);
+}
+```
+
+**Prefer:**
+
+```dart
+// ✅ Binds head and tail cleanly with O(1) Set lookup in `when`
+const allowedTopLevel = {
+  'status', 'chat', 'assets', 'static', 'api', 'documents', 'r',
+};
+if (segments case [final first, ...final rest]
+    when allowedTopLevel.contains(first)) {
+  handleRoute(rest);
+}
+```
+
 ## Related Skills
 
 - **[dart-best-practices]**: General code style and foundational Dart idioms
   that predate or complement the modern syntax features.
+- **[dart-use-pattern-matching]**: Comprehensive pattern matching, list/path
+  segment destructuring, and `String.split()` idioms.
 
 [dart-best-practices]:
   https://github.com/kevmoo/dash_skills/blob/main/skills/dart-best-practices/SKILL.md
+[dart-use-pattern-matching]:
+  https://github.com/dart-lang/skills/blob/main/skills/dart-use-pattern-matching/SKILL.md
