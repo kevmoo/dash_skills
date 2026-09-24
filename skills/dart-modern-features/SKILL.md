@@ -2,12 +2,12 @@
 name: dart-modern-features
 description: |-
   Guidelines for using modern Dart features (v3.0 - v3.10) such as Records,
-  Pattern Matching, Switch Expressions, Extension Types, Class Modifiers,
-  Wildcards, Null-Aware Elements, and Dot Shorthands.
+  Extension Types, Class Modifiers, Wildcards, Digit Separators, Null-Aware
+  Elements, and Dot Shorthands.
 key_features:
-  - Records & Pattern Matching
-  - Switch Expressions & Extension Types
-  - Class Modifiers & Null-aware elements
+  - Records & Extension Types
+  - Class Modifiers & Wildcards
+  - Null-aware elements & Dot shorthands
 ---
 
 # Dart Modern Features
@@ -17,9 +17,15 @@ key_features:
 Use this skill when:
 
 - Writing or reviewing Dart code targeting Dart 3.0 or later.
-- Refactoring legacy Dart code to use modern, concise, and safe features.
-- Looking for idiomatic ways to handle multiple return values, deep data
-  extraction, or exhaustive checking.
+- Refactoring legacy Dart code to use modern, concise, and zero-cost features
+  such as records, extension types, class modifiers, null-aware collection
+  elements, dot shorthands, and digit separators.
+- Looking for idiomatic ways to handle multiple return values or zero-cost
+  domain wrappers.
+
+For pattern matching, switch expressions, and list/map/split destructuring, use
+**[dart-use-pattern-matching]**. For converting closed class hierarchies into
+exhaustive `sealed` types, use **[dart-seal-type-hierarchies]**.
 
 ### When NOT to use (Abstention Guardrails)
 
@@ -28,41 +34,13 @@ Do NOT apply modern features or refactor code when:
 - **SDK Constraint < 3.0.0**: The package's `pubspec.yaml` specifies an SDK
   constraint that supports Dart 2.x (e.g., `sdk: '>=2.19.0 <4.0.0'`).
   Refactoring to Dart 3 features will introduce syntax errors for Dart 2 users.
-- **Single-Variable Type Promotion**: Checking a single variable or parameter
-  where standard `if (x is Foo)` is clearer, more concise, and avoids creating
-  unnecessary alias variables compared to `if (x case final Foo f)`.
-- **Non-Algebraic Boolean Branching**: Branching on independent boolean flags,
-  side-effecting conditions, or early-exit guard clauses
-  (`if (!condition) return;`). Do not force these into switch expressions.
-- **Deep Expression Nesting**: Complex multi-step operations where converting a
-  switch statement into a deeply nested switch expression obscures intent, harms
-  debugger step-through capability, or hurts stack trace readability.
+- **Public API Records with > 3 Fields**: Records work well for 2–3 return
+  values or internal tuples, but complex public API payloads are clearer and
+  more extensible as dedicated classes or extension types.
 
 ## Discovery
 
 To find candidates for modernization:
-
-### Switch Expressions
-
-Search for switch statements where every case assigns to the same variable or
-returns:
-
-- **Regex**: `switch\s*\([^)]+\)\s*\{\s*case`
-
-### Pattern Matching Candidates
-
-Search for manual map/JSON property extraction, type checking, or list/segment
-indexing:
-
-- **Regex**: `containsKey\(['"][^'"]+['"]\)`
-- **Regex**: `json\[['"][^'"]+['"]\]\s+is\s+`
-- **Regex**: `\.length\s*(>=|==|>|<)\s*\d+` (Combined with manual list index
-  access like `\[0\]`, `\[1\]`, `.first`, or `\[\w+\.length\s*-\s*\d+\]`).
-- **Regex**: `\.skip\(1\)|\.sublist\(1\)` (Tail slicing replaceable by
-  `[head, ...final rest]`).
-- **Regex**: `\.split\([^)]+\)` (Followed by `.length` or index checks; note
-  that matching `[final first, final second, ...final rest]` guarantees at least
-  one delimiter was present).
 
 ### Null-Aware Elements
 
@@ -111,102 +89,33 @@ void main() {
 }
 ```
 
-### Patterns and Pattern Matching
-
-Use patterns to destructure complex data into local variables and match against
-specific shapes or values. Use them in `switch`, `if-case`, or variable
-declarations to unpack data directly.
-
-**Avoid:** Manually checking types, nulls, and keys for data extraction.
-
-```dart
-void processJson(Map<String, dynamic> json) {
-  if (json.containsKey('name') && json['name'] is String &&
-      json.containsKey('age') && json['age'] is int) {
-    String name = json['name'];
-    int age = json['age'];
-    print('$name is $age years old.');
-  }
-}
-```
-
-**Prefer:** Combining type-checking, validation, and assignment into a single
-statement.
-
-```dart
-void processJson(Map<String, dynamic> json) {
-  if (json case {'name': String name, 'age': int age}) {
-    print('$name is $age years old.');
-  }
-}
-```
-
-### Switch Expressions
-
-Use switch expressions to return a value directly, eliminating bulky `case` and
-`break` statements.
-
-**Avoid:** Using switch statements where every branch simply returns or assigns
-a value.
-
-```dart
-String describeStatus(int code) {
-  switch (code) {
-    case 200:
-      return 'Success';
-    case 404:
-      return 'Not Found';
-    default:
-      return 'Unknown';
-  }
-}
-```
-
-**Prefer:** Returning the evaluated expression directly using the `=>` syntax.
-
-```dart
-String describeStatus(int code) => switch (code) {
-  200 => 'Success',
-  404 => 'Not Found',
-  _ => 'Unknown',
-};
-```
-
 ### Class Modifiers
 
-Use class modifiers (`sealed`, `final`, `base`, `interface`) to restrict how
-classes can be used outside their defines library. Prefer `sealed` for defining
-closed families of subtypes to enable exhaustive checking.
+Use class modifiers (`final`, `base`, `interface`, `sealed`) to restrict how
+classes can be subtyped outside their defining library:
 
-**Avoid:** Using open `abstract` classes when the set of subclasses is known and
-fixed.
+- `interface class`: External libraries may `implement`, but cannot `extend`.
+- `base class`: External libraries may `extend`, but cannot `implement`
+  (preserving private implementation invariants).
+- `final class`: External libraries can neither `extend` nor `implement`.
+- `sealed class`: Closed family of subtypes within the same library enabling
+  exhaustive switching (see **[dart-seal-type-hierarchies]**).
+
+**Avoid:** Leaving internal implementation classes open to arbitrary external
+subclassing or interface implementation when invariants must be enforced.
 
 ```dart
-abstract class Result {}
-
-class Success extends Result {}
-class Failure extends Result {}
-
-String handle(Result r) {
-  if (r is Success) return 'OK';
-  if (r is Failure) return 'Error';
-  return 'Unknown';
+class TokenStore {
+  void save(String token) {}
 }
 ```
 
-**Prefer:** Using `sealed` to guarantee to the compiler that all cases are
-covered.
+**Prefer:** Declaring explicit subtyping capabilities with class modifiers.
 
 ```dart
-sealed class Result {}
-
-class Success extends Result {}
-class Failure extends Result {}
-
-String handle(Result r) => switch(r) {
-  Success() => 'OK',
-  Failure() => 'Error',
-};
+final class TokenStore {
+  void save(String token) {}
+}
 ```
 
 ### Extension Types
@@ -312,132 +221,18 @@ LogLevel currentLevel = LogLevel.info;
 LogLevel currentLevel = .info;
 ```
 
-### Pragmatic Balance: When NOT to Over-Patternize
-
-Pattern matching and switch expressions should simplify code, not add syntactic
-overhead.
-
-#### 1. Prefer `is` Type Promotion over `if-case` for Single Variables
-
-If you only need to check a type or promote a variable, use standard `is` checks
-instead of `if-case` or `case` patterns that introduce shadow aliases.
-
-**Avoid:**
-
-```dart
-// ❌ Anti-pattern: Introduces unnecessary alias variable `k`
-for (final MapEntry(:key, :value) in map.entries) {
-  if (key case final String k when value != null) {
-    process(k, value);
-  }
-}
-```
-
-**Prefer:**
-
-```dart
-// ✅ Promotes `key` directly in-place without extra variables
-for (final MapEntry(:key, :value) in map.entries) {
-  if (key is String && value != null) {
-    process(key, value);
-  }
-}
-```
-
-#### 2. Consolidate Nullable Types in Switch Arms
-
-When mapping or returning values in a switch expression where both `null` and a
-type `T` are valid and passed through, match the nullable type `T?` directly
-rather than creating redundant `null` arms.
-
-**Avoid:**
-
-```dart
-// ❌ Redundant separate null arm
-switch (value) {
-  final String s => s,
-  null => null,
-  _ => throw FormatException(...),
-}
-```
-
-**Prefer:**
-
-```dart
-// ✅ Clean nullable pattern match
-switch (value) {
-  final String? s => s,
-  _ => throw FormatException(...),
-}
-```
-
-#### 3. Use `switch` Expressions or Inline `if-case` for Boolean Returns
-
-In Dart 3 grammar, `<expr> case <pattern> [when <guard>]` is a `caseClause`
-valid only inside `if (...)`, `for (...; ...; ...)`, or `while (...)` headers.
-It is **not** a standalone boolean expression like `is`. To return a `bool` from
-a pattern check, either inline `if (segments case [...])` at the branch site or
-use a `switch` expression.
-
-**Avoid:**
-
-```dart
-// ❌ Compile error: 'case' cannot be used as a standalone expression
-bool isCommentsRoute(List<String> segments) =>
-    segments case ['api', 'comments', ...];
-```
-
-**Prefer:**
-
-```dart
-// ✅ Switch expression evaluates to a boolean value
-bool isCommentsRoute(List<String> segments) => switch (segments) {
-  ['api', 'comments', ...] => true,
-  _ => false,
-};
-```
-
-#### 4. Use `Set.contains` in `when` Guards over Long `||` Pattern Chains
-
-Each `||` logical-or pattern operator adds `+1` to cognitive complexity metrics
-(e.g., `analytica.dart`). When checking single-element membership against an
-existing `Set` or a large list of constant strings, bind the element in the list
-pattern and check `allowedSet.contains(first)` in the `when` guard (or keep a
-direct `Set.contains` check when no tail destructuring is needed).
-
-**Avoid:**
-
-```dart
-// ❌ High cognitive complexity (+6 for 7 literals chained with ||)
-if (segments case [
-  'status' || 'chat' || 'assets' || 'static' || 'api' || 'documents' || 'r',
-  ...final rest,
-]) {
-  handleRoute(rest);
-}
-```
-
-**Prefer:**
-
-```dart
-// ✅ Binds head and tail cleanly with O(1) Set lookup in `when`
-const allowedTopLevel = {
-  'status', 'chat', 'assets', 'static', 'api', 'documents', 'r',
-};
-if (segments case [final first, ...final rest]
-    when allowedTopLevel.contains(first)) {
-  handleRoute(rest);
-}
-```
-
 ## Related Skills
 
+- **[dart-use-pattern-matching]**: Authoritative guide for Dart 3 pattern
+  matching, switch expressions, and list/map/`String.split()` destructuring.
+- **[dart-seal-type-hierarchies]**: Converting closed class hierarchies into
+  `sealed` types for exhaustive switching.
 - **[dart-best-practices]**: General code style and foundational Dart idioms
   that predate or complement the modern syntax features.
-- **[dart-use-pattern-matching]**: Comprehensive pattern matching, list/path
-  segment destructuring, and `String.split()` idioms.
 
-[dart-best-practices]:
-  https://github.com/kevmoo/dash_skills/blob/main/skills/dart-best-practices/SKILL.md
 [dart-use-pattern-matching]:
   https://github.com/dart-lang/skills/blob/main/skills/dart-use-pattern-matching/SKILL.md
+[dart-seal-type-hierarchies]:
+  https://github.com/kevmoo/dash_skills/blob/main/skills/dart-seal-type-hierarchies/SKILL.md
+[dart-best-practices]:
+  https://github.com/kevmoo/dash_skills/blob/main/skills/dart-best-practices/SKILL.md
