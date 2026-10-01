@@ -180,6 +180,33 @@ timeouts:
 - Test files **must** end in `_test.dart` to be picked up by the test runner.
 - Place tests in the `test/` directory.
 
+### 6. Test Design, Seams & Fakes Over Mocks
+
+- **Test Seams (`lib/<pkg>.dart` vs. `lib/src/`)**:
+  - Import `package:<pkg>/<pkg>.dart` for package-level and integration tests;
+    never export a `lib/src/` symbol in `lib/<pkg>.dart` just for a test.
+  - Import `package:<pkg>/src/<subsystem>.dart` directly when unit-testing an
+    internal **deep module** (e.g., an unexported parser, state machine, or data
+    structure with a simple interface and rich behavior). Do not import
+    `lib/src/` to test shallow single-caller helpers or `@visibleForTesting`
+    private fields.
+- **Test Doubles (`Real -> Fake -> Stub -> Mock`)**:
+  - Prefer real implementations (`Directory.systemTemp.createTempSync()`,
+    in-memory stores, loopback `HttpServer`) or first-party fakes
+    (`package:http/testing.dart` `MockClient`) over `package:mockito`.
+  - Avoid `@GenerateNiceMocks` on types you don't own (`http.Client`, `Process`,
+    DOM APIs)—silent default return values mask real production failures. For
+    browser/Wasm code, run on a real browser (`@TestOn('browser')`) rather than
+    stubbing DOM interfaces on the VM.
+- **Anti-Patterns to Avoid**:
+  - **Constant-Echo Tautologies**: Never assert a constant's literal value
+    (`expect(maxLength, 280)`) or duplicate the production formula in the test.
+    Test the behavior at the boundary (`validate('a' * 280)` vs. `281`).
+  - **Source-File Regex Proxies**: Never read executable `.dart` or template
+    files via `File('lib/...').readAsStringSync()` to regex-match code ordering
+    instead of executing the function or rendering the component (static
+    `README.md` `--help`, `BUILD`, and codegen fixture tests are fine).
+
 ## Common commands
 
 - `dart test`: Run all tests.
