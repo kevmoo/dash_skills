@@ -180,32 +180,34 @@ timeouts:
 - Test files **must** end in `_test.dart` to be picked up by the test runner.
 - Place tests in the `test/` directory.
 
-### 6. Test Design, Seams & Fakes Over Mocks
+### 6. Test Design, Seams & Real Test Doubles
 
 - **Test Seams (`lib/<pkg>.dart` vs. `lib/src/`)**:
-  - Import `package:<pkg>/<pkg>.dart` for package-level and integration tests;
-    never export a `lib/src/` symbol in `lib/<pkg>.dart` just for a test.
+  - Import `package:<pkg>/<pkg>.dart` for package-level and integration tests,
+    keeping `lib/<pkg>.dart` exports strictly scoped to public consumers.
   - Import `package:<pkg>/src/<subsystem>.dart` directly when unit-testing an
     internal **deep module** (e.g., an unexported parser, state machine, or data
-    structure with a simple interface and rich behavior). Do not import
-    `lib/src/` to test shallow single-caller helpers or `@visibleForTesting`
-    private fields.
-- **Test Doubles (`Real -> Fake -> Stub -> Mock`)**:
-  - Prefer real implementations (`Directory.systemTemp.createTempSync()`,
-    in-memory stores, loopback `HttpServer`) or first-party fakes
-    (`package:http/testing.dart` `MockClient`) over `package:mockito`.
-  - Avoid `@GenerateNiceMocks` on types you don't own (`http.Client`, `Process`,
-    DOM APIs)—silent default return values mask real production failures. For
-    browser/Wasm code, run on a real browser (`@TestOn('browser')`) rather than
-    stubbing DOM interfaces on the VM.
-- **Anti-Patterns to Avoid**:
-  - **Constant-Echo Tautologies**: Never assert a constant's literal value
-    (`expect(maxLength, 280)`) or duplicate the production formula in the test.
-    Test the behavior at the boundary (`validate('a' * 280)` vs. `281`).
-  - **Source-File Regex Proxies**: Never read executable `.dart` or template
-    files via `File('lib/...').readAsStringSync()` to regex-match code ordering
-    instead of executing the function or rendering the component (static
-    `README.md` `--help`, `BUILD`, and codegen fixture tests are fine).
+    structure with a simple interface and rich behavior), while testing thin
+    single-caller helpers through their owning module's entrypoint.
+- **Real Implementations & First-Party Fakes (`Real -> Fake -> Stub`)**:
+  - Exercise real dependencies and first-party fakes so tests fail when
+    production contracts change: use `package:test_descriptor` (`d.sandbox`,
+    `d.dir`, `d.file`) or `Directory.systemTemp.createTempSync()` for filesystem
+    I/O, in-memory stores or loopback `HttpServer` instances for services,
+    `package:http/testing.dart` (`MockClient`) for HTTP, and hand-written
+    fakes/stubs for custom interfaces.
+  - Run browser, DOM, and JS/Wasm interop tests on a real browser runtime
+    (`@TestOn('browser')`).
+- **Behavioral & Execution-Driven Assertions**:
+  - **Boundary & Consumer Behavior**: Test the observable outputs and boundary
+    conditions of functions that consume constants and models (e.g.,
+    `validate('a' * 280)` vs. `validate('a' * 281)`) against concrete expected
+    values.
+  - **Direct Execution & Rendering**: Verify runtime behavior, control flow, and
+    UI/CLI output by invoking functions or rendering components directly. Use
+    raw file-text reads (`readAsStringSync()`) specifically for static
+    `README.md` `--help` drift checks, `BUILD` / `pubspec.yaml` metadata sync,
+    and codegen fixtures.
 
 ## Common commands
 
