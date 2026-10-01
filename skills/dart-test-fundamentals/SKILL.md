@@ -180,6 +180,35 @@ timeouts:
 - Test files **must** end in `_test.dart` to be picked up by the test runner.
 - Place tests in the `test/` directory.
 
+### 6. Test Design, Seams & Real Test Doubles
+
+- **Test Seams (`lib/<pkg>.dart` vs. `lib/src/`)**:
+  - Import `package:<pkg>/<pkg>.dart` for package-level and integration tests,
+    keeping `lib/<pkg>.dart` exports strictly scoped to public consumers.
+  - Import `package:<pkg>/src/<subsystem>.dart` directly when unit-testing an
+    internal **deep module** (e.g., an unexported parser, state machine, or data
+    structure with a simple interface and rich behavior), while testing thin
+    single-caller helpers through their owning module's entrypoint.
+- **Real Implementations & First-Party Fakes (`Real -> Fake -> Stub`)**:
+  - Exercise real dependencies and first-party fakes so tests fail when
+    production contracts change: use `package:test_descriptor` (`d.sandbox`,
+    `d.dir`, `d.file`) or `Directory.systemTemp.createTempSync()` for filesystem
+    I/O, in-memory stores or loopback `HttpServer` instances for services,
+    `package:http/testing.dart` (`MockClient`) for HTTP, and hand-written
+    fakes/stubs for custom interfaces.
+  - Run browser, DOM, and JS/Wasm interop tests on a real browser runtime
+    (`@TestOn('browser')`).
+- **Behavioral & Execution-Driven Assertions**:
+  - **Boundary & Consumer Behavior**: Test the observable outputs and boundary
+    conditions of functions that consume constants and models (e.g.,
+    `validate('a' * 280)` vs. `validate('a' * 281)`) against concrete expected
+    values.
+  - **Direct Execution & Rendering**: Verify runtime behavior, control flow, and
+    UI/CLI output by invoking functions or rendering components directly. Use
+    raw file-text reads (`readAsStringSync()`) specifically for static
+    `README.md` `--help` drift checks, `BUILD` / `pubspec.yaml` metadata sync,
+    and codegen fixtures.
+
 ## Common commands
 
 - `dart test`: Run all tests.
