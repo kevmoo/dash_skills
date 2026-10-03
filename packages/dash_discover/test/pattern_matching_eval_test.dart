@@ -48,7 +48,8 @@ void main() {
           result,
           isNull,
           reason:
-              'Must abstain on simple 2-branch guards with single type promotion',
+              'Must abstain on simple 2-branch guards with single type '
+              'promotion',
         );
       },
     );

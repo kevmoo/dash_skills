@@ -23,7 +23,8 @@ ArgParser buildArgParser() => ArgParser()
     'rule',
     abbr: 'r',
     help:
-        'Run only a specific rule by ID (e.g. checks-migration, pattern-matching).',
+        'Run only a specific rule by ID '
+        '(e.g. checks-migration, pattern-matching).',
   )
   ..addOption(
     'category',
@@ -81,19 +82,21 @@ Future<int> runCli(
   try {
     results = parser.parse(args);
   } on FormatException catch (e) {
-    err.writeln('Error: ${e.message}\n');
-    err.writeln(
-      'Usage: dart run dash_discover [path-to-target-package] [options]\n',
-    );
-    err.writeln(parser.usage);
+    err
+      ..writeln('Error: ${e.message}\n')
+      ..writeln(
+        'Usage: dart run dash_discover [path-to-target-package] [options]\n',
+      )
+      ..writeln(parser.usage);
     return ExitCode.usage.code;
   }
 
   if (results.flag('help')) {
-    out.writeln(
-      'Usage: dart run dash_discover [path-to-target-package] [options]\n',
-    );
-    out.writeln(parser.usage);
+    out
+      ..writeln(
+        'Usage: dart run dash_discover [path-to-target-package] [options]\n',
+      )
+      ..writeln(parser.usage);
     return ExitCode.success.code;
   }
 
@@ -110,10 +113,11 @@ Future<int> runCli(
         out.writeln('skills/dash-discover/SKILL.md is up-to-date!');
         return ExitCode.success.code;
       } else {
-        err.writeln('Error: skills/dash-discover/SKILL.md is out of date.');
-        err.writeln(
-          'Run `dart run dash_discover --update-skill` to update it.',
-        );
+        err
+          ..writeln('Error: skills/dash-discover/SKILL.md is out of date.')
+          ..writeln(
+            'Run `dart run dash_discover --update-skill` to update it.',
+          );
         return ExitCode.data.code;
       }
     }
@@ -144,16 +148,15 @@ Future<int> runCli(
       workingDirectory: io.Directory(absPath),
     );
     for (final rule in defaultDiscoveryRules) {
-      out.writeln(
-        '• ${rule.id} (${rule.category.label}) [${rule.lifecycle.label}]',
-      );
-      out.writeln('  Skill:       ${rule.target.skillName}');
-      out.writeln('  Lifecycle:   ${rule.lifecycle.label}');
-      out.writeln('  Category:    ${rule.category.label}');
-      out.writeln(
-        '  Confidence:  ${rule.defaultConfidence.name.toUpperCase()}',
-      );
-      out.writeln('  Description: ${rule.description}');
+      out
+        ..writeln(
+          '• ${rule.id} (${rule.category.label}) [${rule.lifecycle.label}]',
+        )
+        ..writeln('  Skill:       ${rule.target.skillName}')
+        ..writeln('  Lifecycle:   ${rule.lifecycle.label}')
+        ..writeln('  Category:    ${rule.category.label}')
+        ..writeln('  Confidence:  ${rule.defaultConfidence.name.toUpperCase()}')
+        ..writeln('  Description: ${rule.description}');
       final local = catalog.findByName(rule.target.skillName);
       if (local != null) {
         out.writeln('  Resolution:  Local (${local.skillPath})');
@@ -163,7 +166,7 @@ Future<int> runCli(
       if (rule.target.commitSha != null) {
         out.writeln('  Pinned SHA:  ${rule.target.commitSha}');
       }
-      out.writeln('');
+      out.writeln();
     }
     return ExitCode.success.code;
   }
@@ -184,10 +187,11 @@ Future<int> runCli(
   }).toList();
 
   if (activeRules.isEmpty) {
-    err.writeln('Error: No rules match the specified filters.');
-    err.writeln(
-      'Available rules: ${defaultDiscoveryRules.map((r) => r.id).join(', ')}',
-    );
+    err
+      ..writeln('Error: No rules match the specified filters.')
+      ..writeln(
+        'Available rules: ${defaultDiscoveryRules.map((r) => r.id).join(', ')}',
+      );
     return ExitCode.usage.code;
   }
 

@@ -62,7 +62,8 @@ class SkillTarget {
     this.localPath,
   });
 
-  /// The basename identifier of the skill (e.g. `dart-migrate-to-checks-package`).
+  /// The basename identifier of the skill
+  /// (e.g. `dart-migrate-to-checks-package`).
   String get skillName => path.split('/').last;
 
   /// Full permalink or branch URL to the skill definition on GitHub.
@@ -122,7 +123,8 @@ class Opportunity implements Comparable<Opportunity> {
 
   String get skill => target.skillName;
 
-  /// Resolved URI pointing to the local SKILL.md if installed, or upstream GitHub.
+  /// Resolved URI pointing to the local SKILL.md if installed, or upstream
+  /// GitHub.
   Uri get resolvedUri => target.resolvedUri;
 
   /// Whether this opportunity's target skill is installed locally.

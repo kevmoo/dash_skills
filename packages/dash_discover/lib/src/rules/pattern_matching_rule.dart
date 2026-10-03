@@ -4,7 +4,8 @@ import '../models.dart';
 import '../rule.dart';
 
 /// Discovery rule for identifying legacy type cascades and statements that can
-/// be modernized with Dart 3 pattern matching, switch expressions, and destructuring.
+/// be modernized with Dart 3 pattern matching, switch expressions, and
+/// destructuring.
 ///
 /// **Target Skill**:
 /// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-use-pattern-matching
@@ -18,7 +19,8 @@ final class PatternMatchingRule extends FileDiscoveryRule {
     r'(?:\bif\s*\([^)]+\s+is\s+[^)]+\)[^{}]*\{[^{}]*\}\s*else\s+if\s*\([^)]+\s+is\s+[^)]+\)|else\s+if\s*\([^)]+\s+is\s+[^)]+\)[^{}]*\{[^{}]*\}\s*else\s+if\s*\([^)]+\s+is\s+[^)]+\))',
   );
 
-  // Switch statement where a case immediately returns or throws (linear matching without backtracking):
+  // Switch statement where a case immediately returns or throws (linear
+  // matching without backtracking):
   static final _returningSwitchPattern = RegExp(
     r'\bswitch\s*\([^)]+\)\s*\{[^{}]*?\b(?:case\b[^:]+|default)\s*:\s*(?:return\b|throw\b)',
   );
@@ -42,18 +44,21 @@ final class PatternMatchingRule extends FileDiscoveryRule {
 
   @override
   String get description =>
-      'Detects legacy else if (... is ...) type cascades and returning switch statements.';
+      'Detects legacy else if (... is ...) type cascades and returning '
+      'switch statements.';
 
   @override
   Confidence get defaultConfidence => Confidence.high;
 
   @override
   String get diagnosisTemplate =>
-      '{count} file(s) use legacy `else if (... is ...)` type cascades or returning switch statements.';
+      '{count} file(s) use legacy `else if (... is ...)` type cascades or '
+      'returning switch statements.';
 
   @override
   String get prescription =>
-      'Refactor into concise Dart 3 switch expressions, sealed class exhaustiveness, and pattern destructuring.';
+      'Refactor into concise Dart 3 switch expressions, sealed class '
+      'exhaustiveness, and pattern destructuring.';
 
   @override
   String? checkFile(File file, String content, PackageContext context) {

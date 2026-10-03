@@ -20,8 +20,9 @@ void main() {
       final hitsMap = item['hits'] as Map<int, int>;
       final flatHits = <int>[];
       hitsMap.forEach((line, count) {
-        flatHits.add(line);
-        flatHits.add(count);
+        flatHits
+          ..add(line)
+          ..add(count);
       });
       return {'source': source, 'hits': flatHits};
     }).toList();

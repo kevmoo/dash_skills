@@ -135,8 +135,8 @@ class SkillsCatalog {
 
   /// Formats the skills catalog for inclusion in an LLM probe prompt.
   String formatForPrompt() {
-    final buffer = StringBuffer();
-    buffer.writeln('### AVAILABLE SKILLS CATALOG (${skills.length} skills):');
+    final buffer = StringBuffer()
+      ..writeln('### AVAILABLE SKILLS CATALOG (${skills.length} skills):');
     for (final skill in skills) {
       buffer.writeln('- **${skill.name}**: ${skill.description}');
     }

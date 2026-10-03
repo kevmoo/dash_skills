@@ -9,15 +9,15 @@ const discoveryRulesEndTag = '<!-- DISCOVERY_RULES_END -->';
 /// Generates the Markdown list of discovery rules for inclusion in SKILL.md.
 String generateDiscoveryRulesBlock([List<DiscoveryRule>? rules]) {
   final activeRules = rules ?? defaultDiscoveryRules;
-  final buffer = StringBuffer();
-  buffer.writeln(discoveryRulesStartTag);
-  buffer.writeln();
-  buffer.writeln(
-    'The static scanner performs rapid, zero-network checks across '
-    '${activeRules.length} built-in rules:',
-  );
-  buffer.writeln();
-  buffer.writeln('<!-- prettier-ignore -->');
+  final buffer = StringBuffer()
+    ..writeln(discoveryRulesStartTag)
+    ..writeln()
+    ..writeln(
+      'The static scanner performs rapid, zero-network checks across '
+      '${activeRules.length} built-in rules:',
+    )
+    ..writeln()
+    ..writeln('<!-- prettier-ignore -->');
   for (var i = 0; i < activeRules.length; i++) {
     final rule = activeRules[i];
     final num = i + 1;
@@ -26,8 +26,9 @@ String generateDiscoveryRulesBlock([List<DiscoveryRule>? rules]) {
       '${rule.description}',
     );
   }
-  buffer.writeln();
-  buffer.write(discoveryRulesEndTag);
+  buffer
+    ..writeln()
+    ..write(discoveryRulesEndTag);
   return buffer.toString();
 }
 
@@ -37,7 +38,8 @@ String updateSkillContent(String content, [List<DiscoveryRule>? rules]) {
   final endIndex = content.indexOf(discoveryRulesEndTag);
   if (startIndex == -1 || endIndex == -1) {
     throw StateError(
-      'Could not find $discoveryRulesStartTag and $discoveryRulesEndTag in content',
+      'Could not find $discoveryRulesStartTag and $discoveryRulesEndTag '
+      'in content',
     );
   }
   final generated = generateDiscoveryRulesBlock(rules);

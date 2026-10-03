@@ -4,18 +4,16 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
-Directory _getRepoRoot() {
-  return Directory.current.path.endsWith('tool')
-      ? Directory.current.parent
-      : Directory.current;
-}
+Directory _getRepoRoot() => Directory.current.path.endsWith('tool')
+    ? Directory.current.parent
+    : Directory.current;
 
 List<File> _findEvalsFiles(Directory baseDir) {
   if (!baseDir.existsSync()) {
     return [];
   }
   return baseDir.listSync(recursive: true).whereType<File>().where((File f) {
-    final String name = p.basename(f.path);
+    final name = p.basename(f.path);
     return name == 'evals.json' || name.endsWith('_evals.json');
   }).toList();
 }
@@ -28,11 +26,11 @@ void _verifyStructuralConsistency(List<File> files, String itemsKey) {
 
   for (final file in files) {
     final Object? decoded = jsonDecode(file.readAsStringSync());
-    final Map<String, dynamic> decodedMap = switch (decoded) {
+    final decodedMap = switch (decoded) {
       final Map<String, dynamic> map => map,
       _ => fail('${file.path} must be a JSON map.'),
     };
-    final Set<String> rootKeys = decodedMap.keys.toSet();
+    final rootKeys = decodedMap.keys.toSet();
     if (expectedRootKeys == null) {
       expectedRootKeys = rootKeys;
       expectedRootKeysFilePath = file.path;
@@ -42,21 +40,22 @@ void _verifyStructuralConsistency(List<File> files, String itemsKey) {
         equals(expectedRootKeys),
         reason:
             '${file.path} root keys do not match consistency pattern. '
-            'Expected keys to match the first processed file ($expectedRootKeysFilePath).',
+            'Expected keys to match the first processed file '
+            '($expectedRootKeysFilePath).',
       );
     }
 
     final Object? itemsRaw = decodedMap[itemsKey];
-    final List<dynamic> itemsList = switch (itemsRaw) {
+    final itemsList = switch (itemsRaw) {
       final List<dynamic> list => list,
       _ => fail('$itemsKey key in ${file.path} must be a List.'),
     };
     for (final Object? item in itemsList) {
-      final Map<String, dynamic> itemMap = switch (item) {
+      final itemMap = switch (item) {
         final Map<String, dynamic> map => map,
         _ => fail('Item in $itemsKey list in ${file.path} must be a JSON map.'),
       };
-      final Set<String> itemKeys = itemMap.keys.toSet();
+      final itemKeys = itemMap.keys.toSet();
       if (expectedItemKeys == null) {
         expectedItemKeys = itemKeys;
         expectedItemFilePath = file.path;
@@ -66,7 +65,8 @@ void _verifyStructuralConsistency(List<File> files, String itemsKey) {
           equals(expectedItemKeys),
           reason:
               'Item in ${file.path} keys do not match consistency pattern. '
-              'Expected item keys to match the first processed file ($expectedItemFilePath).',
+              'Expected item keys to match the first processed file '
+              '($expectedItemFilePath).',
         );
       }
     }
@@ -79,7 +79,7 @@ void main() {
       'all evals.json files across skills share consistent structure and keys',
       () {
         final repoRoot = _getRepoRoot();
-        final List<File> evalsFiles = [
+        final evalsFiles = <File>[
           ..._findEvalsFiles(Directory(p.join(repoRoot.path, 'skills'))),
           ..._findEvalsFiles(Directory(p.join(repoRoot.path, 'evals'))),
         ]..sort((a, b) => a.path.compareTo(b.path));
@@ -102,7 +102,7 @@ void main() {
         return;
       }
 
-      final List<Directory> skillDirsWithEvals = skillsDir
+      final skillDirsWithEvals = skillsDir
           .listSync()
           .whereType<Directory>()
           .where((dir) => Directory(p.join(dir.path, 'evals')).existsSync())
@@ -120,7 +120,9 @@ void main() {
           evalsFile.existsSync(),
           isTrue,
           reason:
-              'Published skill "${p.basename(skillDir.path)}" has an evals directory but is missing an evals.json file at ${evalsFile.path}',
+              'Published skill "${p.basename(skillDir.path)}" has an evals '
+              'directory but is missing an evals.json file at '
+              '${evalsFile.path}',
         );
       }
     });
@@ -129,7 +131,7 @@ void main() {
       'all referenced rubrics in evals.json exist and have valid structure',
       () {
         final repoRoot = _getRepoRoot();
-        final List<File> evalsFiles = [
+        final evalsFiles = <File>[
           ..._findEvalsFiles(Directory(p.join(repoRoot.path, 'skills'))),
           ..._findEvalsFiles(Directory(p.join(repoRoot.path, 'evals'))),
         ];
@@ -138,7 +140,7 @@ void main() {
 
         for (final file in evalsFiles) {
           final Object? decoded = jsonDecode(file.readAsStringSync());
-          final Map<String, dynamic> decodedMap = switch (decoded) {
+          final decodedMap = switch (decoded) {
             final Map<String, dynamic> map => map,
             _ => fail('${file.path} must be a JSON map.'),
           };
@@ -148,7 +150,7 @@ void main() {
             continue;
           }
 
-          final List<dynamic> repoCriteriaList = switch (repoCriteriaRaw) {
+          final repoCriteriaList = switch (repoCriteriaRaw) {
             final List<dynamic> list => list,
             _ => fail('repo_criteria in ${file.path} must be a List.'),
           };
@@ -162,13 +164,14 @@ void main() {
               rubricFile.existsSync(),
               isTrue,
               reason:
-                  'Referenced rubric "$rubricPath" in ${file.path} does not exist at ${rubricFile.path}',
+                  'Referenced rubric "$rubricPath" in ${file.path} does not '
+                  'exist at ${rubricFile.path}',
             );
 
             final Object? rubricDecoded = jsonDecode(
               rubricFile.readAsStringSync(),
             );
-            final Map<String, dynamic> rubricMap = switch (rubricDecoded) {
+            final rubricMap = switch (rubricDecoded) {
               final Map<String, dynamic> map => map,
               _ => fail('${rubricFile.path} must be a JSON map.'),
             };
@@ -191,7 +194,7 @@ void main() {
           return;
         }
 
-        final List<File> rubricFiles =
+        final rubricFiles =
             rubricsDir
                 .listSync()
                 .whereType<File>()

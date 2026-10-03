@@ -34,7 +34,8 @@ final class MockGenerationRule extends FileDiscoveryRule {
 
   @override
   String get description =>
-      'Detects handwritten fake or mock class definitions without mockito or mocktail.';
+      'Detects handwritten fake or mock class definitions without mockito '
+      'or mocktail.';
 
   @override
   Confidence get defaultConfidence => Confidence.medium;
@@ -48,7 +49,8 @@ final class MockGenerationRule extends FileDiscoveryRule {
 
   @override
   String get prescription =>
-      'Automate test stubbing using `@GenerateMocks` or `mocktail` to avoid manual maintenance of interface stubs.';
+      'Automate test stubbing using `@GenerateMocks` or `mocktail` to avoid '
+      'manual maintenance of interface stubs.';
 
   @override
   String? checkFile(File file, String content, PackageContext context) {

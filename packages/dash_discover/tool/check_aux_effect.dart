@@ -42,9 +42,10 @@ void main(List<String> args) {
       }
 
       rejectedByAux++;
-      details.add(
-        '    ${type.name} <- ${outsideLib.map((s) => '${s.name} (${s.source.relativePath})').join(', ')}',
-      );
+      final outside = outsideLib
+          .map((s) => '${s.name} (${s.source.relativePath})')
+          .join(', ');
+      details.add('    ${type.name} <- $outside');
     }
 
     print(

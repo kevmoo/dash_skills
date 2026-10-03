@@ -88,9 +88,8 @@ class PackageContext {
         rawPubspec.contains('$name:');
   }
 
-  String readContent(File file) {
-    return _contentCache.putIfAbsent(file.path, () => file.readAsStringSync());
-  }
+  String readContent(File file) =>
+      _contentCache.putIfAbsent(file.path, () => file.readAsStringSync());
 
   List<File>? _allTestFiles;
 

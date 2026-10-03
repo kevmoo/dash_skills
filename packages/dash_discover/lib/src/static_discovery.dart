@@ -19,11 +19,10 @@ class StaticDiscoveryEngine {
   factory StaticDiscoveryEngine.forPath(
     String path, {
     List<DiscoveryRule>? rules,
-  }) {
-    return StaticDiscoveryEngine(PackageContext.load(path), rules: rules);
-  }
+  }) => StaticDiscoveryEngine(PackageContext.load(path), rules: rules);
 
-  /// Runs all applicable rules against the package context, sorted deterministically.
+  /// Runs all applicable rules against the package context, sorted
+  /// deterministically.
   List<Opportunity> scan() {
     final opportunities = <Opportunity>[];
     for (final rule in rules) {

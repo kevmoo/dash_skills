@@ -29,7 +29,8 @@ String _locateProfileScript() {
     }
   }
   throw StateError(
-    'Could not locate profile.dart. Current directory: ${Directory.current.path}',
+    'Could not locate profile.dart. '
+    'Current directory: ${Directory.current.path}',
   );
 }
 

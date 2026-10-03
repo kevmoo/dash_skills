@@ -42,55 +42,49 @@ void main() {
       },
     );
 
-    test(
-      'invalid option writes error and usage to stderr and returns ExitCode.usage',
-      () async {
-        final code = await runCli(['--unknown-flag'], stdout: out, stderr: err);
+    test('invalid option writes error and usage to stderr and returns '
+        'ExitCode.usage', () async {
+      final code = await runCli(['--unknown-flag'], stdout: out, stderr: err);
 
-        expect(code, equals(ExitCode.usage.code));
-        expect(
-          err.toString(),
-          contains('Could not find an option named "--unknown-flag".'),
-        );
-        expect(err.toString(), contains('Usage: dart run dash_discover'));
-        expect(out.toString(), isEmpty);
-      },
-    );
+      expect(code, equals(ExitCode.usage.code));
+      expect(
+        err.toString(),
+        contains('Could not find an option named "--unknown-flag".'),
+      );
+      expect(err.toString(), contains('Usage: dart run dash_discover'));
+      expect(out.toString(), isEmpty);
+    });
 
-    test(
-      'non-existent target directory writes error to stderr and returns ExitCode.noInput',
-      () async {
-        final nonExistent = p.join(
-          Directory.systemTemp.path,
-          'non_existent_dir_12345',
-        );
-        final code = await runCli([nonExistent], stdout: out, stderr: err);
+    test('non-existent target directory writes error to stderr and returns '
+        'ExitCode.noInput', () async {
+      final nonExistent = p.join(
+        Directory.systemTemp.path,
+        'non_existent_dir_12345',
+      );
+      final code = await runCli([nonExistent], stdout: out, stderr: err);
 
-        expect(code, equals(ExitCode.noInput.code));
-        expect(
-          err.toString(),
-          contains('Error: Target directory does not exist:'),
-        );
-        expect(out.toString(), isEmpty);
-      },
-    );
+      expect(code, equals(ExitCode.noInput.code));
+      expect(
+        err.toString(),
+        contains('Error: Target directory does not exist:'),
+      );
+      expect(out.toString(), isEmpty);
+    });
 
-    test(
-      '--list-rules outputs rule listing to stdout and returns ExitCode.success',
-      () async {
-        final code = await runCli(
-          [repoRoot.path, '--list-rules'],
-          stdout: out,
-          stderr: err,
-        );
+    test('--list-rules outputs rule listing to stdout and returns '
+        'ExitCode.success', () async {
+      final code = await runCli(
+        [repoRoot.path, '--list-rules'],
+        stdout: out,
+        stderr: err,
+      );
 
-        expect(code, equals(ExitCode.success.code));
-        expect(out.toString(), contains('Available Discovery Rules'));
-        expect(out.toString(), contains('checks-migration'));
-        expect(out.toString(), contains('dart-seal-type-hierarchies'));
-        expect(err.toString(), isEmpty);
-      },
-    );
+      expect(code, equals(ExitCode.success.code));
+      expect(out.toString(), contains('Available Discovery Rules'));
+      expect(out.toString(), contains('checks-migration'));
+      expect(out.toString(), contains('dart-seal-type-hierarchies'));
+      expect(err.toString(), isEmpty);
+    });
 
     test(
       'unmatched rule filter writes error to stderr and returns ExitCode.usage',
@@ -137,20 +131,18 @@ void main() {
       expect(err.toString(), isEmpty);
     });
 
-    test(
-      'valid discovery run with --outline-only emits repository outline to stdout',
-      () async {
-        final code = await runCli(
-          [repoRoot.path, '--outline-only'],
-          stdout: out,
-          stderr: err,
-        );
+    test('valid discovery run with --outline-only emits repository outline '
+        'to stdout', () async {
+      final code = await runCli(
+        [repoRoot.path, '--outline-only'],
+        stdout: out,
+        stderr: err,
+      );
 
-        expect(code, equals(ExitCode.success.code));
-        expect(out.toString(), contains('REPOSITORY OUTLINE'));
-        expect(err.toString(), isEmpty);
-      },
-    );
+      expect(code, equals(ExitCode.success.code));
+      expect(out.toString(), contains('REPOSITORY OUTLINE'));
+      expect(err.toString(), isEmpty);
+    });
 
     test(
       'valid discovery run with --prompt-only emits probe prompt to stdout',

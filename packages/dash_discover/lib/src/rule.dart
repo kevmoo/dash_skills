@@ -2,7 +2,8 @@ import 'dart:io';
 import 'context.dart';
 import 'models.dart';
 
-/// Base contract for a discovery rule aligning project signals with an upstream skill.
+/// Base contract for a discovery rule aligning project signals with an
+/// upstream skill.
 abstract class DiscoveryRule {
   const DiscoveryRule();
 
@@ -15,7 +16,8 @@ abstract class DiscoveryRule {
   /// Architectural category organizing this rule.
   RuleCategory get category;
 
-  /// Skill lifecycle type: one-time migration, periodic hygiene, or architecture.
+  /// Skill lifecycle type: one-time migration, periodic hygiene, or
+  /// architecture.
   SkillLifecycle get lifecycle;
 
   /// Concise summary of what this rule detects.
@@ -27,7 +29,8 @@ abstract class DiscoveryRule {
   /// Fast precondition check before running full evaluation.
   bool appliesTo(PackageContext context) => true;
 
-  /// Evaluates the package and yields any discovered modernization opportunities.
+  /// Evaluates the package and yields any discovered modernization
+  /// opportunities.
   Iterable<Opportunity> evaluate(PackageContext context);
 }
 

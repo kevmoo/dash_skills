@@ -24,7 +24,8 @@ final class MatcherBestPracticesRule extends FileDiscoveryRule {
     r'expect\(\s*[^,]+?\.length\b\s*,\s*([^,)]+)',
   );
 
-  // Checks if the expected argument is a floating-point number (e.g. 25.0 or equals(25.0)):
+  // Checks if the expected argument is a floating-point number
+  // (e.g. 25.0 or equals(25.0)):
   static final _floatPattern = RegExp(r'^(?:equals\(\s*)?\d+\.\d+');
 
   // Matches map string key lookups:
@@ -57,7 +58,8 @@ final class MatcherBestPracticesRule extends FileDiscoveryRule {
 
   @override
   String get description =>
-      'Detects unidiomatic expect() assertions (e.g. expect(x.length, ...) or expect(x.isEmpty, true)).';
+      'Detects unidiomatic expect() assertions (e.g. expect(x.length, ...) '
+      'or expect(x.isEmpty, true)).';
 
   @override
   Confidence get defaultConfidence => Confidence.high;
@@ -73,11 +75,13 @@ final class MatcherBestPracticesRule extends FileDiscoveryRule {
 
   @override
   String get diagnosisTemplate =>
-      '{count} test file(s) use suboptimal expect() assertions instead of dedicated matchers.';
+      '{count} test file(s) use suboptimal expect() assertions instead of '
+      'dedicated matchers.';
 
   @override
   String get prescription =>
-      'Migrate to first-class matchers (hasLength, isEmpty, isNotEmpty, contains) for clearer assertion failure messages.';
+      'Migrate to first-class matchers (hasLength, isEmpty, isNotEmpty, '
+      'contains) for clearer assertion failure messages.';
 
   @override
   String? checkFile(File file, String content, PackageContext context) {

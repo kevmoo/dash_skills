@@ -148,11 +148,7 @@ class _PathJoinVisitor extends RecursiveAstVisitor<void> {
   /// True when the literal is an argument to a `Uri` constructor or factory,
   /// where `/` is a URI separator by definition.
   bool _isInsideUriConstruction(StringInterpolation node) {
-    for (
-      AstNode? current = node.parent;
-      current != null;
-      current = current.parent
-    ) {
+    for (var current = node.parent; current != null; current = current.parent) {
       switch (current) {
         case MethodInvocation(:final target):
           if (target?.toSource() == 'Uri') return true;

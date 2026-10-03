@@ -51,15 +51,15 @@ void main(List<String> arguments) async {
           .toList()
         ..sort((a, b) => p.basename(a.path).compareTo(p.basename(b.path)));
 
-  final listBuffer = StringBuffer();
-  listBuffer.writeln('<!-- SKILLS_LIST_START -->\n');
-  listBuffer.writeln('To install any skill individually:\n');
-  listBuffer.writeln('```bash');
-  listBuffer.writeln('npx skills add $repoSlug --skill <skill-name>');
-  listBuffer.writeln('```\n');
-  listBuffer.writeln('<!-- prettier-ignore -->');
-  listBuffer.writeln('| Skill | Description | Key Features |');
-  listBuffer.writeln('|-------|-------------|--------------|');
+  final listBuffer = StringBuffer()
+    ..writeln('<!-- SKILLS_LIST_START -->\n')
+    ..writeln('To install any skill individually:\n')
+    ..writeln('```bash')
+    ..writeln('npx skills add $repoSlug --skill <skill-name>')
+    ..writeln('```\n')
+    ..writeln('<!-- prettier-ignore -->')
+    ..writeln('| Skill | Description | Key Features |')
+    ..writeln('|-------|-------------|--------------|');
   for (final dir in skillDirs) {
     final skillName = p.basename(dir.path);
     final skillFile = File(p.join(dir.path, 'SKILL.md'));
@@ -70,7 +70,7 @@ void main(List<String> arguments) async {
         frontMatter['name']?.toString() ?? _getSkillTitle(content, skillName);
     final description = frontMatter['description']?.toString() ?? '';
     final keyFeaturesRaw = frontMatter['key_features'];
-    final List<String> keyFeatures = [];
+    final keyFeatures = <String>[];
     if (keyFeaturesRaw is List) {
       keyFeatures.addAll(keyFeaturesRaw.map((e) => e.toString()));
     } else if (keyFeaturesRaw is String) {
@@ -84,12 +84,12 @@ void main(List<String> arguments) async {
 
     final cleanDescription = LineSplitter.split(
       description.trim(),
-    ).map((line) => line.trim()).join(' ').replaceAll('|', '\\|');
+    ).map((line) => line.trim()).join(' ').replaceAll('|', r'\|');
 
     final cleanFeatures = keyFeatures
         .map((f) => LineSplitter.split(f.trim()).map((l) => l.trim()).join(' '))
         .join(', ')
-        .replaceAll('|', '\\|');
+        .replaceAll('|', r'\|');
 
     listBuffer.writeln(
       '| **[$title](skills/$skillName/SKILL.md)** | $cleanDescription | $cleanFeatures |',
@@ -100,8 +100,8 @@ void main(List<String> arguments) async {
   final generatedTable = listBuffer.toString();
 
   final readmeContent = readmeFile.readAsStringSync();
-  final startTag = '<!-- SKILLS_LIST_START -->';
-  final endTag = '<!-- SKILLS_LIST_END -->';
+  const startTag = '<!-- SKILLS_LIST_START -->';
+  const endTag = '<!-- SKILLS_LIST_END -->';
 
   final startIndex = readmeContent.indexOf(startTag);
   final endIndex = startIndex == -1
@@ -110,7 +110,8 @@ void main(List<String> arguments) async {
 
   if (startIndex == -1 || endIndex == -1) {
     print(
-      'Error: Could not find comments <!-- SKILLS_LIST_START --> and <!-- SKILLS_LIST_END --> in correct order in README.md',
+      'Error: Could not find comments <!-- SKILLS_LIST_START --> and '
+      '<!-- SKILLS_LIST_END --> in correct order in README.md',
     );
     exit(1);
   }

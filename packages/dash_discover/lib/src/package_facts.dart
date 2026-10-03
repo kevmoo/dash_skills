@@ -35,7 +35,7 @@ class ParsedSource {
   /// not part of the package's public API.
   bool get isImplementation =>
       relativePath.startsWith('lib/src/') ||
-      relativePath.startsWith('lib\\src\\');
+      relativePath.startsWith(r'lib\src\');
 
   /// 1-based line number for [offset], for human-readable evidence.
   int lineOf(int offset) {
@@ -186,18 +186,14 @@ class PackageFacts {
     final sources = <ParsedSource>[];
     for (final file in files) {
       final content = context.readContent(file);
-      final CompilationUnit unit;
-      try {
-        unit = parseString(
-          content: content,
-          path: file.path,
-          throwIfDiagnostics: false,
-        ).unit;
-      } on ArgumentError {
-        // Unparseable source (e.g. a future language feature this analyzer
-        // does not know). Skipping is correct: no facts beats wrong facts.
-        continue;
-      }
+      // `throwIfDiagnostics: false` keeps syntactically broken sources (e.g.
+      // a future language feature this analyzer does not know) from throwing;
+      // the recovered partial AST is still useful for fact extraction.
+      final unit = parseString(
+        content: content,
+        path: file.path,
+        throwIfDiagnostics: false,
+      ).unit;
       sources.add(
         ParsedSource(
           file: file,
