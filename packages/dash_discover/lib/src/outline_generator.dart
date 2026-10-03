@@ -11,9 +11,9 @@ class OutlineGenerator {
 
   /// Builds the markdown outline string.
   String generate({int maxSignatureLines = 250}) {
-    final buffer = StringBuffer();
-    buffer.writeln('# REPOSITORY OUTLINE: $packageName');
-    buffer.writeln('Path: $packagePath\n');
+    final buffer = StringBuffer()
+      ..writeln('# REPOSITORY OUTLINE: $packageName')
+      ..writeln('Path: $packagePath\n');
 
     _appendPubspec(buffer);
     _appendDirectoryStructure(buffer);
@@ -113,7 +113,8 @@ class OutlineGenerator {
         buffer.writeln(trimmed);
         if (raw.length > maxSignatureLines) {
           buffer.writeln(
-            '\n... [${raw.length - maxSignatureLines} signature lines truncated for token efficiency] ...',
+            '\n... [${raw.length - maxSignatureLines} signature lines '
+            'truncated for token efficiency] ...',
           );
         }
         return;

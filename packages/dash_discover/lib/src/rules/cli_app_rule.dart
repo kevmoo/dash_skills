@@ -63,7 +63,8 @@ final class CliAppRule extends DiscoveryRule {
       return null;
     }
 
-    // 3. Thin Trampoline Guardrail (<30 non-empty lines delegating to package library)
+    // 3. Thin Trampoline Guardrail (<30 non-empty lines delegating to
+    //    package library)
     final lines = content.split('\n').where((l) => l.trim().isNotEmpty).length;
     if (lines <= 30 &&
         (content.contains('package:${context.packageName}/') ||

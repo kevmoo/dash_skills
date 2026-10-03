@@ -32,11 +32,10 @@ Future<void> main(List<String> arguments) async {
   try {
     results = parser.parse(arguments);
   } on ArgParserException catch (e) {
-    stderr.writeln('Error: ${e.message}');
-    stderr.writeln(
-      'Usage: dart profile.dart [options] -- <target.dart> [args...]',
-    );
-    stderr.writeln(parser.usage);
+    stderr
+      ..writeln('Error: ${e.message}')
+      ..writeln('Usage: dart profile.dart [options] -- <target.dart> [args...]')
+      ..writeln(parser.usage);
     exitCode = 64;
     return;
   }
@@ -47,10 +46,9 @@ Future<void> main(List<String> arguments) async {
     return;
   }
   if (results.rest.isEmpty) {
-    stderr.writeln(
-      'Usage: dart profile.dart [options] -- <target.dart> [args...]',
-    );
-    stderr.writeln(parser.usage);
+    stderr
+      ..writeln('Usage: dart profile.dart [options] -- <target.dart> [args...]')
+      ..writeln(parser.usage);
     exitCode = 64;
     return;
   }
@@ -59,7 +57,8 @@ Future<void> main(List<String> arguments) async {
   final period = int.tryParse(results['period'] as String);
   if (period == null || period < 50) {
     stderr.writeln(
-      'Error: Invalid --period value "${results['period']}". Must be an integer >= 50.',
+      'Error: Invalid --period value "${results['period']}". '
+      'Must be an integer >= 50.',
     );
     exitCode = 64;
     return;
@@ -166,9 +165,11 @@ Future<void> main(List<String> arguments) async {
     final isolateId = isolateRef.id!;
 
     var connectionLost = false;
-    service.onDone.then((_) {
-      connectionLost = true;
-    });
+    unawaited(
+      service.onDone.then((_) {
+        connectionLost = true;
+      }),
+    );
 
     var isPausedAtExit = false;
     while (!isPausedAtExit && !connectionLost) {
@@ -196,12 +197,13 @@ Future<void> main(List<String> arguments) async {
         print('Target process exited with code $procExitCode');
         break;
       }
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
     }
 
     if (!isPausedAtExit) {
       stderr.writeln(
-        'Error: Target process did not pause at exit. Cannot retrieve CPU profile.',
+        'Error: Target process did not pause at exit. '
+        'Cannot retrieve CPU profile.',
       );
       exitCode = 1;
       return;
@@ -225,7 +227,8 @@ Future<void> main(List<String> arguments) async {
 
     print('\n=== Top 15 Functions by Self CPU Samples ===');
     print(
-      '${'Self %'.padRight(8)} | ${'Self'.padRight(8)} | ${'Total %'.padRight(8)} | Function',
+      '${'Self %'.padRight(8)} | ${'Self'.padRight(8)} | '
+      '${'Total %'.padRight(8)} | Function',
     );
     print(
       '-----------------------------------------------------------------------',
@@ -241,9 +244,20 @@ Future<void> main(List<String> arguments) async {
       final totalPct = sampleCount > 0
           ? (totalCount * 100.0 / sampleCount)
           : 0.0;
-      final name = func.function?.name ?? func.resolvedUrl ?? 'Unknown';
+      // `ProfileFunction.function` is `dynamic`: a FuncRef or NativeFunction.
+      final Object? function = func.function;
+      final name =
+          switch (function) {
+            FuncRef(:final name) => name,
+            NativeFunction(:final name) => name,
+            _ => null,
+          } ??
+          func.resolvedUrl ??
+          'Unknown';
       print(
-        '${pct.toStringAsFixed(1).padLeft(6)}% | ${count.toString().padLeft(8)} | ${totalPct.toStringAsFixed(1).padLeft(6)}% | $name',
+        '${pct.toStringAsFixed(1).padLeft(6)}% | '
+        '${count.toString().padLeft(8)} | '
+        '${totalPct.toStringAsFixed(1).padLeft(6)}% | $name',
       );
       displayed++;
     }

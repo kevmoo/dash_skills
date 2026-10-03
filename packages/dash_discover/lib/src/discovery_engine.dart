@@ -28,9 +28,9 @@ class DiscoveryReport {
   };
 
   String toMarkdown() {
-    final buffer = StringBuffer();
-    buffer.writeln('# Meta-Skill Discovery Report: $packageName\n');
-    buffer.writeln('Path: `$packagePath`\n');
+    final buffer = StringBuffer()
+      ..writeln('# Meta-Skill Discovery Report: $packageName\n')
+      ..writeln('Path: `$packagePath`\n');
 
     if (staticOpportunities.isEmpty) {
       buffer.writeln(
@@ -41,19 +41,21 @@ class DiscoveryReport {
         '## 🎯 Detected Opportunities (${staticOpportunities.length})\n',
       );
       for (final opp in staticOpportunities) {
-        buffer.writeln(
-          '### [${opp.skill}](${opp.target.resolvedUri}) (${opp.category.label})\n',
-        );
         final targetDesc = opp.target.isLocal
             ? 'Local file (`${opp.target.localPath}`)'
             : 'Remote GitHub (${opp.target.githubUrl})';
-        buffer.writeln('- **Target Skill**: $targetDesc');
-        buffer.writeln('- **Lifecycle**: ${opp.lifecycle.label}');
-        buffer.writeln('- **Confidence**: ${opp.confidence.label}');
-        buffer.writeln('- **Impact**: ${opp.affectedCount} file(s)');
-        buffer.writeln('- **Diagnosis**: ${opp.diagnosis}');
-        buffer.writeln('- **Prescription**: ${opp.prescription}');
-        buffer.writeln('- **Evidence**:');
+        buffer
+          ..writeln(
+            '### [${opp.skill}](${opp.target.resolvedUri}) '
+            '(${opp.category.label})\n',
+          )
+          ..writeln('- **Target Skill**: $targetDesc')
+          ..writeln('- **Lifecycle**: ${opp.lifecycle.label}')
+          ..writeln('- **Confidence**: ${opp.confidence.label}')
+          ..writeln('- **Impact**: ${opp.affectedCount} file(s)')
+          ..writeln('- **Diagnosis**: ${opp.diagnosis}')
+          ..writeln('- **Prescription**: ${opp.prescription}')
+          ..writeln('- **Evidence**:');
         for (final ev in opp.evidence) {
           buffer.writeln('  - $ev');
         }
@@ -85,7 +87,8 @@ class DiscoveryEngine {
     );
     final rawOpportunities = staticEngine.scan();
 
-    // Resolve skill targets against catalog (prefer local SKILL.md over remote GitHub)
+    // Resolve skill targets against catalog (prefer local SKILL.md over
+    // remote GitHub)
     final staticOpportunities = rawOpportunities.map((opp) {
       final localMeta = catalog.findByName(opp.target.skillName);
       if (localMeta != null) {

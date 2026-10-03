@@ -57,7 +57,8 @@ void main() {
         result,
         isNull,
         reason:
-            'Must not flag thin entrypoint delegating to package implementation',
+            'Must not flag thin entrypoint delegating to package '
+            'implementation',
       );
     });
 

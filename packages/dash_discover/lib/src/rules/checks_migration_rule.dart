@@ -53,9 +53,11 @@ final class ChecksMigrationRule extends DiscoveryRule {
       confidence: defaultConfidence,
       affectedCount: context.testFiles.length,
       diagnosis:
-          'Repository depends on `package:test` but does not use `package:checks`.',
+          'Repository depends on `package:test` but does not use '
+          '`package:checks`.',
       prescription:
-          'Migrate test assertions from legacy `expect(actual, matcher)` to fluent, strongly-typed `check(actual)...` chains.',
+          'Migrate test assertions from legacy `expect(actual, matcher)` to '
+          'fluent, strongly-typed `check(actual)...` chains.',
       evidence: [
         'pubspec.yaml lacks checks dependency',
         ...context.testFiles.take(3).map(context.relativePath),

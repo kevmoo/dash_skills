@@ -128,7 +128,7 @@ void main() {
     });
 
     test('ChecksMigrationRule declares unambiguous upstream GitHub target', () {
-      final rule = ChecksMigrationRule();
+      const rule = ChecksMigrationRule();
       expect(rule.target.org, 'dart-lang');
       expect(rule.target.repo, 'skills');
       expect(rule.target.path, 'skills/dart-migrate-to-checks-package');
@@ -153,7 +153,7 @@ dev_dependencies:
       ).writeAsStringSync('void main() {}');
 
       final context = PackageContext.load(tempDir.path);
-      final rule = ChecksMigrationRule();
+      const rule = ChecksMigrationRule();
 
       expect(rule.appliesTo(context), isTrue);
       final opps = rule.evaluate(context).toList();
@@ -180,7 +180,7 @@ void main(List<String> args) {
 ''');
 
       final context = PackageContext.load(tempDir.path);
-      final rule = CliAppRule();
+      const rule = CliAppRule();
 
       expect(rule.appliesTo(context), isTrue);
       final opps = rule.evaluate(context).toList();
@@ -203,7 +203,7 @@ void parse(Object x) {
 ''');
 
         final context = PackageContext.load(tempDir.path);
-        final rule = PatternMatchingRule();
+        const rule = PatternMatchingRule();
         final opps = rule.evaluate(context).toList();
 
         expect(opps, hasLength(1));
@@ -211,18 +211,17 @@ void parse(Object x) {
       },
     );
 
-    test(
-      'MatcherBestPracticesRule detects suboptimal expect() calls in test files',
-      () {
-        File(p.join(tempDir.path, 'pubspec.yaml')).writeAsStringSync('''
+    test('MatcherBestPracticesRule detects suboptimal expect() calls in test '
+        'files', () {
+      File(p.join(tempDir.path, 'pubspec.yaml')).writeAsStringSync('''
 name: sample_test_pkg
 environment:
   sdk: ^3.0.0
 dev_dependencies:
   test: ^1.24.0
 ''');
-        final testDir = Directory(p.join(tempDir.path, 'test'))..createSync();
-        File(p.join(testDir.path, 'sample_test.dart')).writeAsStringSync('''
+      final testDir = Directory(p.join(tempDir.path, 'test'))..createSync();
+      File(p.join(testDir.path, 'sample_test.dart')).writeAsStringSync('''
 import 'package:test/test.dart';
 
 void main() {
@@ -234,20 +233,19 @@ void main() {
 }
 ''');
 
-        final context = PackageContext.load(tempDir.path);
-        final rule = MatcherBestPracticesRule();
+      final context = PackageContext.load(tempDir.path);
+      const rule = MatcherBestPracticesRule();
 
-        expect(rule.appliesTo(context), isTrue);
-        final opps = rule.evaluate(context).toList();
+      expect(rule.appliesTo(context), isTrue);
+      final opps = rule.evaluate(context).toList();
 
-        expect(opps, hasLength(1));
-        expect(opps.single.skill, 'dart-matcher-best-practices');
-        expect(opps.single.target.org, 'kevmoo');
-        expect(opps.single.category, RuleCategory.testing);
-        expect(opps.single.lifecycle, SkillLifecycle.hygiene);
-        expect(opps.single.confidence, Confidence.high);
-      },
-    );
+      expect(opps, hasLength(1));
+      expect(opps.single.skill, 'dart-matcher-best-practices');
+      expect(opps.single.target.org, 'kevmoo');
+      expect(opps.single.category, RuleCategory.testing);
+      expect(opps.single.lifecycle, SkillLifecycle.hygiene);
+      expect(opps.single.confidence, Confidence.high);
+    });
   });
 
   group('DiscoveryEngine & Registry', () {
@@ -302,7 +300,6 @@ void main() {
         target: target,
         category: RuleCategory.testing,
         lifecycle: SkillLifecycle.migration,
-        confidence: Confidence.high,
         affectedCount: 5,
         diagnosis: 'd',
         prescription: 'p',
@@ -322,8 +319,6 @@ void main() {
         target: target,
         category: RuleCategory.cli,
         lifecycle: SkillLifecycle.architecture,
-        confidence: Confidence.high,
-        affectedCount: 1,
         diagnosis: 'd',
         prescription: 'p',
         evidence: [],
@@ -332,7 +327,6 @@ void main() {
         target: target,
         category: RuleCategory.codeQuality,
         lifecycle: SkillLifecycle.hygiene,
-        confidence: Confidence.high,
         affectedCount: 50,
         diagnosis: 'd',
         prescription: 'p',
@@ -342,7 +336,6 @@ void main() {
         target: target,
         category: RuleCategory.codeQuality,
         lifecycle: SkillLifecycle.hygiene,
-        confidence: Confidence.high,
         affectedCount: 2,
         diagnosis: 'd',
         prescription: 'p',

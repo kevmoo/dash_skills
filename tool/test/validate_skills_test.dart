@@ -17,9 +17,7 @@ void main() {
     });
 
     try {
-      final Configuration config = await ConfigParser.loadConfig(
-        path: _configFilePath,
-      );
+      final config = await ConfigParser.loadConfig(path: _configFilePath);
       final isValid = await validateSkills(config: config);
       expect(
         isValid,
@@ -66,7 +64,7 @@ void main() {
         await process.shouldExit(0);
       }
     }
-  }, timeout: Timeout(Duration(minutes: 3)));
+  }, timeout: const Timeout(Duration(minutes: 3)));
 
   test('Verify formatting and analysis of all skills Dart code', () async {
     final skillsDir = Directory(
@@ -86,7 +84,8 @@ void main() {
     ]);
     await formatProcess.shouldExit(0);
 
-    // Ensure pub get has been run for all nested packages to prevent analysis failures
+    // Ensure pub get has been run for all nested packages to prevent
+    // analysis failures
     final pubspecs = <File>[];
     for (final dir in skillsDir.listSync().whereType<Directory>().where(
       (dir) => File('${dir.path}/SKILL.md').existsSync(),
@@ -118,5 +117,5 @@ void main() {
       ['analyze', '--fatal-infos', skillsDir.path],
     );
     await analyzeProcess.shouldExit(0);
-  }, timeout: Timeout(Duration(minutes: 3)));
+  }, timeout: const Timeout(Duration(minutes: 3)));
 }

@@ -15,7 +15,7 @@ class IdiomaticDemo {
   };
 
   void handlePattern(Map<String, dynamic> json) {
-    if (json case {'id': int id, 'name': String name}) {
+    if (json case {'id': final int id, 'name': final String name}) {
       print('User $id: $name');
     }
   }

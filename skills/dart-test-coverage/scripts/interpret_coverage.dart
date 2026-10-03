@@ -54,11 +54,13 @@ void main(List<String> args) {
   });
 }
 
-/// Processes a list of coverage files and returns a map of file paths to line hit counts.
+/// Processes a list of coverage files and returns a map of file paths to
+/// line hit counts.
 ///
 /// The returned map structure is: `{ file_uri: { line_number: hit_count } }`.
 ///
-/// If [packageName] is provided, only files starting with `package:$packageName/` are included.
+/// If [packageName] is provided, only files starting with
+/// `package:$packageName/` are included.
 /// Files containing `/test/` are skipped.
 Map<String, Map<int, int>> processCoverage(
   Iterable<File> files,
@@ -70,7 +72,7 @@ Map<String, Map<int, int>> processCoverage(
     final json = jsonDecode(content) as Map<String, dynamic>;
     final coverage = json['coverage'] as List<dynamic>;
 
-    for (final item in coverage) {
+    for (final item in coverage.cast<Map<String, dynamic>>()) {
       final source = item['source'] as String;
 
       // Filter by package name if provided
