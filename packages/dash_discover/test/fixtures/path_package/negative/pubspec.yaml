@@ -4,3 +4,6 @@ publish_to: none
 
 environment:
   sdk: ^3.9.0
+
+dependencies:
+  path: ^1.9.0

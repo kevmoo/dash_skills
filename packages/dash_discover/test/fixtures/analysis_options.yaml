@@ -3,9 +3,6 @@
 # the fixtures intentionally violate so their semantics stay untouched:
 #   - lines_longer_than_80_chars: inline "Suboptimal:/Skill abstention" notes
 #     are part of the fixture narrative.
-#   - depend_on_referenced_packages: `path_package/negative` imports
-#     `package:path` without a fixture pubspec dep (resolved via the host
-#     package).
 #   - avoid_relative_lib_imports / unreachable_from_main:
 #     `sealed_hierarchy/negatives/test` models a subtype declared outside
 #     `lib/` via a relative import so the rule must abstain from sealing.
@@ -14,6 +11,5 @@ include: ../../../../analysis_options.yaml
 linter:
   rules:
     avoid_relative_lib_imports: false
-    depend_on_referenced_packages: false
     lines_longer_than_80_chars: false
     unreachable_from_main: false
