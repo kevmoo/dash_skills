@@ -148,15 +148,16 @@ class PackageFacts {
         typesByName[facts.name] = facts;
       }
     }
-    duplicates.forEach(typesByName.remove);
+    for (final name in duplicates) {
+      typesByName.remove(name);
+    }
 
     // Edges come from everywhere, so that a subtype declared in `test/` is
     // visible even though it can never itself be a finding.
     final subtypesOf = <String, List<TypeDeclarationFacts>>{};
-    final allDeclarations = [
-      ...allLibraryDeclarations,
-      for (final source in auxiliarySources) ..._declaredTypes(source),
-    ];
+    final allDeclarations = allLibraryDeclarations.followedBy(
+      auxiliarySources.expand(_declaredTypes),
+    );
     for (final facts in allDeclarations) {
       for (final supertype in facts.directSupertypes) {
         if (!typesByName.containsKey(supertype)) continue;

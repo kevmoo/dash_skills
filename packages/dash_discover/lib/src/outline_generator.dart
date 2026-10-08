@@ -151,7 +151,8 @@ class OutlineGenerator {
           final trimmed = line.trim();
           if (!_declarationPrefixes.any(trimmed.startsWith)) continue;
           buffer.writeln('    $trimmed');
-          if (++lineCount >= maxLines) break;
+          lineCount++;
+          if (lineCount >= maxLines) break;
         }
       } catch (_) {}
       if (lineCount >= maxLines) {

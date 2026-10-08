@@ -176,25 +176,26 @@ StreamSubscription<String> _listenForServiceUri(
   Stream<List<int>> stream,
   Completer<Uri> wsUriCompleter,
   void Function(String) onLine,
-) => stream.transform(utf8.decoder).transform(const LineSplitter()).listen((
-  line,
 ) {
-  if (wsUriCompleter.isCompleted) {
-    onLine(line);
-    return;
-  }
-  final match = _vmServiceUriRegex.firstMatch(line);
-  final rawUrl = match?.group(1) ?? match?.group(3);
-  if (rawUrl == null) {
-    onLine(line);
-    return;
-  }
-  var wsUrl = rawUrl.replaceFirst('http://', 'ws://');
-  if (!wsUrl.endsWith('/ws')) {
-    wsUrl = wsUrl.endsWith('/') ? '${wsUrl}ws' : '$wsUrl/ws';
-  }
-  wsUriCompleter.complete(Uri.parse(wsUrl));
-});
+  final lines = stream.transform(utf8.decoder).transform(const LineSplitter());
+  return lines.listen((line) {
+    if (wsUriCompleter.isCompleted) {
+      onLine(line);
+      return;
+    }
+    final match = _vmServiceUriRegex.firstMatch(line);
+    final rawUrl = match?.group(1) ?? match?.group(3);
+    if (rawUrl == null) {
+      onLine(line);
+      return;
+    }
+    var wsUrl = rawUrl.replaceFirst('http://', 'ws://');
+    if (!wsUrl.endsWith('/ws')) {
+      wsUrl = wsUrl.endsWith('/') ? '${wsUrl}ws' : '$wsUrl/ws';
+    }
+    wsUriCompleter.complete(Uri.parse(wsUrl));
+  });
+}
 
 Future<bool> _waitForPauseAtExit(
   VmService service,
