@@ -127,6 +127,15 @@ class OutlineGenerator {
     _appendFallbackSignatures(buffer, libDir, maxSignatureLines);
   }
 
+  static const _declarationPrefixes = [
+    'class ',
+    'abstract class ',
+    'enum ',
+    'extension ',
+    'mixin ',
+    'typedef ',
+  ];
+
   void _appendFallbackSignatures(
     StringBuffer buffer,
     Directory libDir,
@@ -138,19 +147,11 @@ class OutlineGenerator {
       final relPath = p.relative(file.path, from: packagePath);
       buffer.writeln('  $relPath:');
       try {
-        final lines = file.readAsLinesSync();
-        for (final line in lines) {
+        for (final line in file.readAsLinesSync()) {
           final trimmed = line.trim();
-          if (trimmed.startsWith('class ') ||
-              trimmed.startsWith('abstract class ') ||
-              trimmed.startsWith('enum ') ||
-              trimmed.startsWith('extension ') ||
-              trimmed.startsWith('mixin ') ||
-              trimmed.startsWith('typedef ')) {
-            buffer.writeln('    $trimmed');
-            lineCount++;
-            if (lineCount >= maxLines) break;
-          }
+          if (!_declarationPrefixes.any(trimmed.startsWith)) continue;
+          buffer.writeln('    $trimmed');
+          if (++lineCount >= maxLines) break;
         }
       } catch (_) {}
       if (lineCount >= maxLines) {

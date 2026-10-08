@@ -96,48 +96,12 @@ Future<void> main(List<String> arguments) async {
   }
 
   final wsUriCompleter = Completer<Uri>();
-  final uriRegex = RegExp(
-    r'Observatory listening on ((http|ws)://[a-zA-Z0-9\.:]+[^\s]*)'
-    r'|The Dart VM service is listening on ((http|ws)://[a-zA-Z0-9\.:]+[^\s]*)',
+  final stdoutSub = _listenForServiceUri(process.stdout, wsUriCompleter, print);
+  final stderrSub = _listenForServiceUri(
+    process.stderr,
+    wsUriCompleter,
+    stderr.writeln,
   );
-
-  final stdoutSub = process.stdout
-      .transform(utf8.decoder)
-      .transform(const LineSplitter())
-      .listen((line) {
-        final match = uriRegex.firstMatch(line);
-        if (match != null && !wsUriCompleter.isCompleted) {
-          final rawUrl = match.group(1) ?? match.group(3);
-          if (rawUrl != null) {
-            var wsUrl = rawUrl.replaceFirst('http://', 'ws://');
-            if (!wsUrl.endsWith('/ws')) {
-              wsUrl = wsUrl.endsWith('/') ? '${wsUrl}ws' : '$wsUrl/ws';
-            }
-            wsUriCompleter.complete(Uri.parse(wsUrl));
-          }
-        } else {
-          print(line);
-        }
-      });
-
-  final stderrSub = process.stderr
-      .transform(utf8.decoder)
-      .transform(const LineSplitter())
-      .listen((line) {
-        final match = uriRegex.firstMatch(line);
-        if (match != null && !wsUriCompleter.isCompleted) {
-          final rawUrl = match.group(1) ?? match.group(3);
-          if (rawUrl != null) {
-            var wsUrl = rawUrl.replaceFirst('http://', 'ws://');
-            if (!wsUrl.endsWith('/ws')) {
-              wsUrl = wsUrl.endsWith('/') ? '${wsUrl}ws' : '$wsUrl/ws';
-            }
-            wsUriCompleter.complete(Uri.parse(wsUrl));
-          }
-        } else {
-          stderr.writeln(line);
-        }
-      });
 
   VmService? service;
   try {
@@ -164,42 +128,11 @@ Future<void> main(List<String> arguments) async {
     final isolateRef = isolates.first;
     final isolateId = isolateRef.id!;
 
-    var connectionLost = false;
-    unawaited(
-      service.onDone.then((_) {
-        connectionLost = true;
-      }),
+    final isPausedAtExit = await _waitForPauseAtExit(
+      service,
+      isolateId,
+      process,
     );
-
-    var isPausedAtExit = false;
-    while (!isPausedAtExit && !connectionLost) {
-      try {
-        final isolate = await service.getIsolate(isolateId);
-        final pauseKind = isolate.pauseEvent?.kind;
-        if (pauseKind == EventKind.kPauseExit) {
-          isPausedAtExit = true;
-          break;
-        }
-        if (pauseKind == EventKind.kPauseException) {
-          print('Target isolate paused on exception!');
-          break;
-        }
-      } catch (e) {
-        print('Error querying VM service: $e');
-        break;
-      }
-
-      final procExitCode = await process.exitCode.timeout(
-        const Duration(milliseconds: 50),
-        onTimeout: () => -1,
-      );
-      if (procExitCode != -1) {
-        print('Target process exited with code $procExitCode');
-        break;
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    }
-
     if (!isPausedAtExit) {
       stderr.writeln(
         'Error: Target process did not pause at exit. '
@@ -216,51 +149,7 @@ Future<void> main(List<String> arguments) async {
       0x7fffffffffffffff,
     );
 
-    final sampleCount = cpuSamples.sampleCount ?? 0;
-    print('Retrieved $sampleCount samples.');
-
-    final functions = cpuSamples.functions ?? [];
-
-    final sortedFunctions = List<ProfileFunction>.from(
-      functions,
-    )..sort((a, b) => (b.exclusiveTicks ?? 0).compareTo(a.exclusiveTicks ?? 0));
-
-    print('\n=== Top 15 Functions by Self CPU Samples ===');
-    print(
-      '${'Self %'.padRight(8)} | ${'Self'.padRight(8)} | '
-      '${'Total %'.padRight(8)} | Function',
-    );
-    print(
-      '-----------------------------------------------------------------------',
-    );
-
-    var displayed = 0;
-    for (final func in sortedFunctions) {
-      if (displayed >= 15) break;
-      final count = func.exclusiveTicks ?? 0;
-      if (count <= 0 && displayed > 0) break;
-      final pct = sampleCount > 0 ? (count * 100.0 / sampleCount) : 0.0;
-      final totalCount = func.inclusiveTicks ?? 0;
-      final totalPct = sampleCount > 0
-          ? (totalCount * 100.0 / sampleCount)
-          : 0.0;
-      // `ProfileFunction.function` is `dynamic`: a FuncRef or NativeFunction.
-      final Object? function = func.function;
-      final name =
-          switch (function) {
-            FuncRef(:final name) => name,
-            NativeFunction(:final name) => name,
-            _ => null,
-          } ??
-          func.resolvedUrl ??
-          'Unknown';
-      print(
-        '${pct.toStringAsFixed(1).padLeft(6)}% | '
-        '${count.toString().padLeft(8)} | '
-        '${totalPct.toStringAsFixed(1).padLeft(6)}% | $name',
-      );
-      displayed++;
-    }
+    _printCpuProfileSummary(cpuSamples);
 
     final outFile = File(outPath);
     await outFile.writeAsString(
@@ -275,5 +164,117 @@ Future<void> main(List<String> arguments) async {
     process.kill();
     await stdoutSub.cancel();
     await stderrSub.cancel();
+  }
+}
+
+final _vmServiceUriRegex = RegExp(
+  r'Observatory listening on ((http|ws)://[a-zA-Z0-9\.:]+[^\s]*)'
+  r'|The Dart VM service is listening on ((http|ws)://[a-zA-Z0-9\.:]+[^\s]*)',
+);
+
+StreamSubscription<String> _listenForServiceUri(
+  Stream<List<int>> stream,
+  Completer<Uri> wsUriCompleter,
+  void Function(String) onLine,
+) => stream.transform(utf8.decoder).transform(const LineSplitter()).listen((
+  line,
+) {
+  if (wsUriCompleter.isCompleted) {
+    onLine(line);
+    return;
+  }
+  final match = _vmServiceUriRegex.firstMatch(line);
+  final rawUrl = match?.group(1) ?? match?.group(3);
+  if (rawUrl == null) {
+    onLine(line);
+    return;
+  }
+  var wsUrl = rawUrl.replaceFirst('http://', 'ws://');
+  if (!wsUrl.endsWith('/ws')) {
+    wsUrl = wsUrl.endsWith('/') ? '${wsUrl}ws' : '$wsUrl/ws';
+  }
+  wsUriCompleter.complete(Uri.parse(wsUrl));
+});
+
+Future<bool> _waitForPauseAtExit(
+  VmService service,
+  String isolateId,
+  Process process,
+) async {
+  var connectionLost = false;
+  unawaited(
+    service.onDone.then((_) {
+      connectionLost = true;
+    }),
+  );
+
+  while (!connectionLost) {
+    try {
+      final isolate = await service.getIsolate(isolateId);
+      final pauseKind = isolate.pauseEvent?.kind;
+      if (pauseKind == EventKind.kPauseExit) return true;
+      if (pauseKind == EventKind.kPauseException) {
+        print('Target isolate paused on exception!');
+        return false;
+      }
+    } catch (e) {
+      print('Error querying VM service: $e');
+      return false;
+    }
+
+    final procExitCode = await process.exitCode.timeout(
+      const Duration(milliseconds: 50),
+      onTimeout: () => -1,
+    );
+    if (procExitCode != -1) {
+      print('Target process exited with code $procExitCode');
+      return false;
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+  }
+  return false;
+}
+
+void _printCpuProfileSummary(CpuSamples cpuSamples) {
+  final sampleCount = cpuSamples.sampleCount ?? 0;
+  print('Retrieved $sampleCount samples.');
+
+  final functions = cpuSamples.functions ?? [];
+  final sortedFunctions = List<ProfileFunction>.from(functions)
+    ..sort((a, b) => (b.exclusiveTicks ?? 0).compareTo(a.exclusiveTicks ?? 0));
+
+  print('\n=== Top 15 Functions by Self CPU Samples ===');
+  print(
+    '${'Self %'.padRight(8)} | ${'Self'.padRight(8)} | '
+    '${'Total %'.padRight(8)} | Function',
+  );
+  print(
+    '-----------------------------------------------------------------------',
+  );
+
+  var displayed = 0;
+  for (final func in sortedFunctions) {
+    if (displayed >= 15) break;
+    final count = func.exclusiveTicks ?? 0;
+    if (count <= 0 && displayed > 0) break;
+    final pct = sampleCount > 0 ? (count * 100.0 / sampleCount) : 0.0;
+    final totalCount = func.inclusiveTicks ?? 0;
+    final totalPct = sampleCount > 0 ? (totalCount * 100.0 / sampleCount) : 0.0;
+    // `ProfileFunction.function` is `dynamic`: a FuncRef or NativeFunction.
+    final Object? function = func.function;
+    final name =
+        switch (function) {
+          FuncRef(:final name) => name,
+          NativeFunction(:final name) => name,
+          _ => null,
+        } ??
+        func.resolvedUrl ??
+        'Unknown';
+    print(
+      '${pct.toStringAsFixed(1).padLeft(6)}% | '
+      '${count.toString().padLeft(8)} | '
+      '${totalPct.toStringAsFixed(1).padLeft(6)}% | $name',
+    );
+    displayed++;
   }
 }

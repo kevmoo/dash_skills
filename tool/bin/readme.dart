@@ -51,53 +51,7 @@ void main(List<String> arguments) async {
           .toList()
         ..sort((a, b) => p.basename(a.path).compareTo(p.basename(b.path)));
 
-  final listBuffer = StringBuffer()
-    ..writeln('<!-- SKILLS_LIST_START -->\n')
-    ..writeln('To install any skill individually:\n')
-    ..writeln('```bash')
-    ..writeln('npx skills add $repoSlug --skill <skill-name>')
-    ..writeln('```\n')
-    ..writeln('<!-- prettier-ignore -->')
-    ..writeln('| Skill | Description | Key Features |')
-    ..writeln('|-------|-------------|--------------|');
-  for (final dir in skillDirs) {
-    final skillName = p.basename(dir.path);
-    final skillFile = File(p.join(dir.path, 'SKILL.md'));
-    final content = skillFile.readAsStringSync();
-
-    final frontMatter = _parseFrontMatter(content);
-    final title =
-        frontMatter['name']?.toString() ?? _getSkillTitle(content, skillName);
-    final description = frontMatter['description']?.toString() ?? '';
-    final keyFeaturesRaw = frontMatter['key_features'];
-    final keyFeatures = <String>[];
-    if (keyFeaturesRaw is List) {
-      keyFeatures.addAll(keyFeaturesRaw.map((e) => e.toString()));
-    } else if (keyFeaturesRaw is String) {
-      keyFeatures.add(keyFeaturesRaw);
-    }
-
-    if (title.toLowerCase().contains('deprecated') ||
-        description.toLowerCase().startsWith('deprecated')) {
-      continue;
-    }
-
-    final cleanDescription = LineSplitter.split(
-      description.trim(),
-    ).map((line) => line.trim()).join(' ').replaceAll('|', r'\|');
-
-    final cleanFeatures = keyFeatures
-        .map((f) => LineSplitter.split(f.trim()).map((l) => l.trim()).join(' '))
-        .join(', ')
-        .replaceAll('|', r'\|');
-
-    listBuffer.writeln(
-      '| **[$title](skills/$skillName/SKILL.md)** | $cleanDescription | $cleanFeatures |',
-    );
-  }
-  listBuffer.write('\n<!-- SKILLS_LIST_END -->');
-
-  final generatedTable = listBuffer.toString();
+  final generatedTable = _buildSkillsTable(repoSlug, skillDirs);
 
   final readmeContent = readmeFile.readAsStringSync();
   const startTag = '<!-- SKILLS_LIST_START -->';
@@ -144,6 +98,55 @@ void main(List<String> arguments) async {
     print('------------------------------');
     print('Run with --write (or -w) to save changes to README.md.');
   }
+}
+
+String _buildSkillsTable(String repoSlug, List<Directory> skillDirs) {
+  final listBuffer = StringBuffer()
+    ..writeln('<!-- SKILLS_LIST_START -->\n')
+    ..writeln('To install any skill individually:\n')
+    ..writeln('```bash')
+    ..writeln('npx skills add $repoSlug --skill <skill-name>')
+    ..writeln('```\n')
+    ..writeln('<!-- prettier-ignore -->')
+    ..writeln('| Skill | Description | Key Features |')
+    ..writeln('|-------|-------------|--------------|');
+  for (final dir in skillDirs) {
+    final skillName = p.basename(dir.path);
+    final skillFile = File(p.join(dir.path, 'SKILL.md'));
+    final content = skillFile.readAsStringSync();
+
+    final frontMatter = _parseFrontMatter(content);
+    final title =
+        frontMatter['name']?.toString() ?? _getSkillTitle(content, skillName);
+    final description = frontMatter['description']?.toString() ?? '';
+    final keyFeaturesRaw = frontMatter['key_features'];
+    final keyFeatures = <String>[];
+    if (keyFeaturesRaw is List) {
+      keyFeatures.addAll(keyFeaturesRaw.map((e) => e.toString()));
+    } else if (keyFeaturesRaw is String) {
+      keyFeatures.add(keyFeaturesRaw);
+    }
+
+    if (title.toLowerCase().contains('deprecated') ||
+        description.toLowerCase().startsWith('deprecated')) {
+      continue;
+    }
+
+    final cleanDescription = LineSplitter.split(
+      description.trim(),
+    ).map((line) => line.trim()).join(' ').replaceAll('|', r'\|');
+
+    final cleanFeatures = keyFeatures
+        .map((f) => LineSplitter.split(f.trim()).map((l) => l.trim()).join(' '))
+        .join(', ')
+        .replaceAll('|', r'\|');
+
+    listBuffer.writeln(
+      '| **[$title](skills/$skillName/SKILL.md)** | $cleanDescription | $cleanFeatures |',
+    );
+  }
+  listBuffer.write('\n<!-- SKILLS_LIST_END -->');
+  return listBuffer.toString();
 }
 
 Directory? _findRepoRoot(Directory startDir) {
