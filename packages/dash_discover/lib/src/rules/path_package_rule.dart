@@ -96,27 +96,22 @@ class _PathJoinVisitor extends RecursiveAstVisitor<void> {
 
     final elements = node.elements;
     for (var i = 0; i < elements.length; i++) {
-      final element = elements[i];
-      if (element is! InterpolationExpression) continue;
+      if (elements[i] is! InterpolationExpression) continue;
 
       // `'$dir/lib/foo.dart'` -- the literal chunk *after* the expression
       // begins with a separator.
-      if (i + 1 < elements.length) {
-        final next = elements[i + 1];
-        if (next is InterpolationString && next.value.startsWith('/')) {
-          findings.add(node.offset);
-          return;
-        }
+      final next = elements.elementAtOrNull(i + 1);
+      if (next is InterpolationString && next.value.startsWith('/')) {
+        findings.add(node.offset);
+        return;
       }
 
       // `'lib/$name'` -- the literal chunk *before* the expression ends with
       // a separator.
-      if (i > 0) {
-        final previous = elements[i - 1];
-        if (previous is InterpolationString && previous.value.endsWith('/')) {
-          findings.add(node.offset);
-          return;
-        }
+      final previous = i > 0 ? elements[i - 1] : null;
+      if (previous is InterpolationString && previous.value.endsWith('/')) {
+        findings.add(node.offset);
+        return;
       }
     }
   }

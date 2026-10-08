@@ -35,40 +35,7 @@ class SkillsCatalog {
     List<String>? searchPaths,
     Directory? workingDirectory,
   }) {
-    final paths = searchPaths != null
-        ? List<String>.from(searchPaths)
-        : <String>[];
-    if (paths.isEmpty) {
-      void addIfDirExists(String dirPath) {
-        if (!paths.contains(dirPath) && Directory(dirPath).existsSync()) {
-          paths.add(dirPath);
-        }
-      }
-
-      void scanDirectoryAncestors(Directory start) {
-        var dir = start.absolute;
-        while (dir.path != dir.parent.path) {
-          addIfDirExists(p.join(dir.path, 'skills'));
-          addIfDirExists(p.join(dir.path, '.agents', 'skills'));
-          dir = dir.parent;
-        }
-      }
-
-      final targetDir = (workingDirectory ?? Directory.current).absolute;
-      scanDirectoryAncestors(targetDir);
-
-      final currentDir = Directory.current.absolute;
-      if (currentDir.path != targetDir.path) {
-        scanDirectoryAncestors(currentDir);
-      }
-
-      final home =
-          Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
-      if (home != null) {
-        addIfDirExists(p.join(home, '.agents', 'skills'));
-      }
-    }
-
+    final paths = _resolveSearchPaths(searchPaths, workingDirectory);
     final discovered = <String, SkillMetadata>{};
 
     for (final searchPath in paths) {
@@ -99,6 +66,46 @@ class SkillsCatalog {
     final sorted = discovered.values.toList()
       ..sort((a, b) => a.name.compareTo(b.name));
     return SkillsCatalog(sorted);
+  }
+
+  static List<String> _resolveSearchPaths(
+    List<String>? searchPaths,
+    Directory? workingDirectory,
+  ) {
+    if (searchPaths != null && searchPaths.isNotEmpty) {
+      return List<String>.from(searchPaths);
+    }
+
+    final paths = <String>[];
+    void addIfDirExists(String dirPath) {
+      if (!paths.contains(dirPath) && Directory(dirPath).existsSync()) {
+        paths.add(dirPath);
+      }
+    }
+
+    void scanDirectoryAncestors(Directory start) {
+      var dir = start.absolute;
+      while (dir.path != dir.parent.path) {
+        addIfDirExists(p.join(dir.path, 'skills'));
+        addIfDirExists(p.join(dir.path, '.agents', 'skills'));
+        dir = dir.parent;
+      }
+    }
+
+    final targetDir = (workingDirectory ?? Directory.current).absolute;
+    scanDirectoryAncestors(targetDir);
+
+    final currentDir = Directory.current.absolute;
+    if (currentDir.path != targetDir.path) {
+      scanDirectoryAncestors(currentDir);
+    }
+
+    final home =
+        Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
+    if (home != null) {
+      addIfDirExists(p.join(home, '.agents', 'skills'));
+    }
+    return paths;
   }
 
   static SkillMetadata? _parseSkillFile(

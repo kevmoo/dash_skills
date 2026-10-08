@@ -101,33 +101,11 @@ Future<int> runCli(
   }
 
   if (results.flag('update-skill') || results.flag('validate-skill')) {
-    final skillFile = findSkillFile();
-    if (skillFile == null) {
-      err.writeln('Error: Could not find skills/dash-discover/SKILL.md');
-      return ExitCode.config.code;
-    }
-    final content = skillFile.readAsStringSync();
-    final updated = updateSkillContent(content);
-    if (results.flag('validate-skill')) {
-      if (content == updated) {
-        out.writeln('skills/dash-discover/SKILL.md is up-to-date!');
-        return ExitCode.success.code;
-      } else {
-        err
-          ..writeln('Error: skills/dash-discover/SKILL.md is out of date.')
-          ..writeln(
-            'Run `dart run dash_discover --update-skill` to update it.',
-          );
-        return ExitCode.data.code;
-      }
-    }
-    if (results.flag('update-skill')) {
-      skillFile.writeAsStringSync(updated);
-      out.writeln(
-        'Successfully updated ${skillFile.path} with the latest rules!',
-      );
-      return ExitCode.success.code;
-    }
+    return _handleSkillDocSync(
+      validateOnly: results.flag('validate-skill'),
+      out: out,
+      err: err,
+    );
   }
 
   final targetPath = results.rest.isNotEmpty ? results.rest.first : '.';
@@ -139,52 +117,11 @@ Future<int> runCli(
   }
 
   if (results.flag('list-rules')) {
-    out.writeln(
-      'Available Discovery Rules (${defaultDiscoveryRules.length}):\n',
-    );
-    final skillsDir = results.option('skills-dir');
-    final catalog = SkillsCatalog.discover(
-      searchPaths: skillsDir != null ? [skillsDir] : null,
-      workingDirectory: io.Directory(absPath),
-    );
-    for (final rule in defaultDiscoveryRules) {
-      out
-        ..writeln(
-          '• ${rule.id} (${rule.category.label}) [${rule.lifecycle.label}]',
-        )
-        ..writeln('  Skill:       ${rule.target.skillName}')
-        ..writeln('  Lifecycle:   ${rule.lifecycle.label}')
-        ..writeln('  Category:    ${rule.category.label}')
-        ..writeln('  Confidence:  ${rule.defaultConfidence.name.toUpperCase()}')
-        ..writeln('  Description: ${rule.description}');
-      final local = catalog.findByName(rule.target.skillName);
-      if (local != null) {
-        out.writeln('  Resolution:  Local (${local.skillPath})');
-      } else {
-        out.writeln('  Resolution:  Remote (${rule.target.githubUrl})');
-      }
-      if (rule.target.commitSha != null) {
-        out.writeln('  Pinned SHA:  ${rule.target.commitSha}');
-      }
-      out.writeln();
-    }
+    _printRulesList(out, _discoverCatalog(results, absPath));
     return ExitCode.success.code;
   }
 
-  final ruleId = results.option('rule');
-  final categoryFilter = results.option('category');
-  final lifecycleFilter = results.option('lifecycle');
-
-  final activeRules = defaultDiscoveryRules.where((r) {
-    if (ruleId != null && r.id != ruleId) return false;
-    if (categoryFilter != null && r.category.name != categoryFilter) {
-      return false;
-    }
-    if (lifecycleFilter != null && r.lifecycle.name != lifecycleFilter) {
-      return false;
-    }
-    return true;
-  }).toList();
+  final activeRules = _selectActiveRules(results);
 
   if (activeRules.isEmpty) {
     err
@@ -195,12 +132,7 @@ Future<int> runCli(
     return ExitCode.usage.code;
   }
 
-  final skillsDir = results.option('skills-dir');
-  final catalog = SkillsCatalog.discover(
-    searchPaths: skillsDir != null ? [skillsDir] : null,
-    workingDirectory: io.Directory(absPath),
-  );
-
+  final catalog = _discoverCatalog(results, absPath);
   final engine = DiscoveryEngine(absPath, catalog: catalog, rules: activeRules);
   final report = engine.run();
 
@@ -220,4 +152,82 @@ Future<int> runCli(
     out.writeln(report.toMarkdown());
   }
   return ExitCode.success.code;
+}
+
+int _handleSkillDocSync({
+  required bool validateOnly,
+  required StringSink out,
+  required StringSink err,
+}) {
+  final skillFile = findSkillFile();
+  if (skillFile == null) {
+    err.writeln('Error: Could not find skills/dash-discover/SKILL.md');
+    return ExitCode.config.code;
+  }
+  final content = skillFile.readAsStringSync();
+  final updated = updateSkillContent(content);
+  if (!validateOnly) {
+    skillFile.writeAsStringSync(updated);
+    out.writeln(
+      'Successfully updated ${skillFile.path} with the latest rules!',
+    );
+    return ExitCode.success.code;
+  }
+  if (content == updated) {
+    out.writeln('skills/dash-discover/SKILL.md is up-to-date!');
+    return ExitCode.success.code;
+  }
+  err
+    ..writeln('Error: skills/dash-discover/SKILL.md is out of date.')
+    ..writeln('Run `dart run dash_discover --update-skill` to update it.');
+  return ExitCode.data.code;
+}
+
+SkillsCatalog _discoverCatalog(ArgResults results, String absPath) {
+  final skillsDir = results.option('skills-dir');
+  return SkillsCatalog.discover(
+    searchPaths: skillsDir != null ? [skillsDir] : null,
+    workingDirectory: io.Directory(absPath),
+  );
+}
+
+void _printRulesList(StringSink out, SkillsCatalog catalog) {
+  out.writeln('Available Discovery Rules (${defaultDiscoveryRules.length}):\n');
+  for (final rule in defaultDiscoveryRules) {
+    final local = catalog.findByName(rule.target.skillName);
+    final resolution = local != null
+        ? 'Local (${local.skillPath})'
+        : 'Remote (${rule.target.githubUrl})';
+    out
+      ..writeln(
+        '• ${rule.id} (${rule.category.label}) [${rule.lifecycle.label}]',
+      )
+      ..writeln('  Skill:       ${rule.target.skillName}')
+      ..writeln('  Lifecycle:   ${rule.lifecycle.label}')
+      ..writeln('  Category:    ${rule.category.label}')
+      ..writeln('  Confidence:  ${rule.defaultConfidence.name.toUpperCase()}')
+      ..writeln('  Description: ${rule.description}')
+      ..writeln('  Resolution:  $resolution');
+    if (rule.target.commitSha != null) {
+      out.writeln('  Pinned SHA:  ${rule.target.commitSha}');
+    }
+    out.writeln();
+  }
+}
+
+List<DiscoveryRule> _selectActiveRules(ArgResults results) {
+  final ruleId = results.option('rule');
+  final categoryFilter = results.option('category');
+  final lifecycleFilter = results.option('lifecycle');
+
+  return defaultDiscoveryRules.where((r) {
+    if (ruleId != null && r.id != ruleId) return false;
+    if (categoryFilter != null && r.category.name != categoryFilter) {
+      return false;
+    }
+    if (lifecycleFilter != null && r.lifecycle.name != lifecycleFilter) {
+      return false;
+    }
+    return true;
+  }).toList();
 }

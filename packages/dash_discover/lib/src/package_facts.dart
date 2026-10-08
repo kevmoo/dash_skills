@@ -155,18 +155,14 @@ class PackageFacts {
     // Edges come from everywhere, so that a subtype declared in `test/` is
     // visible even though it can never itself be a finding.
     final subtypesOf = <String, List<TypeDeclarationFacts>>{};
-    void addEdges(Iterable<TypeDeclarationFacts> declarations) {
-      for (final facts in declarations) {
-        for (final supertype in facts.directSupertypes) {
-          if (!typesByName.containsKey(supertype)) continue;
-          (subtypesOf[supertype] ??= []).add(facts);
-        }
+    final allDeclarations = allLibraryDeclarations.followedBy(
+      auxiliarySources.expand(_declaredTypes),
+    );
+    for (final facts in allDeclarations) {
+      for (final supertype in facts.directSupertypes) {
+        if (!typesByName.containsKey(supertype)) continue;
+        (subtypesOf[supertype] ??= []).add(facts);
       }
-    }
-
-    addEdges(allLibraryDeclarations);
-    for (final source in auxiliarySources) {
-      addEdges(_declaredTypes(source));
     }
 
     return PackageFacts._(
