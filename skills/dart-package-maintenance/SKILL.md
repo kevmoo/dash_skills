@@ -13,8 +13,10 @@ key_features:
 
 # Dart Package Maintenance
 
-Guidelines for maintaining Dart packages in alignment with Dart team best
-practices.
+Guidelines for maintaining Dart packages in alignment with the canonical Dart
+team
+[External Package Maintenance](https://github.com/dart-lang/sdk/blob/main/docs/External-Package-Maintenance.md)
+specification.
 
 ## When to use this skill
 
