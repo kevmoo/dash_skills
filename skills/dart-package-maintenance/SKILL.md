@@ -30,14 +30,22 @@ Use this skill when:
 Do NOT apply package maintenance version bumps or changelog updates when:
 
 - **Internal / Private Packages**: Packages marked `publish_to: none` in
-  `pubspec.yaml` that are not published to pub.dev (e.g. application root
+  `pubspec.yaml` that are not published to `pub.dev` (e.g., application root
   packages or internal monorepo tooling).
-- **Documentation or Skill-Only Changes**: Pull requests that only modify
-  markdown files, agent skills (`SKILL.md`), or repository documentation, as
-  documentation updates do not alter the public package interface.
+- **Unpublished Packages (`0.1.0-wip`)**: Packages that have never been
+  published to `pub.dev` keep their initial `0.1.0-wip` version and
+  `- Initial release.` changelog entry without accumulating per-PR entries until
+  after their first release.
+- **Repository-Root Skills, Workflows, or Historical `CHANGELOG.md` Typos**:
+  Pull requests that only modify repository-level files outside a published
+  package (such as `.github/workflows/`, repo-root `SKILL.md`, or root docs in a
+  monorepo) or that only fix typos/formatting in historical `CHANGELOG.md`
+  sections. Note that modifying `README.md`, `test/`, or `tool/` _inside_ a
+  published package sitting at a released version _does_ require a `-wip`
+  version bump with an empty `## <version>-wip` changelog section.
 - **In-Flight PR Iterations**: Intermediate commits on an active feature branch
-  where the version already carries a `-wip` suffix. Do not bump the version on
-  every commit.
+  where the version already carries an appropriate `-wip` suffix. Do not bump
+  the version on every commit.
 
 ## Discovery
 
@@ -54,47 +62,68 @@ Ensure the latest version in `CHANGELOG.md` matches `pubspec.yaml`:
 
 ### Semantic Versioning
 
-- **Major**: Breaking changes.
-- **Minor**: New features (non-breaking API changes).
-- **Patch**: Bug fixes, documentation, or non-impacting changes.
-- **Unstable packages**: Use `0.major.minor+patch`.
-- **Recommendation**: Aim for `1.0.0` as soon as the package is stable.
+Dart packages use [semantic versioning](https://semver.org) with a
+[pre-`1.0.0` variation](https://dart.dev/tools/pub/dependencies#caret-syntax)
+where the version numbers are shifted to the right before a `1.0.0` release; see
+also the
+[`package:pub_semver` semantics](https://pub.dev/packages/pub_semver#semantics):
 
-### Pre-Edit Verification
+- **Packages at `1.0.0` or later**: `major.minor.patch`.
+- **Packages not yet at `1.0.0`**: `0.major.minor`, where the second number is
+  bumped for breaking changes, such as `0.4.2` to `0.5.0-wip`, and the third
+  number is bumped for non-breaking features and bug fixes, such as `0.4.2` to
+  `0.4.3-wip`. Avoid `+1` build suffixes (in `package:pub_semver`, `0.4.2+1-wip`
+  parses `+1-wip` as build metadata rather than a `-wip` pre-release).
+- **Recommendation**: Aim to publish `1.0.0` as soon as the package is stable.
 
-- **Check Published Versions**: Before modifying `CHANGELOG.md` or
-  `pubspec.yaml`, ALWAYS check the currently released version (e.g., via
-  `git tag` or `pub.dev`).
-- **Do Not Amend Released Versions**: Never add new entries to a version header
-  that corresponds to a released tag.
-- **Increment for New Changes**: If the current version in `pubspec.yaml`
-  matches a released tag, increment the version (e.g., usually to `-wip`) and
-  create a new section in `CHANGELOG.md`.
+Choose the version bump based on the impact of the change:
 
-  - **Consistency**: The `CHANGELOG.md` header must match the new `pubspec.yaml`
-    version.
+- **Major**: Breaking changes, including removing or renaming a `pubspec.yaml`
+  `executables` entry.
+- **Minor**: New features and non-breaking API changes, such as introducing a
+  new class or adding a `pubspec.yaml` `executables` entry.
+- **Patch**: Bug fixes, minimum `environment.sdk` or runtime `dependencies`
+  constraint updates, or any other change that does not impact calling code.
 
-  - **SemVer Guidelines**:
-    - **Breaking Changes**: Bump Major, reset Minor/Patch (e.g., `2.0.0-wip`,
-      `0.5.0-wip`).
-    - **New Features**: Bump Minor, reset Patch (e.g., `1.1.0-wip`,
-      `0.4.5-wip`).
-    - **Bug Fixes**: Bump Patch (e.g., `1.0.1-wip`).
+### Updating the Version
 
-### Changelog Content
+Whenever the code in the repo differs from the latest version published on
+`pub.dev`, both `pubspec.yaml` and `CHANGELOG.md` must use a `-wip` version. We
+bump to `-wip` on the _first_ change after a release, even if we don't plan on
+publishing the code in that state or if the change doesn't impact consumers.
 
-- **Focus on User Impact**: Entries in `CHANGELOG.md` should focus on changes
-  visible to or impacting the end-user (e.g., new features, bug fixes, breaking
-  changes).
-- **Omit Internal Changes**: Do not include internal refactorings, test changes,
-  or other modifications that do not affect the package's behavior or API for
-  the user.
+When opening or merging a PR, check the current version in `pubspec.yaml` and
+`CHANGELOG.md`:
 
-### Work-in-Progress (WIP) Versions
+- **Currently at a published version**, such as `1.2.3`: Perform the appropriate
+  version bump, append `-wip` in `pubspec.yaml`, and add a matching
+  `## <version>-wip` section at the top of `CHANGELOG.md`.
+- **Already at a `-wip` version**, such as `1.2.4-wip`: Compare the existing
+  `-wip` bump against the bump required for your change. If your change requires
+  a larger bump, such as from a _patch_ bump to a _minor_ bump when adding a
+  feature, update `pubspec.yaml` and rename the existing `## <version>-wip`
+  heading in `CHANGELOG.md` in place.
+- **Not yet published to `pub.dev`**, at `0.1.0-wip`: Keep `0.1.0-wip` and the
+  `- Initial release.` entry without adding per-PR changelog entries until after
+  the first release.
 
-- Immediately after a publish, or on the first change after a publish, update
-  `pubspec.yaml` and `CHANGELOG.md` with a `-wip` suffix (e.g., `1.1.0-wip`).
-- This indicates the current state is not yet published.
+### Updating `CHANGELOG.md`
+
+- **User-visible changes**: Add an entry under the top `-wip` section.
+- **Internal or non-user-visible changes**, such as safe refactorings, lint
+  cleanups, `test/`, `tool/`, or `README.md` updates, or `dev_dependencies` and
+  `dependency_overrides` changes:
+  - If your PR creates the new `-wip` section, add the `## <version>-wip`
+    heading with no bullet items below it.
+  - If the package is already at a `-wip` version, leave `CHANGELOG.md`
+    untouched and apply the `skip-changelog-check` PR label.
+- **Follow-up edits to unreleased work**: If a subsequent PR modifies or reverts
+  an unreleased change in the current `-wip` section, such as bumping an SDK or
+  dependency constraint again before publishing, update or remove the existing
+  `-wip` bullet in place instead of adding a duplicate entry.
+- **Already-published sections**: Never add new entries under an
+  already-published version heading, especially after merging `main` when a
+  release landed while your PR was open.
 
 ### Breaking Changes
 
