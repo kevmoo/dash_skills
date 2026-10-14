@@ -34,31 +34,12 @@ Do NOT apply package maintenance version bumps or changelog updates when:
 - **Internal / Private Packages**: Packages marked `publish_to: none` in
   `pubspec.yaml` that are not published to `pub.dev` (e.g., application root
   packages or internal monorepo tooling).
-- **Unpublished Packages (`0.1.0-wip`)**: Packages that have never been
-  published to `pub.dev` keep their initial `0.1.0-wip` version and
-  `- Initial release.` changelog entry without accumulating per-PR entries until
-  after their first release.
-- **Repository-Root Skills, Workflows, or Historical `CHANGELOG.md` Typos**:
-  Pull requests that only modify repository-level files outside a published
-  package (such as `.github/workflows/`, repo-root `SKILL.md`, or root docs in a
-  monorepo) or that only fix typos/formatting in historical `CHANGELOG.md`
-  sections. Note that modifying `README.md`, `test/`, or `tool/` _inside_ a
-  published package sitting at a released version _does_ require a `-wip`
-  version bump with an empty `## <version>-wip` changelog section.
-- **In-Flight PR Iterations**: Intermediate commits on an active feature branch
-  where the version already carries an appropriate `-wip` suffix. Do not bump
-  the version on every commit.
-
-## Discovery
-
-To find maintenance tasks or inconsistencies:
-
-### Consistency Checks
-
-Ensure the latest version in `CHANGELOG.md` matches `pubspec.yaml`:
-
-- Compare the top header in `CHANGELOG.md` with the `version:` field in
-  `pubspec.yaml`.
+- **Repository-Root Files or Historical `CHANGELOG.md` Typos**: Pull requests
+  that only modify repository-level files outside a published package (such as
+  `.github/workflows/`, repo-root `SKILL.md`, or root docs in a monorepo) or
+  that only fix typos/formatting in historical `CHANGELOG.md` sections.
+- **In-Flight PR Commits**: Intermediate commits on an active feature branch
+  where the version already carries an appropriate `-wip` suffix.
 
 ## Versioning
 
