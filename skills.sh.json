@@ -3,7 +3,7 @@
   "notGrouped": "bottom",
   "groupings": [
     {
-      "title": "Language, Style & Architecture",
+      "title": "Language & Style",
       "description": "Skills for Effective Dart conventions, modern Dart 3 language features, sealed type hierarchies, and formatting.",
       "skills": [
         "dart-best-practices",
@@ -14,7 +14,7 @@
       ]
     },
     {
-      "title": "Testing & Coverage",
+      "title": "Testing",
       "description": "Skills for authoring unit tests with package:test and package:matcher and analyzing LCOV line coverage.",
       "skills": [
         "dart-test-fundamentals",
@@ -23,7 +23,7 @@
       ]
     },
     {
-      "title": "Package Maintenance, Docs & Profiling",
+      "title": "Packages & Profiling",
       "description": "Skills for diagnosing modernization opportunities, maintaining pub packages, validating dartdoc comments, and CPU profiling.",
       "skills": [
         "dash-discover",
