@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:logging/logging.dart';
@@ -9,7 +10,64 @@ final String _configFilePath = Directory.current.path.endsWith('tool')
     ? 'skills_lint.yaml'
     : 'tool/skills_lint.yaml';
 
+final String _skillsShJsonPath = Directory.current.path.endsWith('tool')
+    ? '../skills.sh.json'
+    : 'skills.sh.json';
+
 void main() {
+  test('Validate skills.sh.json covers all active skills', () {
+    final skillsDir = Directory(
+      Directory.current.path.endsWith('tool') ? '../skills' : 'skills',
+    );
+    final actualSkills = skillsDir
+        .listSync()
+        .whereType<Directory>()
+        .where((dir) => File('${dir.path}/SKILL.md').existsSync())
+        .map((dir) => dir.uri.pathSegments.where((s) => s.isNotEmpty).last)
+        .toSet();
+
+    final configFile = File(_skillsShJsonPath);
+    expect(
+      configFile.existsSync(),
+      isTrue,
+      reason: 'skills.sh.json not found at ${configFile.path}',
+    );
+
+    final decoded =
+        jsonDecode(configFile.readAsStringSync()) as Map<String, Object?>;
+    expect(
+      decoded[r'$schema'],
+      'https://skills.sh/schemas/skills.sh.schema.json',
+    );
+    expect(decoded['notGrouped'], 'bottom');
+
+    final groupings = decoded['groupings'] as List<Object?>;
+    expect(groupings, isNotEmpty);
+
+    final groupedSkills = <String>{};
+    for (final group in groupings.cast<Map<String, Object?>>()) {
+      expect(
+        group['title'],
+        isA<String>().having((s) => s.isNotEmpty, 'non-empty', isTrue),
+      );
+      expect(
+        group['description'],
+        isA<String>().having((s) => s.isNotEmpty, 'non-empty', isTrue),
+      );
+      final skills = (group['skills'] as List<Object?>).cast<String>();
+      expect(skills, isNotEmpty);
+      for (final skill in skills) {
+        expect(
+          groupedSkills.add(skill),
+          isTrue,
+          reason: 'Duplicate skill "$skill" in skills.sh.json',
+        );
+      }
+    }
+
+    expect(groupedSkills, equals(actualSkills));
+  });
+
   test('Validate skills', () async {
     Logger.root.level = Level.ALL;
     final subscription = Logger.root.onRecord.listen((record) {

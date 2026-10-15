@@ -1,0 +1,36 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Language, Style & Architecture",
+      "description": "Skills for Effective Dart conventions, modern Dart 3 language features, sealed type hierarchies, and formatting.",
+      "skills": [
+        "dart-best-practices",
+        "dart-modern-features",
+        "dart-seal-type-hierarchies",
+        "dart-long-lines",
+        "dart-multiline-strings"
+      ]
+    },
+    {
+      "title": "Testing & Coverage",
+      "description": "Skills for authoring unit tests with package:test and package:matcher and analyzing LCOV line coverage.",
+      "skills": [
+        "dart-test-fundamentals",
+        "dart-matcher-best-practices",
+        "dart-test-coverage"
+      ]
+    },
+    {
+      "title": "Package Maintenance, Docs & Profiling",
+      "description": "Skills for diagnosing modernization opportunities, maintaining pub packages, validating dartdoc comments, and CPU profiling.",
+      "skills": [
+        "dash-discover",
+        "dart-package-maintenance",
+        "dart-doc-validation",
+        "profile-dart-code"
+      ]
+    }
+  ]
+}
