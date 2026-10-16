@@ -34,8 +34,7 @@ We have a skill validator that checks for basic standards like path validity and
 formatting. It does not check for reachability from a resolver or for duplicate
 logic across skills.
 
-- **Example**:
-  [validate_skills_test.dart](skill_validator/test/validate_skills_test.dart)
+- **Example**: [validate_skills_test.dart](test/validate_skills_test.dart)
 
 ## Unimplemented Layers
 
@@ -98,7 +97,7 @@ To run the validator:
 
 1. Navigate to the validator directory:
    ```bash
-   cd tool/skill_validator
+   cd tool
    ```
 2. Run the tests:
    ```bash
