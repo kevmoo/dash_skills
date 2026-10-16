@@ -198,11 +198,26 @@ timeouts:
     fakes/stubs for custom interfaces.
   - Run browser, DOM, and JS/Wasm interop tests on a real browser runtime
     (`@TestOn('browser')`).
-- **Behavioral & Execution-Driven Assertions**:
-  - **Boundary & Consumer Behavior**: Test the observable outputs and boundary
-    conditions of functions that consume constants and models (e.g.,
-    `validate('a' * 280)` vs. `validate('a' * 281)`) against concrete expected
-    values.
+- **Behavioral, Structural & Relational Assertions (No Change-Detector Tests)**:
+  - **Boundary & Consumer Behavior on Synthetic Inputs**: Test the observable
+    outputs and boundary conditions of functions that consume constants,
+    configs, and models using synthetic unit inputs (e.g., `validate('a' * 280)`
+    vs. `validate('a' * 281)`, or passing synthetic temp directories into a repo
+    classifier) rather than writing tautological change-detector tests that echo
+    constant literals, pin item membership in static config sets
+    (`publishedPackages.contains('foo')`), hard-code named production entities,
+    or substring-match literal action names, CLI flags, or tool versions/SHAs
+    inside a single static template constant. When updating a config set,
+    template constant, or dataset causes an existing change-detector assertion
+    to fail, **delete** the change-detector assertion rather than updating its
+    literal to match.
+  - **Structural & Relational Invariants on Live Data & Templates**: When
+    testing live catalogs, JSON datasets, registries, or canonical templates
+    that evolve independently of logic, assert **structural validity and
+    cross-artifact relational invariants** (`isNotEmpty`, required schema keys
+    present, `mergedCount + openCount == totalCount`, or workflow template job
+    ID matching the required check name) rather than hard-coding total entry
+    counts (`hasLength(33)`) or literal config items.
   - **Direct Execution & Rendering**: Verify runtime behavior, control flow, and
     UI/CLI output by invoking functions or rendering components directly. Use
     raw file-text reads (`readAsStringSync()`) specifically for static
