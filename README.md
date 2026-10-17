@@ -13,6 +13,8 @@ enabling agents to perform complex specialized tasks with high reliability.
 To install any skill individually:
 
 ```bash
+dart run skills@ add kevmoo/dash_skills --skill <skill-name>
+# or
 npx skills add kevmoo/dash_skills --skill <skill-name>
 ```
 
