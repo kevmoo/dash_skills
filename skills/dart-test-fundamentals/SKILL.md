@@ -182,47 +182,71 @@ timeouts:
 
 ### 6. Test Design, Seams & Real Test Doubles
 
-- **Test Seams (`lib/<pkg>.dart` vs. `lib/src/`)**:
-  - Import `package:<pkg>/<pkg>.dart` for package-level and integration tests,
-    keeping `lib/<pkg>.dart` exports strictly scoped to public consumers.
-  - Import `package:<pkg>/src/<subsystem>.dart` directly when unit-testing an
-    internal **deep module** (e.g., an unexported parser, state machine, or data
-    structure with a simple interface and rich behavior), while testing thin
-    single-caller helpers through their owning module's entrypoint.
-- **Real Implementations & First-Party Fakes (`Real -> Fake -> Stub`)**:
-  - Exercise real dependencies and first-party fakes so tests fail when
-    production contracts change: use `package:test_descriptor` (`d.sandbox`,
-    `d.dir`, `d.file`) or `Directory.systemTemp.createTempSync()` for filesystem
-    I/O, in-memory stores or loopback `HttpServer` instances for services,
-    `package:http/testing.dart` (`MockClient`) for HTTP, and hand-written
-    fakes/stubs for custom interfaces.
-  - Run browser, DOM, and JS/Wasm interop tests on a real browser runtime
-    (`@TestOn('browser')`).
+<!-- BEGIN SPOT: dart-test-hermeticity -->
+
+- **Test Seam Discipline (Package Integration vs. `lib/src/` Unit Tests)**:
+  - **Package-Level & Integration Tests**: Import `package:<pkg>/<pkg>.dart`
+    (the public entrypoint seam) and keep `lib/<pkg>.dart` exports strictly
+    scoped to public consumers.
+  - **Subsystem Unit Tests (`lib/src/`)**: Import internal **deep modules**
+    (`package:<pkg>/src/<subsystem>.dart`)—such as unexported parsers, state
+    machines, data models, or algorithms with simple interfaces and rich
+    internal behavior—to unit-test edge cases directly; test thin single-caller
+    helpers through their owning module's entrypoint.
+- **Real Implementations & First-Party Fakes ("Tests That Can Fail")**: Exercise
+  real dependencies and first-party fakes so tests fail when production
+  contracts break—use `package:test_descriptor` (`d.sandbox`, `d.dir`, `d.file`)
+  or `Directory.systemTemp.createTempSync()` (always registered with
+  `addTearDown(() => tempDir.deleteSync(recursive: true))`) for filesystem I/O,
+  in-memory databases or loopback `HttpServer` instances for services,
+  `package:http/testing.dart` (`MockClient`) for HTTP, hand-written fakes/stubs
+  for custom interfaces, and `@TestOn('browser')` for DOM and JS/Wasm interop.
+- **Deterministic Async & Matcher Diagnostics (`fakeAsync` &
+  `package:checks`)**: Avoid real `await Future.delayed(...)` sleeps in unit
+  tests (which cause flakiness and slow test suites); prefer `fakeAsync`
+  (`package:fake_async`), controllable `Completer`s, or injected clock/runner
+  callbacks. Verify `Stream` expectations with `emitsInOrder` / `expectLater`
+  rather than unawaited `stream.listen(expectAsync1(...))` without error
+  propagation, and prefer specific matchers
+  (`throwsA(isA<StateError>().having((e) => e.message, 'message', contains('...')))`,
+  `completion(...)`, `unorderedEquals(...)`) over `expect(x == y, isTrue)` or
+  manual `try { ...; fail('...'); } catch (e) {}` blocks.
+
+<!-- END SPOT: dart-test-hermeticity -->
+
+<!-- BEGIN SPOT: dart-test-no-change-detectors -->
+
 - **Behavioral, Structural & Relational Assertions (No Change-Detector Tests)**:
-  - **Boundary & Consumer Behavior on Synthetic Inputs**: Test the observable
-    outputs and boundary conditions of functions that consume constants,
-    configs, and models using synthetic unit inputs (e.g., `validate('a' * 280)`
-    vs. `validate('a' * 281)`, or passing synthetic temp directories into a repo
-    classifier) rather than writing tautological change-detector tests that echo
-    constant literals, pin item membership in static config sets
-    (`publishedPackages.contains('foo')`), hard-code named production entities,
-    or substring-match literal action names, CLI flags, or tool versions/SHAs
-    inside a single static template constant. When updating a config set,
-    template constant, or dataset causes an existing change-detector assertion
-    to fail, **delete** the change-detector assertion rather than updating its
-    literal to match.
-  - **Structural & Relational Invariants on Live Data & Templates**: When
+  - **Test Consumer Behavior on Synthetic Inputs**: Assert observable outputs,
+    state transitions, and boundary conditions of the code that _consumes_
+    constants, configs, and models using synthetic unit inputs (e.g., passing
+    280 vs. 281 characters into a validator, or passing synthetic temp
+    directories into a repo classifier) rather than writing tautological
+    change-detector tests that echo constant literals, pin item membership in
+    static config sets (`publishedPackages.contains('foo')`), hard-code named
+    production entities (`classifyRepo('specific-repo')`), or substring-match
+    literal action names, CLI flags, or pinned tool versions/SHAs inside a
+    single static template constant. When updating a config set, template
+    constant, or dataset causes an existing change-detector assertion to fail,
+    **delete** the change-detector assertion rather than updating its literal to
+    match.
+  - **Assert Structural & Relational Invariants on Live Data & Templates**: When
     testing live catalogs, JSON datasets, registries, or canonical templates
     that evolve independently of logic, assert **structural validity and
-    cross-artifact relational invariants** (`isNotEmpty`, required schema keys
-    present, `mergedCount + openCount == totalCount`, or workflow template job
-    ID matching the required check name) rather than hard-coding total entry
-    counts (`hasLength(33)`) or literal config items.
-  - **Direct Execution & Rendering**: Verify runtime behavior, control flow, and
-    UI/CLI output by invoking functions or rendering components directly. Use
-    raw file-text reads (`readAsStringSync()`) specifically for static
-    `README.md` `--help` drift checks, `BUILD` / `pubspec.yaml` metadata sync,
-    and codegen fixtures.
+    cross-artifact relational invariants** (e.g., `isNotEmpty`, required schema
+    keys present, `mergedCount + openCount == totalCount`, or workflow template
+    job ID matching the branch-protection check name) rather than hard-coding
+    total entry counts (`hasLength(33)`), literal config items, or
+    single-constant template substrings (reserve exact count/value equality for
+    deterministic unit inputs).
+- **Direct Execution & Rendering Verification**: Verify runtime behavior,
+  control flow, and UI/CLI output by invoking functions, running CLI commands,
+  or rendering components directly. Use raw file-text reads
+  (`readAsStringSync()`) specifically for static documentation drift
+  (`README.md` `--help` blocks), build/package metadata sync (`BUILD`,
+  `pubspec.yaml`), and code-generator input/output fixtures.
+
+<!-- END SPOT: dart-test-no-change-detectors -->
 
 ## Common commands
 
