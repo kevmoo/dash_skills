@@ -83,18 +83,28 @@ Or for structured machine ingestion:
 dart run dash_discover <path-to-target-package> --json
 ```
 
+By default, scans report **Defect** and **Capability** rules while suppressing
+**Alternative** idiom rules (`checks-migration`, `pattern-matching`,
+`matcher-best-practices`) when existing code is already valid. Pass
+`--include-alternatives` (or target a rule directly via `--rule <id>`) to opt
+into alternative-idiom checks:
+
+```bash
+dart run dash_discover <path-to-target-package> --include-alternatives
+```
+
 <!-- DISCOVERY_RULES_START -->
 
 The static scanner performs rapid, zero-network checks across 7 built-in rules:
 
 <!-- prettier-ignore -->
-1. **Testing Architecture (`dart-migrate-to-checks-package`)**: Detects test or flutter_test in dependencies when checks is absent.
-2. **Dart 3 Language Idioms (`dart-use-pattern-matching`)**: Detects legacy else if (... is ...) type cascades and returning switch statements.
-3. **CLI Architecture (`dart-build-cli-app`)**: Detects ad-hoc bin/*.dart CLI entrypoints lacking structured argument parsing.
-4. **Cross-Platform Robustness (`dart-use-path-package`)**: Detects manual path string concatenation without package:path.
-5. **Testing Architecture (`dart-generate-test-mocks`)**: Detects handwritten fake or mock class definitions without mockito or mocktail.
-6. **Testing Architecture (`dart-matcher-best-practices`)**: Detects unidiomatic expect() assertions (e.g. expect(x.length, ...) or expect(x.isEmpty, true)).
-7. **Dart 3 Language Idioms (`dart-seal-type-hierarchies`)**: Detects closed type hierarchies that are not sealed, so the compiler cannot check switch exhaustiveness over them.
+1. **Testing Architecture (`dart-migrate-to-checks-package`)** [Alternative (requires `--include-alternatives`)]: Detects test or flutter_test in dependencies when checks is absent.
+2. **Dart 3 Language Idioms (`dart-use-pattern-matching`)** [Alternative (requires `--include-alternatives`)]: Detects legacy else if (... is ...) type cascades and returning switch statements.
+3. **CLI Architecture (`dart-build-cli-app`)** [Capability]: Detects ad-hoc bin/*.dart CLI entrypoints lacking structured argument parsing.
+4. **Cross-Platform Robustness (`dart-use-path-package`)** [Defect]: Detects manual path string concatenation without package:path.
+5. **Testing Architecture (`dart-generate-test-mocks`)** [Capability]: Detects handwritten fake or mock class definitions without mockito or mocktail.
+6. **Testing Architecture (`dart-matcher-best-practices`)** [Alternative (requires `--include-alternatives`)]: Detects unidiomatic expect() assertions (e.g. expect(x.length, ...) or expect(x.isEmpty, true)).
+7. **Dart 3 Language Idioms (`dart-seal-type-hierarchies`)** [Capability]: Detects closed type hierarchies that are not sealed, so the compiler cannot check switch exhaustiveness over them.
 
 <!-- DISCOVERY_RULES_END -->
 
@@ -121,11 +131,12 @@ To capture complex cross-cutting architectural patterns beyond regexes:
 
 When `dash-discover` produces recommendations:
 
-1. **Triage by Lifecycle & Confidence**:
-   - Focus on finite migrations first (e.g. core language modernization and
-     testing migrations), prioritized by confidence and affected file count.
-   - Treat periodic hygiene audits (e.g. cognitive complexity, doc validation)
-     as recurring sweeps rather than one-time migrations.
+1. **Triage by Trigger, Lifecycle & Confidence**:
+   - Address **Defect** findings first (fragile or unportable patterns), then
+     evaluate **Capability** opportunities against project goals; treat
+     **Alternative** idiom migrations (`--include-alternatives`) as opt-in.
+   - Focus on finite migrations before recurring hygiene sweeps, prioritized by
+     confidence and affected file count.
    - Throttle ubiquitous recommendations (e.g. at most one test framework
      migration at a time).
 2. **Follow the Resolved Skill Target**:

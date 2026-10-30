@@ -20,6 +20,10 @@ abstract class DiscoveryRule {
   /// architecture.
   SkillLifecycle get lifecycle;
 
+  /// Trigger classification determining whether this rule fires unprompted or
+  /// requires explicit opt-in.
+  RuleTrigger get trigger;
+
   /// Concise summary of what this rule detects.
   String get description;
 
@@ -63,6 +67,7 @@ abstract class FileDiscoveryRule extends DiscoveryRule {
         target: target,
         category: category,
         lifecycle: lifecycle,
+        trigger: trigger,
         confidence: defaultConfidence,
         affectedCount: matchedFiles.length,
         diagnosis: diagnosisTemplate.replaceAll(

@@ -8,7 +8,7 @@ import '../rule.dart';
 /// destructuring.
 ///
 /// **Target Skill**:
-/// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-use-pattern-matching
+/// - GitHub: https://github.com/dart-lang/skills/tree/bf984f3ef223dd85e92036f934bbcb6bf301e4ce/skills/dart-use-pattern-matching
 final class PatternMatchingRule extends FileDiscoveryRule {
   const PatternMatchingRule();
 
@@ -33,7 +33,7 @@ final class PatternMatchingRule extends FileDiscoveryRule {
     org: 'dart-lang',
     repo: 'skills',
     path: 'skills/dart-use-pattern-matching',
-    commitSha: '26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e',
+    commitSha: 'bf984f3ef223dd85e92036f934bbcb6bf301e4ce',
   );
 
   @override
@@ -41,6 +41,9 @@ final class PatternMatchingRule extends FileDiscoveryRule {
 
   @override
   SkillLifecycle get lifecycle => SkillLifecycle.migration;
+
+  @override
+  RuleTrigger get trigger => RuleTrigger.alternative;
 
   @override
   String get description =>

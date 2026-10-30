@@ -39,6 +39,11 @@ ArgParser buildArgParser() => ArgParser()
     help: 'Filter rules by skill lifecycle (migration, hygiene, architecture).',
   )
   ..addFlag(
+    'include-alternatives',
+    negatable: false,
+    help: 'Include alternative-idiom rules (suppressed by default).',
+  )
+  ..addFlag(
     'list-rules',
     negatable: false,
     help: 'List all available discovery rules and their upstream targets.',
@@ -124,11 +129,18 @@ Future<int> runCli(
   final activeRules = _selectActiveRules(results);
 
   if (activeRules.isEmpty) {
-    err
-      ..writeln('Error: No rules match the specified filters.')
-      ..writeln(
-        'Available rules: ${defaultDiscoveryRules.map((r) => r.id).join(', ')}',
+    err.writeln('Error: No rules match the specified filters.');
+    final suppressed = _selectActiveRules(results, includeAlternatives: true);
+    if (suppressed.isNotEmpty) {
+      final ids = suppressed.map((r) => r.id).join(', ');
+      err.writeln(
+        'Hint: Matching alternative-idiom rules are suppressed by default '
+        '($ids). Pass --include-alternatives to include them.',
       );
+    }
+    err.writeln(
+      'Available rules: ${defaultDiscoveryRules.map((r) => r.id).join(', ')}',
+    );
     return ExitCode.usage.code;
   }
 
@@ -203,6 +215,7 @@ void _printRulesList(StringSink out, SkillsCatalog catalog) {
         '• ${rule.id} (${rule.category.label}) [${rule.lifecycle.label}]',
       )
       ..writeln('  Skill:       ${rule.target.skillName}')
+      ..writeln('  Trigger:     ${rule.trigger.label}')
       ..writeln('  Lifecycle:   ${rule.lifecycle.label}')
       ..writeln('  Category:    ${rule.category.label}')
       ..writeln('  Confidence:  ${rule.defaultConfidence.name.toUpperCase()}')
@@ -215,13 +228,22 @@ void _printRulesList(StringSink out, SkillsCatalog catalog) {
   }
 }
 
-List<DiscoveryRule> _selectActiveRules(ArgResults results) {
+List<DiscoveryRule> _selectActiveRules(
+  ArgResults results, {
+  bool? includeAlternatives,
+}) {
   final ruleId = results.option('rule');
   final categoryFilter = results.option('category');
   final lifecycleFilter = results.option('lifecycle');
+  final allowAlternatives =
+      (includeAlternatives ?? results.flag('include-alternatives')) ||
+      ruleId != null;
 
   return defaultDiscoveryRules.where((r) {
     if (ruleId != null && r.id != ruleId) return false;
+    if (!allowAlternatives && r.trigger == RuleTrigger.alternative) {
+      return false;
+    }
     if (categoryFilter != null && r.category.name != categoryFilter) {
       return false;
     }

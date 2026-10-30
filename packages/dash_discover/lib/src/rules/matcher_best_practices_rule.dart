@@ -57,6 +57,9 @@ final class MatcherBestPracticesRule extends FileDiscoveryRule {
   SkillLifecycle get lifecycle => SkillLifecycle.hygiene;
 
   @override
+  RuleTrigger get trigger => RuleTrigger.alternative;
+
+  @override
   String get description =>
       'Detects unidiomatic expect() assertions (e.g. expect(x.length, ...) '
       'or expect(x.isEmpty, true)).';

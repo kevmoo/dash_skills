@@ -13,13 +13,27 @@ class StaticDiscoveryEngine {
   final PackageContext context;
   final List<DiscoveryRule> rules;
 
-  StaticDiscoveryEngine(this.context, {List<DiscoveryRule>? rules})
-    : rules = rules ?? defaultDiscoveryRules;
+  StaticDiscoveryEngine(
+    this.context, {
+    List<DiscoveryRule>? rules,
+    bool includeAlternatives = false,
+  }) : rules =
+           rules ??
+           (includeAlternatives
+               ? defaultDiscoveryRules
+               : defaultDiscoveryRules
+                     .where((r) => r.trigger != RuleTrigger.alternative)
+                     .toList(growable: false));
 
   factory StaticDiscoveryEngine.forPath(
     String path, {
     List<DiscoveryRule>? rules,
-  }) => StaticDiscoveryEngine(PackageContext.load(path), rules: rules);
+    bool includeAlternatives = false,
+  }) => StaticDiscoveryEngine(
+    PackageContext.load(path),
+    rules: rules,
+    includeAlternatives: includeAlternatives,
+  );
 
   /// Runs all applicable rules against the package context, sorted
   /// deterministically.

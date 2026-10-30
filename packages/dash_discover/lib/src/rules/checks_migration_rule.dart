@@ -6,7 +6,7 @@ import '../rule.dart';
 /// `package:test` matchers instead of fluent `package:checks`.
 ///
 /// **Target Skill**:
-/// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-migrate-to-checks-package
+/// - GitHub: https://github.com/dart-lang/skills/tree/bf984f3ef223dd85e92036f934bbcb6bf301e4ce/skills/dart-migrate-to-checks-package
 final class ChecksMigrationRule extends DiscoveryRule {
   const ChecksMigrationRule();
 
@@ -18,7 +18,7 @@ final class ChecksMigrationRule extends DiscoveryRule {
     org: 'dart-lang',
     repo: 'skills',
     path: 'skills/dart-migrate-to-checks-package',
-    commitSha: '26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e',
+    commitSha: 'bf984f3ef223dd85e92036f934bbcb6bf301e4ce',
   );
 
   @override
@@ -26,6 +26,9 @@ final class ChecksMigrationRule extends DiscoveryRule {
 
   @override
   SkillLifecycle get lifecycle => SkillLifecycle.migration;
+
+  @override
+  RuleTrigger get trigger => RuleTrigger.alternative;
 
   @override
   String get description =>
@@ -50,6 +53,7 @@ final class ChecksMigrationRule extends DiscoveryRule {
       target: target,
       category: category,
       lifecycle: lifecycle,
+      trigger: trigger,
       confidence: defaultConfidence,
       affectedCount: context.testFiles.length,
       diagnosis:

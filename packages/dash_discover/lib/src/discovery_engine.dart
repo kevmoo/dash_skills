@@ -50,6 +50,7 @@ class DiscoveryReport {
             '(${opp.category.label})\n',
           )
           ..writeln('- **Target Skill**: $targetDesc')
+          ..writeln('- **Trigger**: ${opp.trigger.label}')
           ..writeln('- **Lifecycle**: ${opp.lifecycle.label}')
           ..writeln('- **Confidence**: ${opp.confidence.label}')
           ..writeln('- **Impact**: ${opp.affectedCount} file(s)')
@@ -71,11 +72,16 @@ class DiscoveryEngine {
   final String packagePath;
   final SkillsCatalog catalog;
   final List<DiscoveryRule>? rules;
+  final bool includeAlternatives;
 
-  DiscoveryEngine(this.packagePath, {SkillsCatalog? catalog, this.rules})
-    : catalog =
-          catalog ??
-          SkillsCatalog.discover(workingDirectory: Directory(packagePath));
+  DiscoveryEngine(
+    this.packagePath, {
+    SkillsCatalog? catalog,
+    this.rules,
+    this.includeAlternatives = false,
+  }) : catalog =
+           catalog ??
+           SkillsCatalog.discover(workingDirectory: Directory(packagePath));
 
   DiscoveryReport run() {
     final packageName = p.basename(packagePath);
@@ -84,6 +90,7 @@ class DiscoveryEngine {
     final staticEngine = StaticDiscoveryEngine.forPath(
       packagePath,
       rules: rules,
+      includeAlternatives: includeAlternatives,
     );
     final rawOpportunities = staticEngine.scan();
 

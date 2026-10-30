@@ -14,7 +14,7 @@ import '../rule.dart';
 /// expression is simply not a string interpolation.
 ///
 /// **Target Skill**:
-/// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-use-path-package
+/// - GitHub: https://github.com/dart-lang/skills/tree/bf984f3ef223dd85e92036f934bbcb6bf301e4ce/skills/dart-use-path-package
 final class PathPackageRule extends DiscoveryRule {
   const PathPackageRule();
 
@@ -26,7 +26,7 @@ final class PathPackageRule extends DiscoveryRule {
     org: 'dart-lang',
     repo: 'skills',
     path: 'skills/dart-use-path-package',
-    commitSha: '26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e',
+    commitSha: 'bf984f3ef223dd85e92036f934bbcb6bf301e4ce',
   );
 
   @override
@@ -34,6 +34,9 @@ final class PathPackageRule extends DiscoveryRule {
 
   @override
   SkillLifecycle get lifecycle => SkillLifecycle.migration;
+
+  @override
+  RuleTrigger get trigger => RuleTrigger.defect;
 
   @override
   String get description =>
@@ -64,6 +67,7 @@ final class PathPackageRule extends DiscoveryRule {
       target: target,
       category: category,
       lifecycle: lifecycle,
+      trigger: trigger,
       confidence: defaultConfidence,
       affectedCount: count,
       diagnosis:
