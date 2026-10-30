@@ -43,6 +43,9 @@ final class SealedHierarchyRule extends DiscoveryRule {
   SkillLifecycle get lifecycle => SkillLifecycle.architecture;
 
   @override
+  RuleTrigger get trigger => RuleTrigger.capability;
+
+  @override
   String get description =>
       'Detects closed type hierarchies that are not sealed, so the compiler '
       'cannot check switch exhaustiveness over them.';
@@ -83,6 +86,7 @@ final class SealedHierarchyRule extends DiscoveryRule {
       target: target,
       category: category,
       lifecycle: lifecycle,
+      trigger: trigger,
       confidence: allPrivate ? Confidence.high : Confidence.medium,
       affectedCount: candidates.length,
       diagnosis:

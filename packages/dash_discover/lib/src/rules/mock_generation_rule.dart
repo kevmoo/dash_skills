@@ -7,7 +7,7 @@ import '../rule.dart';
 /// in test suites that should be automated via `@GenerateMocks` or `mocktail`.
 ///
 /// **Target Skill**:
-/// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-generate-test-mocks
+/// - GitHub: https://github.com/dart-lang/skills/tree/bf984f3ef223dd85e92036f934bbcb6bf301e4ce/skills/dart-generate-test-mocks
 final class MockGenerationRule extends FileDiscoveryRule {
   const MockGenerationRule();
 
@@ -23,7 +23,7 @@ final class MockGenerationRule extends FileDiscoveryRule {
     org: 'dart-lang',
     repo: 'skills',
     path: 'skills/dart-generate-test-mocks',
-    commitSha: '26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e',
+    commitSha: 'bf984f3ef223dd85e92036f934bbcb6bf301e4ce',
   );
 
   @override
@@ -31,6 +31,9 @@ final class MockGenerationRule extends FileDiscoveryRule {
 
   @override
   SkillLifecycle get lifecycle => SkillLifecycle.architecture;
+
+  @override
+  RuleTrigger get trigger => RuleTrigger.capability;
 
   @override
   String get description =>

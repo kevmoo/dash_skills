@@ -32,6 +32,26 @@ enum SkillLifecycle {
   String toString() => label;
 }
 
+/// Trigger classification determining whether a rule fires unprompted or
+/// requires explicit opt-in.
+enum RuleTrigger {
+  /// Current pattern is broken, fragile, or unportable; fires unprompted.
+  defect('Defect'),
+
+  /// Codebase lacks an architectural capability; engineering design choice.
+  capability('Capability'),
+
+  /// Current pattern is valid; skill offers an alternative modern idiom
+  /// (suppressed by default).
+  alternative('Alternative');
+
+  final String label;
+  const RuleTrigger(this.label);
+
+  @override
+  String toString() => label;
+}
+
 /// Confidence level in the accuracy of a discovery match.
 enum Confidence {
   high('High'),
@@ -104,6 +124,7 @@ class Opportunity implements Comparable<Opportunity> {
   final SkillTarget target;
   final RuleCategory category;
   final SkillLifecycle lifecycle;
+  final RuleTrigger trigger;
   final Confidence confidence;
   final int affectedCount;
   final String diagnosis;
@@ -114,6 +135,7 @@ class Opportunity implements Comparable<Opportunity> {
     required this.target,
     required this.category,
     required this.lifecycle,
+    required this.trigger,
     this.confidence = Confidence.high,
     this.affectedCount = 1,
     required this.diagnosis,
@@ -134,6 +156,7 @@ class Opportunity implements Comparable<Opportunity> {
     target: newTarget,
     category: category,
     lifecycle: lifecycle,
+    trigger: trigger,
     confidence: confidence,
     affectedCount: affectedCount,
     diagnosis: diagnosis,
@@ -165,6 +188,8 @@ class Opportunity implements Comparable<Opportunity> {
     'category_label': category.label,
     'lifecycle': lifecycle.name,
     'lifecycle_label': lifecycle.label,
+    'trigger': trigger.name,
+    'trigger_label': trigger.label,
     'confidence': confidence.name.toUpperCase(),
     'affected_count': affectedCount,
     'diagnosis': diagnosis,

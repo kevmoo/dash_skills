@@ -49,18 +49,19 @@ void main() {
 
   group('SkillTarget resolution', () {
     test('defaults to remote githubUrl when localPath is null', () {
+      const sha = '0123456789abcdef0123456789abcdef01234567';
       const target = SkillTarget(
         org: 'dart-lang',
         repo: 'skills',
         path: 'skills/dart-use-path-package',
-        commitSha: '26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e',
+        commitSha: sha,
       );
 
       expect(target.isLocal, isFalse);
       expect(target.localPath, isNull);
       expect(
         target.githubUrl.toString(),
-        'https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-use-path-package',
+        'https://github.com/dart-lang/skills/tree/$sha/skills/dart-use-path-package',
       );
       expect(target.resolvedUri, equals(target.githubUrl));
 
@@ -162,6 +163,7 @@ dev_dependencies:
       expect(opps.single.target.org, 'dart-lang');
       expect(opps.single.category, RuleCategory.testing);
       expect(opps.single.lifecycle, SkillLifecycle.migration);
+      expect(opps.single.trigger, RuleTrigger.alternative);
       expect(opps.single.confidence, Confidence.high);
       expect(opps.single.affectedCount, 1);
     });
@@ -244,6 +246,7 @@ void main() {
       expect(opps.single.target.org, 'kevmoo');
       expect(opps.single.category, RuleCategory.testing);
       expect(opps.single.lifecycle, SkillLifecycle.hygiene);
+      expect(opps.single.trigger, RuleTrigger.alternative);
       expect(opps.single.confidence, Confidence.high);
     });
   });
@@ -261,13 +264,51 @@ void main() {
       expect(ids, contains('seal-type-hierarchies'));
     });
 
-    test('all rules define valid category and lifecycle metadata', () {
-      for (final rule in defaultDiscoveryRules) {
-        expect(rule.category, isA<RuleCategory>());
-        expect(rule.lifecycle, isA<SkillLifecycle>());
-        expect(rule.defaultConfidence, isA<Confidence>());
-        expect(rule.description, isNotEmpty);
-      }
+    test(
+      'all rules define valid category, lifecycle, and trigger metadata',
+      () {
+        final shaPattern = RegExp(r'^[0-9a-f]{40}$');
+        for (final rule in defaultDiscoveryRules) {
+          expect(rule.category, isA<RuleCategory>());
+          expect(rule.lifecycle, isA<SkillLifecycle>());
+          expect(rule.trigger, isA<RuleTrigger>());
+          expect(rule.defaultConfidence, isA<Confidence>());
+          expect(rule.description, isNotEmpty);
+          if (rule.target.org == 'dart-lang' && rule.target.repo == 'skills') {
+            expect(rule.target.commitSha, matches(shaPattern));
+          }
+        }
+      },
+    );
+
+    test('classifies all 7 built-in rules by RuleTrigger taxonomy', () {
+      final triggersById = {
+        for (final rule in defaultDiscoveryRules) rule.id: rule.trigger,
+      };
+      expect(triggersById, {
+        'use-path-package': RuleTrigger.defect,
+        'build-cli-app': RuleTrigger.capability,
+        'generate-test-mocks': RuleTrigger.capability,
+        'seal-type-hierarchies': RuleTrigger.capability,
+        'checks-migration': RuleTrigger.alternative,
+        'pattern-matching': RuleTrigger.alternative,
+        'matcher-best-practices': RuleTrigger.alternative,
+      });
+
+      expect(
+        defaultDiscoveryRules.where((r) => r.trigger == RuleTrigger.defect),
+        hasLength(1),
+      );
+      expect(
+        defaultDiscoveryRules.where((r) => r.trigger == RuleTrigger.capability),
+        hasLength(3),
+      );
+      expect(
+        defaultDiscoveryRules.where(
+          (r) => r.trigger == RuleTrigger.alternative,
+        ),
+        hasLength(3),
+      );
     });
 
     test(
@@ -300,6 +341,7 @@ void main() {
         target: target,
         category: RuleCategory.testing,
         lifecycle: SkillLifecycle.migration,
+        trigger: RuleTrigger.defect,
         affectedCount: 5,
         diagnosis: 'd',
         prescription: 'p',
@@ -309,6 +351,7 @@ void main() {
         target: target,
         category: RuleCategory.testing,
         lifecycle: SkillLifecycle.migration,
+        trigger: RuleTrigger.alternative,
         confidence: Confidence.low,
         affectedCount: 20,
         diagnosis: 'd',
@@ -319,6 +362,7 @@ void main() {
         target: target,
         category: RuleCategory.cli,
         lifecycle: SkillLifecycle.architecture,
+        trigger: RuleTrigger.capability,
         diagnosis: 'd',
         prescription: 'p',
         evidence: [],
@@ -327,6 +371,7 @@ void main() {
         target: target,
         category: RuleCategory.codeQuality,
         lifecycle: SkillLifecycle.hygiene,
+        trigger: RuleTrigger.alternative,
         affectedCount: 50,
         diagnosis: 'd',
         prescription: 'p',
@@ -336,6 +381,7 @@ void main() {
         target: target,
         category: RuleCategory.codeQuality,
         lifecycle: SkillLifecycle.hygiene,
+        trigger: RuleTrigger.alternative,
         affectedCount: 2,
         diagnosis: 'd',
         prescription: 'p',
@@ -456,7 +502,104 @@ void main() {
       expect(json['is_local'], isFalse);
       expect(json.containsKey('local_path'), isFalse);
       expect(json['resolved_uri'], equals(opp.target.resolvedUri.toString()));
+      expect(json['trigger'], 'alternative');
+      expect(json['trigger_label'], 'Alternative');
+      expect(report.toMarkdown(), contains('- **Trigger**: Alternative'));
     });
+
+    test(
+      'suppresses alternative rules by default and includes them on opt-in',
+      () {
+        final temp = Directory.systemTemp.createTempSync(
+          'discovery_trigger_filter_',
+        );
+        addTearDown(() => temp.deleteSync(recursive: true));
+
+        File(p.join(temp.path, 'pubspec.yaml')).writeAsStringSync('''
+name: mixed_signals_pkg
+environment:
+  sdk: ^3.5.0
+dev_dependencies:
+  test: ^1.25.0
+''');
+        final libDir = Directory(p.join(temp.path, 'lib'))..createSync();
+        File(p.join(libDir.path, 'paths_and_types.dart')).writeAsStringSync(r'''
+String joinPath(String dir, Object value) {
+  if (value is int) {
+    return '$dir/int.txt';
+  } else if (value is String) {
+    return '$dir/$value';
+  }
+  return '$dir/other.txt';
+}
+''');
+        final binDir = Directory(p.join(temp.path, 'bin'))..createSync();
+        File(p.join(binDir.path, 'tool.dart')).writeAsStringSync('''
+void main(List<String> args) {
+  print(args);
+}
+''');
+        final testDir = Directory(p.join(temp.path, 'test'))..createSync();
+        File(p.join(testDir.path, 'mixed_test.dart')).writeAsStringSync('''
+import 'package:test/test.dart';
+
+void main() {
+  test('assertions', () {
+    final items = [1, 2, 3];
+    expect(items.length, 3);
+  });
+}
+''');
+
+        final defaultStatic = StaticDiscoveryEngine.forPath(temp.path).scan();
+        expect(
+          defaultStatic.map((o) => o.skill).toSet(),
+          equals({'dart-use-path-package', 'dart-build-cli-app'}),
+        );
+        expect(
+          defaultStatic.every((o) => o.trigger != RuleTrigger.alternative),
+          isTrue,
+        );
+
+        final allStatic = StaticDiscoveryEngine.forPath(
+          temp.path,
+          includeAlternatives: true,
+        ).scan();
+        expect(
+          allStatic.map((o) => o.skill).toSet(),
+          equals({
+            'dart-use-path-package',
+            'dart-build-cli-app',
+            'dart-migrate-to-checks-package',
+            'dart-use-pattern-matching',
+            'dart-matcher-best-practices',
+          }),
+        );
+
+        final defaultReport = DiscoveryEngine(
+          temp.path,
+          catalog: SkillsCatalog(const []),
+        ).run();
+        expect(
+          defaultReport.staticOpportunities.map((o) => o.skill).toSet(),
+          equals({'dart-use-path-package', 'dart-build-cli-app'}),
+        );
+
+        final allReport = DiscoveryEngine(
+          temp.path,
+          catalog: SkillsCatalog(const []),
+          includeAlternatives: true,
+        ).run();
+        expect(
+          allReport.staticOpportunities.map((o) => o.skill).toSet(),
+          containsAll({
+            'dart-migrate-to-checks-package',
+            'dart-use-pattern-matching',
+            'dart-matcher-best-practices',
+          }),
+        );
+      },
+    );
   });
 
   group('SKILL.md documentation synchronization', () {
@@ -468,8 +611,10 @@ void main() {
       for (final rule in defaultDiscoveryRules) {
         expect(block, contains(rule.category.label));
         expect(block, contains(rule.target.skillName));
+        expect(block, contains(rule.trigger.label));
         expect(block, contains(rule.description));
       }
+      expect(block, contains('(requires `--include-alternatives`)'));
     });
 
     test('skills/dash-discover/SKILL.md is in sync with defaultDiscoveryRules', () {

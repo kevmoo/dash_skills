@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
+import 'models.dart';
 import 'rule.dart';
 import 'rules_registry.dart';
 
@@ -21,9 +22,12 @@ String generateDiscoveryRulesBlock([List<DiscoveryRule>? rules]) {
   for (var i = 0; i < activeRules.length; i++) {
     final rule = activeRules[i];
     final num = i + 1;
+    final optIn = rule.trigger == RuleTrigger.alternative
+        ? ' (requires `--include-alternatives`)'
+        : '';
     buffer.writeln(
-      '$num. **${rule.category.label} (`${rule.target.skillName}`)**: '
-      '${rule.description}',
+      '$num. **${rule.category.label} (`${rule.target.skillName}`)** '
+      '[${rule.trigger.label}$optIn]: ${rule.description}',
     );
   }
   buffer

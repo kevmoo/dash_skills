@@ -8,7 +8,7 @@ import '../rule.dart';
 /// ad-hoc `main()` functions instead of structured CLI architectures.
 ///
 /// **Target Skill**:
-/// - GitHub: https://github.com/dart-lang/skills/tree/26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e/skills/dart-build-cli-app
+/// - GitHub: https://github.com/dart-lang/skills/tree/bf984f3ef223dd85e92036f934bbcb6bf301e4ce/skills/dart-build-cli-app
 final class CliAppRule extends DiscoveryRule {
   const CliAppRule();
 
@@ -24,7 +24,7 @@ final class CliAppRule extends DiscoveryRule {
     org: 'dart-lang',
     repo: 'skills',
     path: 'skills/dart-build-cli-app',
-    commitSha: '26b2dcc5654cbbc3b2ec56ea94719469bc8bae9e',
+    commitSha: 'bf984f3ef223dd85e92036f934bbcb6bf301e4ce',
   );
 
   @override
@@ -32,6 +32,9 @@ final class CliAppRule extends DiscoveryRule {
 
   @override
   SkillLifecycle get lifecycle => SkillLifecycle.architecture;
+
+  @override
+  RuleTrigger get trigger => RuleTrigger.capability;
 
   @override
   String get description =>
@@ -118,6 +121,7 @@ final class CliAppRule extends DiscoveryRule {
         target: target,
         category: category,
         lifecycle: lifecycle,
+        trigger: trigger,
         confidence: defaultConfidence,
         affectedCount: adHocFiles.length,
         diagnosis:
@@ -133,6 +137,7 @@ final class CliAppRule extends DiscoveryRule {
         target: target,
         category: category,
         lifecycle: lifecycle,
+        trigger: trigger,
         confidence: Confidence.medium,
         affectedCount: monolithicFiles.length,
         diagnosis:
