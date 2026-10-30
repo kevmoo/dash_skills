@@ -119,13 +119,32 @@ class PackageFacts {
   /// declared anywhere in this package, including outside `lib/`.
   final Map<String, List<TypeDeclarationFacts>> subtypesOf;
 
+  final Map<String, ParsedSource> _sourcesByPath;
+
   PackageFacts._({
     required this.context,
     required this.librarySources,
     required this.auxiliarySources,
     required this.typesByName,
     required this.subtypesOf,
-  });
+  }) : _sourcesByPath = {
+         for (final source in librarySources) source.file.path: source,
+         for (final source in auxiliarySources) source.file.path: source,
+       };
+
+  /// Returns the cached [CompilationUnit] for [file] when [content] matches
+  /// the parsed source, or parses [content] directly for in-memory fixtures.
+  CompilationUnit unitForFile(File file, String content) {
+    final cached = _sourcesByPath[file.path];
+    if (cached != null && cached.content == content) {
+      return cached.unit;
+    }
+    return parseString(
+      content: content,
+      path: file.path,
+      throwIfDiagnostics: false,
+    ).unit;
+  }
 
   factory PackageFacts.build(PackageContext context) {
     final librarySources = _parseAll(context, context.libFiles);

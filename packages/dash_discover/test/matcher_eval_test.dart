@@ -96,5 +96,85 @@ void main() {
       final context = PackageContext.load(Directory.current.path);
       expect(rule.checkFile(file, content, context), isNotNull);
     });
+
+    test('abstains on qualified context.expect calls from package:checks', () {
+      const content = '''
+import 'package:checks/context.dart';
+
+extension CustomCheck on Subject<List<String>> {
+  void allowsDefault() {
+    context.expect(() => const ['allows'], (actual) => null);
+  }
+}
+''';
+      final file = File('test/checks_context_expect_test.dart');
+      final context = PackageContext.load(Directory.current.path);
+      expect(rule.checkFile(file, content, context), isNull);
+    });
+
+    test('abstains on list literals inside closures passed to expect()', () {
+      const content = '''
+import 'package:test/test.dart';
+void main() {
+  test('immutability and builder config', () {
+    final headersAll = <String, List<String>>{};
+    expect(() => headersAll['h1'] = ['value1'], throwsUnsupportedError);
+    expect(
+      () => buildExtensions({'foo.txt': ['foo.txt']}),
+      throwsArgumentError,
+    );
+  });
+}
+''';
+      final file = File('test/closure_list_literal_test.dart');
+      final context = PackageContext.load(Directory.current.path);
+      expect(rule.checkFile(file, content, context), isNull);
+    });
+
+    test('abstains on expect() text inside comments and string literals', () {
+      const content = '''
+import 'package:test/test.dart';
+void main() {
+  test('docs only', () {
+    // Avoid expect(items.length, 3) and expect(map['k'], 'v').
+    const snippet = "expect(items.isEmpty, true)";
+    expect(snippet, isNotEmpty);
+  });
+}
+''';
+      final file = File('test/comments_and_strings_test.dart');
+      final context = PackageContext.load(Directory.current.path);
+      expect(rule.checkFile(file, content, context), isNull);
+    });
+
+    test('abstains on closeTo() and negative float .length expectations', () {
+      const content = '''
+import 'package:test/test.dart';
+void main() {
+  test('geometry scalar length', () {
+    expect(vector.length, closeTo(5.0, 0.01));
+    expect(delta.length, -1.5);
+    expect(segment.length, equals(12.5));
+  });
+}
+''';
+      final file = File('test/float_length_test.dart');
+      final context = PackageContext.load(Directory.current.path);
+      expect(rule.checkFile(file, content, context), isNull);
+    });
+
+    test('flags chained PropertyAccess .length and .isEmpty checks', () {
+      const content = '''
+import 'package:test/test.dart';
+void main() {
+  test('chained', () {
+    expect(results.visibleItems.length, 2);
+  });
+}
+''';
+      final file = File('test/chained_property_access_test.dart');
+      final context = PackageContext.load(Directory.current.path);
+      expect(rule.checkFile(file, content, context), isNotNull);
+    });
   });
 }
