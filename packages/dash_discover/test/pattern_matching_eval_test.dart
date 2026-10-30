@@ -119,5 +119,76 @@ void methodTwo(Object? b) {
         );
       },
     );
+
+    test('flags type cascades containing string interpolation braces and '
+        'nested blocks', () {
+      const interpolationContent = r'''
+abstract class Target {}
+class PackageTarget extends Target {
+  final String name;
+  final String version;
+  PackageTarget(this.name, this.version);
+}
+class RepoTarget extends Target {
+  final String org;
+  RepoTarget(this.org);
+}
+
+String describe(Target target) {
+  if (target is PackageTarget) {
+    return 'package:${target.name}@${target.version}';
+  } else if (target is RepoTarget) {
+    if (target.org.isNotEmpty) {
+      return 'github:${target.org}';
+    }
+    return 'github:unknown';
+  }
+  return 'other';
+}
+''';
+      final file = File('test/interpolation_cascade.dart');
+      final context = PackageContext.load(Directory.current.path);
+      expect(rule.checkFile(file, interpolationContent, context), isNotNull);
+    });
+
+    test('abstains on void bare-return switches, single-arm switches, and '
+        'mixed procedural switches', () {
+      const content = '''
+enum Step { start, skip, help }
+
+void handleVoid(Step step) {
+  switch (step) {
+    case Step.start:
+      return;
+    case Step.skip:
+      return;
+    case Step.help:
+      return;
+  }
+}
+
+int singleArm(Step step) {
+  switch (step) {
+    default:
+      return 1;
+  }
+}
+
+bool handleMixed(Step step) {
+  switch (step) {
+    case Step.start:
+      return true;
+    case Step.skip:
+      return false;
+    case Step.help:
+      print('help');
+  }
+  return false;
+}
+''';
+      final file = File('test/non_expression_switches.dart');
+      final context = PackageContext.load(Directory.current.path);
+      expect(rule.checkFile(file, content, context), isNull);
+    });
   });
 }

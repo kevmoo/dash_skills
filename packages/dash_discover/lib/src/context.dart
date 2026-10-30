@@ -88,6 +88,12 @@ class PackageContext {
         rawPubspec.contains('$name:');
   }
 
+  /// Whether `pubspec.yaml` marks this package as `publish_to: none`.
+  ///
+  /// Unpublished packages have no external `pub.dev` consumers, so changes to
+  /// declarations under `lib/` outside `lib/src/` are not breaking API changes.
+  bool get isUnpublished => pubspecYaml['publish_to'] == 'none';
+
   String readContent(File file) =>
       _contentCache.putIfAbsent(file.path, () => file.readAsStringSync());
 

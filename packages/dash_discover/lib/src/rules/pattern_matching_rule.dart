@@ -1,4 +1,8 @@
 import 'dart:io';
+
+import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/visitor.dart';
+
 import '../context.dart';
 import '../models.dart';
 import '../rule.dart';
@@ -11,19 +15,6 @@ import '../rule.dart';
 /// - GitHub: https://github.com/dart-lang/skills/tree/bf984f3ef223dd85e92036f934bbcb6bf301e4ce/skills/dart-use-pattern-matching
 final class PatternMatchingRule extends FileDiscoveryRule {
   const PatternMatchingRule();
-
-  // Matches type cascades where at least two branches perform `is` checks:
-  // Either `if (x is A) ... else if (x is B)`
-  // Or `else if (x is A) ... else if (x is B)`
-  static final _typeCascadePattern = RegExp(
-    r'(?:\bif\s*\([^)]+\s+is\s+[^)]+\)[^{}]*\{[^{}]*\}\s*else\s+if\s*\([^)]+\s+is\s+[^)]+\)|else\s+if\s*\([^)]+\s+is\s+[^)]+\)[^{}]*\{[^{}]*\}\s*else\s+if\s*\([^)]+\s+is\s+[^)]+\))',
-  );
-
-  // Switch statement where a case immediately returns or throws (linear
-  // matching without backtracking):
-  static final _returningSwitchPattern = RegExp(
-    r'\bswitch\s*\([^)]+\)\s*\{[^{}]*?\b(?:case\b[^:]+|default)\s*:\s*(?:return\b|throw\b)',
-  );
 
   @override
   String get id => 'pattern-matching';
@@ -65,12 +56,73 @@ final class PatternMatchingRule extends FileDiscoveryRule {
 
   @override
   String? checkFile(File file, String content, PackageContext context) {
-    if (_typeCascadePattern.hasMatch(content)) {
-      return 'Legacy type cascade found';
-    }
-    if (_returningSwitchPattern.hasMatch(content)) {
-      return 'Legacy returning switch statement found';
-    }
-    return null;
+    final unit = context.facts.unitForFile(file, content);
+    final visitor = _PatternMatchingVisitor();
+    unit.accept(visitor);
+    return visitor.reason;
   }
+}
+
+class _PatternMatchingVisitor extends RecursiveAstVisitor<void> {
+  String? reason;
+
+  @override
+  void visitIfStatement(IfStatement node) {
+    if (reason != null) return;
+    final parent = node.parent;
+    if (parent is! IfStatement || parent.elseStatement != node) {
+      if (_countTypeCheckBranches(node) >= 2) {
+        reason = 'Legacy type cascade found';
+        return;
+      }
+    }
+    super.visitIfStatement(node);
+  }
+
+  @override
+  void visitSwitchStatement(SwitchStatement node) {
+    if (reason != null) return;
+    if (_isExpressionConvertibleSwitch(node)) {
+      reason = 'Legacy returning switch statement found';
+      return;
+    }
+    super.visitSwitchStatement(node);
+  }
+}
+
+int _countTypeCheckBranches(IfStatement root) {
+  var count = 0;
+  Statement? current = root;
+  while (current is IfStatement) {
+    if (current.caseClause == null && _containsPositiveIs(current.expression)) {
+      count++;
+    }
+    current = current.elseStatement;
+  }
+  return count;
+}
+
+bool _containsPositiveIs(Expression expression) {
+  final expr = expression.unParenthesized;
+  if (expr is IsExpression) return expr.notOperator == null;
+  if (expr is BinaryExpression) {
+    return _containsPositiveIs(expr.leftOperand) ||
+        _containsPositiveIs(expr.rightOperand);
+  }
+  return false;
+}
+
+bool _isExpressionConvertibleSwitch(SwitchStatement node) {
+  final nonEmptyMembers = node.members
+      .where((m) => m.statements.isNotEmpty)
+      .toList();
+  if (nonEmptyMembers.length < 2) return false;
+  return nonEmptyMembers.every(_isSingleValueExitMember);
+}
+
+bool _isSingleValueExitMember(SwitchMember member) {
+  if (member.statements.length != 1) return false;
+  final stmt = member.statements.single;
+  if (stmt is ReturnStatement) return stmt.expression != null;
+  return stmt is ExpressionStatement && stmt.expression is ThrowExpression;
 }

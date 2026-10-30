@@ -1,4 +1,8 @@
 import 'dart:io';
+
+import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/visitor.dart';
+
 import '../context.dart';
 import '../models.dart';
 import '../rule.dart';
@@ -11,34 +15,6 @@ import '../rule.dart';
 /// - GitHub: https://github.com/kevmoo/dash_skills/tree/main/skills/dart-matcher-best-practices
 final class MatcherBestPracticesRule extends FileDiscoveryRule {
   const MatcherBestPracticesRule();
-
-  // Matches collection boolean and membership checks:
-  // e.g. expect(x.isEmpty, true), expect(x.contains('a'), true)
-  static final _booleanOrContainsPattern = RegExp(
-    r'expect\(\s*[^,]+?\.(?:isEmpty\b|isNotEmpty\b|contains\([^)]*\))\s*,',
-  );
-
-  // Matches .length checks and captures the expected argument for inspection:
-  // e.g. expect(x.length, 3) or expect(x.length, equals(3))
-  static final _lengthPattern = RegExp(
-    r'expect\(\s*[^,]+?\.length\b\s*,\s*([^,)]+)',
-  );
-
-  // Checks if the expected argument is a floating-point number
-  // (e.g. 25.0 or equals(25.0)):
-  static final _floatPattern = RegExp(r'^(?:equals\(\s*)?\d+\.\d+');
-
-  // Matches map string key lookups:
-  // e.g. expect(map['key'], value)
-  static final _mapStringLookupPattern = RegExp(
-    r'''expect\(\s*[^,]+?\[\s*['"][^'"]+['"]\s*\]\s*,''',
-  );
-
-  // Matches imperative try/catch blocks that use fail():
-  // e.g. try { fn(); fail('should throw'); } catch (e) { ... }
-  static final _tryCatchFailPattern = RegExp(
-    r'\btry\s*\{[\s\S]*?\bfail\s*\([^;]*\);[\s\S]*?\}\s*(?:on\s+\w+\s*)?catch\b',
-  );
 
   @override
   String get id => 'matcher-best-practices';
@@ -88,19 +64,116 @@ final class MatcherBestPracticesRule extends FileDiscoveryRule {
 
   @override
   String? checkFile(File file, String content, PackageContext context) {
-    if (_booleanOrContainsPattern.hasMatch(content) ||
-        _mapStringLookupPattern.hasMatch(content) ||
-        _tryCatchFailPattern.hasMatch(content)) {
-      return 'Suboptimal expect() assertion found';
-    }
+    final unit = context.facts.unitForFile(file, content);
+    final visitor = _SuboptimalMatcherVisitor();
+    unit.accept(visitor);
+    return visitor.found ? 'Suboptimal expect() assertion found' : null;
+  }
+}
 
-    for (final match in _lengthPattern.allMatches(content)) {
-      final expectedArg = match.group(1)?.trim() ?? '';
-      if (!_floatPattern.hasMatch(expectedArg)) {
-        return 'Suboptimal expect() assertion found';
-      }
-    }
+class _SuboptimalMatcherVisitor extends RecursiveAstVisitor<void> {
+  bool found = false;
 
-    return null;
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    if (found) return;
+    if (_isSuboptimalExpectCall(node)) {
+      found = true;
+      return;
+    }
+    super.visitMethodInvocation(node);
+  }
+
+  @override
+  void visitTryStatement(TryStatement node) {
+    if (found) return;
+    if (node.catchClauses.isNotEmpty && _blockContainsFailCall(node.body)) {
+      found = true;
+      return;
+    }
+    super.visitTryStatement(node);
+  }
+}
+
+bool _isSuboptimalExpectCall(MethodInvocation node) {
+  if (node.target != null ||
+      node.isCascaded ||
+      node.methodName.name != 'expect') {
+    return false;
+  }
+  final args = node.argumentList.arguments;
+  if (args.length < 2 ||
+      args[0] is NamedExpression ||
+      args[1] is NamedExpression) {
+    return false;
+  }
+
+  final actual = args[0].unParenthesized;
+  final expected = args[1].unParenthesized;
+
+  final prop = _accessedPropertyName(actual);
+  if (prop == 'isEmpty' || prop == 'isNotEmpty') return true;
+  if (prop == 'length') return !_isFloatingPointMatcher(expected);
+
+  if (actual is MethodInvocation &&
+      actual.target != null &&
+      actual.methodName.name == 'contains' &&
+      actual.argumentList.arguments.length == 1) {
+    return true;
+  }
+
+  return actual is IndexExpression &&
+      actual.target != null &&
+      actual.index.unParenthesized is StringLiteral;
+}
+
+String? _accessedPropertyName(Expression expr) => switch (expr) {
+  PrefixedIdentifier(:final identifier) => identifier.name,
+  PropertyAccess(:final propertyName) => propertyName.name,
+  _ => null,
+};
+
+bool _isFloatingPointMatcher(Expression expr) {
+  if (expr is DoubleLiteral) return true;
+  if (expr is PrefixExpression) {
+    return expr.operand.unParenthesized is DoubleLiteral;
+  }
+  if (expr is MethodInvocation) {
+    final name = expr.methodName.name;
+    if (name == 'closeTo') return true;
+    if (name == 'equals' && expr.argumentList.arguments.length == 1) {
+      return _isFloatingPointMatcher(
+        expr.argumentList.arguments.first.unParenthesized,
+      );
+    }
+  }
+  return false;
+}
+
+bool _blockContainsFailCall(Block block) {
+  final finder = _FailCallFinder();
+  block.accept(finder);
+  return finder.found;
+}
+
+class _FailCallFinder extends RecursiveAstVisitor<void> {
+  bool found = false;
+
+  @override
+  void visitFunctionExpression(FunctionExpression node) {
+    // Do not cross into nested closures that may not run synchronously inside
+    // the try block.
+  }
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    if (found) return;
+    if (node.target == null &&
+        !node.isCascaded &&
+        node.methodName.name == 'fail') {
+      found = true;
+      return;
+    }
+    super.visitMethodInvocation(node);
   }
 }

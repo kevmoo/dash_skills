@@ -75,12 +75,15 @@ final class SealedHierarchyRule extends DiscoveryRule {
     if (candidates.isEmpty) return;
 
     // Sealing a type that downstream packages can currently extend is a
-    // breaking change. Types under `lib/src/` are package-private by
-    // convention, so the change is safe; anything else needs a judgement call
-    // that syntax alone cannot make.
-    final allPrivate = candidates.every(
-      (c) => c.source.isImplementation || c.isFinal || c.name.startsWith('_'),
-    );
+    // breaking change. Types under `lib/src/` (or in `publish_to: none`
+    // packages with no external pub consumers) are safe; anything else needs a
+    // judgement call that syntax alone cannot make.
+    final allPrivate =
+        context.isUnpublished ||
+        candidates.every(
+          (c) =>
+              c.source.isImplementation || c.isFinal || c.name.startsWith('_'),
+        );
 
     yield Opportunity(
       target: target,
