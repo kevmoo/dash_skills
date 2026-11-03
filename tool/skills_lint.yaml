@@ -5,3 +5,7 @@ skills_lint:
     check-trailing-whitespace: error
   directories:
     - path: "../skills"
+      rules:
+        check-relative-paths:
+          severity: error
+          within-skill: true
