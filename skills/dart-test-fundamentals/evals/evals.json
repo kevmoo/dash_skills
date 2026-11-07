@@ -43,6 +43,20 @@
         "The test file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
       ],
       "agent_config": "bare-agent"
+    },
+    {
+      "id": 4,
+      "prompt": "Reorder the top-level declarations in test/layout_test.dart so that main() comes first, followed by the tests it calls, with all private fakes and helpers moved to the bottom.",
+      "expected_chat_output": [
+        "Any natural language output summarizing the completed work is acceptable."
+      ],
+      "expected_repo_state": [
+        "The test/layout_test.dart file has imports first, followed immediately by void main().",
+        "The group/test functions are ordered in the sequence they are called by main().",
+        "Private fakes, mocks, consts, and helpers are located at the bottom of the file.",
+        "The test file compiles with zero errors and passes static analysis ('dart analyze --fatal-infos')."
+      ],
+      "agent_config": "bare-agent"
     }
   ]
 }
