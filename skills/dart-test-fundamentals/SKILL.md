@@ -177,9 +177,14 @@ timeouts:
 
 ### 5. File Naming & Layout
 
-- **Naming**: Test files **must** end in `_test.dart` to be picked up by the test runner, and should be placed in the `test/` directory.
-- **Top-Level Layout**: Order `*_test.dart` files as imports → `void main()` → the `group`/`test` functions `main` calls, in call order → private fakes, mocks, consts, and helpers at the bottom.
-  - **Rationale**: Dart allows forward references to top-level declarations, so `main` can come first at no cost, keeping the high-level test plan above the fold.
+- **Naming**: Test files **must** end in `_test.dart` to be picked up by the
+  test runner, and should be placed in the `test/` directory.
+- **Top-Level Layout**: Order `*_test.dart` files as imports → `void main()` →
+  the `group`/`test` functions `main` calls, in call order → private fakes,
+  mocks, consts, and helpers at the bottom.
+  - **Rationale**: Dart allows forward references to top-level declarations, so
+    `main` can come first at no cost, keeping the high-level test plan above the
+    fold.
   - **Shared Fakes**: Place larger shared fakes and mocks in `test/src/`.
 
 ### 6. Test Design, Seams & Real Test Doubles
